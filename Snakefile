@@ -5,7 +5,11 @@ hmms,    = glob_wildcards("hmm/{hmm}.hmm")
 rule all:
 	input:
 		expand("analysis/hmmsearch/{genome}-{hmm}.txt", genome = genomes, hmm = hmms),
-		expand("analysis/segments/{genome}/segments.pfam.txt", genome = genomes)
+		expand("analysis/segments/{genome}/segments.pfam.txt", genome = genomes),
+		expand("analysis/segments/{genome}/segments.gvog.tblout", genome = genomes),
+		expand("analysis/segments/{genome}/segments.vogdb.tblout", genome = genomes),
+		expand("analysis/segments/{genome}/segments.bellas.tblout", genome = genomes),
+		expand("analysis/segments/{genome}/segments.gbk", genome = genomes)
 
 rule cat_hmm:
 	input:
@@ -84,6 +88,42 @@ rule segments_gffread:
 	shell:
 		"gffread -g {input.fna} -y {output} {input.gff3}"
 
+rule segments_gvog:
+	input:
+		hmm = "databases/GVDB/output/GVOG.hmm",
+		fasta = "analysis/segments/{genome}/segments.faa"
+	output:
+		tblout = "analysis/segments/{genome}/segments.gvog.tblout",
+		domtblout = "analysis/segments/{genome}/segments.gvog.domtblout"
+	threads:
+		4
+	shell:
+		"hmmscan --cpu {threads} -o /dev/null --tblout {output.tblout} --domtblout {output.domtblout} {input.hmm} {input.fasta}"
+
+rule segments_bellas:
+	input:
+		hmm = "databases/Bellas_Sommaruga/output/PCs.hmmdb",
+		fasta = "analysis/segments/{genome}/segments.faa"
+	output:
+		tblout = "analysis/segments/{genome}/segments.bellas.tblout",
+		domtblout = "analysis/segments/{genome}/segments.bellas.domtblout"
+	threads:
+		4
+	shell:
+		"hmmscan --cpu {threads} -o /dev/null --tblout {output.tblout} --domtblout {output.domtblout} {input.hmm} {input.fasta}"
+
+rule segments_vogdb:
+	input:
+		hmm = "databases/vogdb/output/vog.hmmdb",
+		fasta = "analysis/segments/{genome}/segments.faa"
+	output:
+		tblout = "analysis/segments/{genome}/segments.vogdb.tblout",
+		domtblout = "analysis/segments/{genome}/segments.vogdb.domtblout"
+	threads:
+		4
+	shell:
+		"hmmscan --cpu {threads} -o /dev/null --tblout {output.tblout} --domtblout {output.domtblout} {input.hmm} {input.fasta}"
+
 rule segments_pfam:
 	input:
 		"analysis/segments/{genome}/segments.faa"
@@ -95,6 +135,24 @@ rule segments_pfam:
 		4
 	shell:
 		"pfam_scan.pl -fasta {input} -dir {params.pfam_dir} -outfile {output} -cpu {threads}"
+
+rule segments_genbank:
+	input:
+		fna = "analysis/segments/{genome}/segments.fna",
+		gff3 = "analysis/segments/{genome}/segments.fna.gff3",
+		pfam_db = "databases/Pfam/Pfam-A.hmm",
+		tblout = [
+			"analysis/segments/{genome}/segments.gvog.tblout",
+			"analysis/segments/{genome}/segments.vogdb.tblout",
+			"analysis/segments/{genome}/segments.bellas.tblout"
+		],
+		pfam = "analysis/segments/{genome}/segments.pfam.txt"
+	output:
+		"analysis/segments/{genome}/segments.gbk"
+	params:
+		evalue = 1e-5
+	script:
+		"scripts/gff2gbk.py"
 
 rule segments_split:
 	input:

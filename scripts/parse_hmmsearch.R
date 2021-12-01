@@ -22,7 +22,7 @@ genes.threshold <- unlist(params["genes_threshold"]) # 2
 data <- lapply(hmmsearch_files, read.hmmer.tblout) %>%
 	bind_rows %>%
 	extract(description.of.target, into = c("start", "end"), regex = "(\\d+) - (\\d+)", convert = T) %>%
-	extract(target.name, into = "scaffold", regex = "^(.+_scaffold_\\d+)", remove = F) %>%
+	extract(target.name, into = "scaffold", regex = "^(.+)_\\d+$", remove = F) %>%
 	extract(query.name, into = "gene", regex = "^([^_]+)", remove = F) %>%
 	arrange(best.1.domain.E.value) %>%
 	select(target.name, scaffold, query.name, gene, best.1.domain.E.value, best.1.domain.score, start, end) %>%
