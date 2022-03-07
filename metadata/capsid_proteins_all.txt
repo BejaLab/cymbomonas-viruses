@@ -1,0 +1,4 @@
+MCP_PLV	MCP
+mCP	mCP
+MCP_Virophage	MCP
+VOG01840	MCP

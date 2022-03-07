@@ -1,0 +1,661 @@
+
+from pandas import read_csv, isnull
+from os import path
+from hashlib import sha256
+from Bio import SeqIO
+from collections import defaultdict
+
+genomes,       = glob_wildcards("genomes/{genome}.fna")
+algal_genomes, = glob_wildcards("genomes_algae/{genome}.fna")
+hmms,          = glob_wildcards("hmm/{hmm}.hmm")
+hmm_algae,     = glob_wildcards("hmm_algae/{hmm}.hmm")
+core_genomes = []
+capsid_proteins = defaultdict(list)
+
+with open("metadata/core_genomes.txt") as fh:
+    for line in fh:
+    	core_genomes.append(line.rstrip())
+with open("metadata/capsid_proteins.txt") as fh:
+    for line in fh:
+    	hmm, CP = line.rstrip().split()
+    	capsid_proteins[CP].append(hmm)
+
+segments_file = 'metadata/viral_elements.tsv'
+ncbi_file     = 'metadata/viruses_ncbi.tsv'
+bellas_file   = 'metadata/viruses_bellas.tsv'
+yutin_file    = 'metadata/viruses_yutin.tsv'
+
+# search = [ "autoblast", "blastp", "diamond", "usearch", "ublast", "lastp", "rapsearch", "topaz", "blatp", "mmseqsp" ]
+search = [ "diamond" ]
+
+segments = {}
+data = read_csv(segments_file, sep = '\t')
+for i, row in data.iterrows():
+    if isnull(row['fragment']):
+        short = row['short']
+        segments[short] = row
+
+ncbi = {}
+data = read_csv(ncbi_file, sep = '\t')
+for i, row in data.iterrows():
+    if isnull(row['fragment']):
+        short = row['short']
+        ncbi[short] = row
+
+bellas = {}
+data = read_csv(bellas_file, sep = '\t')
+for i, row in data.iterrows():
+    short = row['short']
+    bellas[short] = row
+
+yutin = {}
+data = read_csv(yutin_file, sep = '\t')
+for i, row in data.iterrows():
+    short = row['short']
+    yutin[short] = row
+
+rule all:
+    input:
+        expand("analysis/PLVs/orthogroups/{search}", search = search),
+    	# expand("analysis/hmmsearch/{genome}-{hmm}.txt", genome = genomes, hmm = hmms),
+    	# expand("analysis/hmmsearch/{genome}-{hmm}.faa", genome = genomes, hmm = hmms),
+        # expand("analysis/segments/{genome}/segments.gbk", genome = genomes),
+    	#expand("analysis/blast_algae/{genome}.blast", genome = algal_genomes),
+        expand("analysis/phylogeny/{CP}.svg", CP = "MCP_PLV")
+        #"analysis/proteinortho/viruses.proteinortho.tsv",
+
+rule viruses_ncbi_gbk:
+    output:
+        "analysis/PLVs/ncbi/{genome}.gbk"
+    params:
+        id = lambda w: ncbi[w.genome]['accession']
+    resources:
+        ncbi = 1
+    shell:
+        "efetch -db nuccore -id {params.id} -format gb > {output}"
+
+rule extract_element:
+    input:
+        lambda w: "analysis/segments/%s/segments.gbk" % segments[w.segment]['genome']
+    output:
+        "analysis/PLV_elements/{segment}.gbk"
+    params:
+        flank = 50000,
+        segment = lambda w: segments[w.segment]
+    script:
+        "scripts/extract_element.py"
+
+# Workaround for BQ2
+rule extract_faa_BQ2:
+    input:
+        "analysis/PLVs/ncbi/CpV-BQ2.gbk"
+    output:
+        "analysis/PLVs/ncbi/CpV-BQ2.faa"
+    shell:
+        "sed s/misc_feature/CDS/ {input} | biotags.pl -i - -f genbank -p CDS -t note,seq_translate | awk -F'[ ]' '{{print$NF}}' | seqkit tab2fx -o {output}"
+
+rule extract_faa_bellas:
+    input:
+        "databases/Bellas_Sommaruga/input/All_proteins.faa"
+    output:
+        "analysis/PLVs/bellas/{segment}.faa"
+    params:
+        search = lambda w: bellas[w.segment]['search']
+    shell:
+        "seqkit grep -rp {params.search} -o {output} {input}"
+
+rule extract_gbk_yutin:
+    input:
+        "databases/Yutin2015.gbk"
+    output:
+        "analysis/PLVs/yutin/{segment}.gbk"
+    shell:
+        "awk -vl={wildcards.segment} '/^LOCUS/{{p=$2==l}}p' {input} | sed -E 's/\\x93|\\x94/\"/g' > {output}"
+
+rule extract_faa_yutin:
+    input:
+        "analysis/PLVs/yutin/{segment}.gbk"
+    output:
+        "analysis/PLVs/yutin/{segment}.faa"
+    shell:
+        "biotags.pl -i {input} -p CDS -t locus_tag,translation | awk '$1' | seqkit tab2fx -o {output}"
+
+rule extract_faa_ncbi:
+    input:
+        "analysis/PLVs/ncbi/{segment}.gbk"
+    output:
+        "analysis/PLVs/ncbi/{segment}.faa"
+    shell:
+        "biotags.pl -i {input} -p CDS -t protein_id,translation | awk '$1' | seqkit tab2fx -o {output}"
+
+rule extract_faa_elements:
+    input:
+        "analysis/PLV_elements/{segment}.gbk"
+    output:
+        "analysis/PLV_elements/{segment}.faa"
+    shell:
+        "biotags.pl -i {input} -p CDS -t locus_tag,translation | awk '$1' | seqkit tab2fx -o {output}"
+
+rule proteinortho:
+    input:
+        expand("analysis/PLV_elements/{segment}.faa", segment = segments.keys()),
+        expand("analysis/PLVs/ncbi/{genome}.faa", genome = ncbi),
+        expand("analysis/PLVs/yutin/{genome}.faa", genome = yutin),
+        expand("analysis/PLVs/bellas/{genome}.faa", genome = bellas)
+    output:
+        "analysis/PLVs/proteinortho/{search}/proteinortho.proteinortho.tsv"
+    shadow:
+        "shallow"
+    params:
+        evalue = 1e-5,
+        conn   = 0.1,
+        outdir = "analysis/PLVs/proteinortho/{search}/"
+    threads:
+        workflow.cores
+    shell:
+        """
+        proteinortho -project=proteinortho -p={wildcards.search} -cpus={threads} -conn={params.conn} -e={params.evalue} {input}
+        mv proteinortho.* {params.outdir}
+        """
+
+checkpoint proteinortho_collect:
+    input:
+        "analysis/PLVs/proteinortho/{search}/proteinortho.proteinortho.tsv",
+        expand("analysis/PLVs/ncbi/{genome}.faa", genome = ncbi),
+        expand("analysis/PLVs/yutin/{genome}.faa", genome = yutin),
+        expand("analysis/PLVs/bellas/{genome}.faa", genome = bellas)
+    output:
+        directory("analysis/PLVs/orthogroups/{search}")
+    shadow:
+        "shallow"
+    shell:
+        "perl workflow/scripts/proteinortho_grab_proteins.pl -t -s -output_dir={output} -output_file=sequences.faa -exact {input}"
+
+rule getorf:
+    input:
+    	"genomes/{genome}.fna"
+    output:
+    	"analysis/getorf/{genome}.faa",
+    shell:
+    	"getorf -minsize 100 -filter {input} > {output}"
+
+rule hmmsearch:
+    input:
+    	fasta = "analysis/getorf/{genome}.faa", hmm = "hmm/{hmm}.hmm"
+    output:
+    	"analysis/hmmsearch/{genome}-{hmm}.txt"
+    shell:
+    	"hmmsearch -o /dev/null --tblout {output} {input.hmm} {input.fasta}"
+
+rule extract_hmmsearch:
+    input:
+    	fasta = "analysis/getorf/{genome}.faa",
+    	fai = "analysis/getorf/{genome}.faa.seqkit.fai",
+    	txt = "analysis/hmmsearch/{genome}-{hmm}.txt"
+    output:
+    	"analysis/hmmsearch/{genome}-{hmm}.faa"
+    shell:
+    	"""
+    	awk '!/^#/&&$5<0.001{{print $1,$3}}' OFS=\\\\t {input.txt} | \
+    		parallel --colsep \\\t seqkit faidx -f {input.fasta} {{1}} \| seqkit replace -p "'$'" -r '" {{2}}"' | seqkit  seqkit seq -gm 100
+    	"""
+
+rule algae_getorf:
+    input:
+    	"genomes_algae/{genome}.fna"
+    output:
+    	"analysis/getorf_algae/{genome}.faa"
+    params:
+    	minsize = 100,
+    	maxsize = 100000
+    shell:
+    	"getorf -minsize {params.minsize} -maxsize {params.maxsize} -filter {input} > {output}"
+
+rule makeblastdb_prot:
+    input:
+    	"{fasta}"
+    output:
+    	"{fasta}.pdb"
+    shell:
+    	"makeblastdb -in {input} -dbtype prot"
+
+rule makeblastdb_nucl:
+    input:
+    	"{fasta}"
+    output:
+    	"{fasta}.ndb"
+    shell:
+    	"makeblastdb -in {input} -dbtype nucl"
+
+rule extract_core_genes:
+    input:
+    	tblout = "analysis/segments/{genome}/segments-hmm-{hmm}.tblout",
+    	fasta = "analysis/segments/{genome}/segments.faa",
+    	faidx = "analysis/segments/{genome}/segments.faa.fai"
+    output:
+    	"analysis/CPs/core/{genome}-{hmm}.faa"
+    params:
+    	evalue = 1e-5
+    shell:
+    	"grep -v '^#' {input.tblout} | awk -ve={params.evalue} '$5<e' | cut -f1 -d' ' | xargs seqkit faidx -f {input.fasta} > {output}"
+
+rule combine_core_genes:
+    input:
+    	fasta = lambda w: expand("analysis/CPs/core/{genome}-{hmm}.faa", genome = core_genomes, hmm = capsid_proteins[w.CP])
+    output:
+    	"analysis/CPs/queries/{CP}.faa"
+    shell:
+    	"cat {input} > {output}"
+
+rule cluster_core_genes:
+    input:
+    	"analysis/CPs/queries/{CP}.faa"
+    output:
+    	"analysis/CPs/queries/{CP}.cdhit"
+    params:
+    	c = 0.9
+    shell:
+    	"cdhit -i {input} -o {output} -c {params.c} -d 0"
+
+rule algae_blast:
+    input:
+    	faa = "analysis/getorf_algae/{genome}.faa",
+    	pdb = "analysis/getorf_algae/{genome}.faa.pdb",
+    	query = "analysis/CPs/queries/{CP}.faa"
+    output:
+    	"analysis/phylogeny/algae/{genome}-{CP}.blast"
+    shell:
+    	"blastp -query {input.query} -db {input.faa} -outfmt 6 -out {output}"
+
+rule PLV_blast:
+    input:
+    	faa = "analysis/PLVs/{source}/{genome}.faa",
+    	pdb = "analysis/PLVs/{source}/{genome}.faa.pdb",
+    	query = "analysis/CPs/queries/{CP}.faa"
+    output:
+    	"analysis/phylogeny/PLVs/{source}/{genome}-{CP}.blast"
+    shell:
+    	"blastp -query {input.query} -db {input.faa} -outfmt 6 -out {output}"
+
+rule faidx:
+    input:
+    	"{fasta}"
+    output:
+    	"{fasta}.fai"
+    shell:
+    	"seqkit faidx {input}"
+
+rule faidx_f:
+    input:
+    	"{fasta}"
+    output:
+    	"{fasta}.seqkit.fai"
+    shell:
+    	"seqkit faidx -f {input}"
+
+rule blast_extract_algae:
+    input:
+    	fasta = "analysis/getorf_algae/{genome}.faa",
+    	fai = "analysis/getorf_algae/{genome}.faa.seqkit.fai",
+    	blast = "analysis/phylogeny/algae/{genome}-{CP}.blast"
+    output:
+    	"analysis/phylogeny/algae/{genome}-{CP}.faa"
+    params:
+    	evalue = 1e-10
+    shell:
+    	"awk -ve={params.evalue} '$11<e' {input.blast} | cut -f2 | sort -u | xargs -r seqkit faidx -f {input.fasta} > {output}"
+
+rule blast_extract_PLVs:
+    input:
+    	fasta = "analysis/PLVs/{source}/{genome}.faa",
+    	fai = "analysis/PLVs/{source}/{genome}.faa.seqkit.fai",
+    	blast = "analysis/phylogeny/PLVs/{source}/{genome}-{CP}.blast"
+    output:
+    	"analysis/phylogeny/PLVs/{source}/{genome}-{CP}.faa"
+    params:
+    	evalue = 1e-10
+    shell:
+    	"awk -ve={params.evalue} '$11<e' {input.blast} | cut -f2 | sort -u | xargs -r seqkit faidx -f {input.fasta} > {output}"
+
+rule algae_hmm:
+    input:
+    	fasta = "analysis/getorf_algae/{genome}.faa",
+    	hmm = "hmm_algae/{hmm}.hmm"
+    output:
+    	"analysis/hmm_algae/{genome}-{hmm}.tblout"
+    shell:
+    	"hmmsearch -o /dev/null --tblout {output} {input.hmm} {input.fasta}"
+
+rule algae_cat:
+    input:
+    	expand("analysis/phylogeny/algae/{genome}-{{CP}}.faa", genome = algal_genomes),
+        expand("analysis/phylogeny/PLVs/ncbi/{genome}-{{CP}}.faa", genome = ncbi.keys()),
+        expand("analysis/phylogeny/PLVs/yutin/{genome}-{{CP}}.faa", genome = yutin.keys()),
+        expand("analysis/phylogeny/PLVs/bellas/{genome}-{{CP}}.faa", genome = bellas.keys()),
+    output:
+    	"analysis/phylogeny/{CP}.fasta"
+    shell:
+    	"seqkit seq -gm 200 {input} -o {output}"
+
+rule algae_mafft:
+    input:
+    	"analysis/phylogeny/{CP}.fasta"
+    output:
+    	"analysis/phylogeny/{CP}.mafft"
+    shell:
+    	"cat {input} | mafft --localpair --maxiterate 1000 - > {output}"
+
+rule algae_trimal:
+    input:
+    	"analysis/phylogeny/{CP}.mafft"
+    output:
+    	"analysis/phylogeny/{CP}.trimal"
+    shell:
+    	"trimal -in {input} -out {output} -automated1"
+
+rule algae_rmdup:
+    input:
+        "analysis/phylogeny/{CP}.trimal"
+    output:
+        "analysis/phylogeny/{CP}.trimal.uniq"
+    shell:
+        "seqkit rmdup -so {output} {input}"
+
+rule algae_iqtree:
+    input:
+    	"analysis/phylogeny/{CP}.trimal.uniq"
+    output:
+    	"analysis/phylogeny/{CP}.treefile"
+    params:
+    	seed = 1234,
+        prefix = "analysis/phylogeny/{CP}"
+    threads:
+    	4
+    shell:
+    	"iqtree2 -s {input} --prefix {params.prefix} -redo --alrt 1000 -B 1000 --seed {params.seed} -T {threads}"
+
+rule algae_ggtree_MCP_PLV:
+    input:
+    	tree = "analysis/phylogeny/MCP_PLV.treefile",
+    	fasta = expand("analysis/phylogeny/algae/{genome}-MCP_PLV.faa", genome = algal_genomes),
+        # tblout = expand("analysis/hmm_algae/{genome}-{hmm}.tblout", genome = algal_genomes, hmm = hmm_algae),
+    	synonyms = "annotations/organisms.txt",
+    	hmm = expand("hmm_algae/{hmm}.hmm", hmm = hmm_algae)
+    output:
+    	"analysis/phylogeny/MCP_PLV.svg"
+    script:
+    	"scripts/ggtree_collapse.R"
+
+rule algae_ggtree_MCP:
+    input:
+    	tree = "analysis/phylogeny/MCP.treefile",
+    	fasta = expand("analysis/blast_algae/{genome}-MCP.faa", genome = algal_genomes),
+    	tblout = expand("analysis/hmm_algae/{genome}-{hmm}.tblout", genome = algal_genomes, hmm = hmm_algae),
+    	synonyms = "annotations/organisms.txt",
+    	hmm = expand("hmm_algae/{hmm}.hmm", hmm = hmm_algae)
+    output:
+    	"analysis/phylogeny/MCP.svg"
+    script:
+    	"scripts/ggtree.R"
+
+rule parse_hmmsearch:
+    input:
+    	expand("analysis/hmmsearch/{{genome}}-{hmm}.txt", hmm = hmms)
+    output:
+    	# figure = "images/segments_{genome}.pdf",
+    	bed = "analysis/segments/{genome}/segments.bed"
+    params:
+    	e_value_threshold = 0.001,
+    	distance_threshold = 100000,
+    	genes_threshold = 2
+    script:
+    	"scripts/parse_hmmsearch.R"
+
+rule segments_extract:
+    input:
+    	genome = "genomes/{genome}.fna", bed = "analysis/segments/{genome}/segments.bed"
+    output:
+    	"analysis/segments/{genome}/segments.fna"
+    params:
+    	flanks = 50000
+    shell:
+    	"seqkit subseq --up-stream {params.flanks} --down-stream {params.flanks} --bed {input.bed} {input.genome} | cut -f1 -d: > {output}"
+
+checkpoint segments_split:
+    input:
+    	"analysis/segments/{genome}/segments.fna"
+    output:
+    	directory("analysis/segments/{genome}/segments_split")
+    shell:
+    	"""
+    	seqkit split -iO {output} {input}
+    	rename s/segments.id_// {output}/*.fna
+    	"""
+
+rule segments_genemarks:
+    input:
+    	"analysis/segments/{genome}/segments_split/{segment}.fna"
+    output:
+    	"analysis/segments/{genome}/segments_split/{segment}.genemarks.gff"
+    shadow:
+    	"minimal"
+    shell:
+    	"gmsn.pl --format GFF3 --virus --output {output} {input}"
+
+rule segments_prodigal:
+    input:
+    	"analysis/segments/{genome}/segments_split/{segment}.fna"
+    output:
+    	"analysis/segments/{genome}/segments_split/{segment}.prodigal.gff"
+    shadow:
+    	"minimal"
+    shell:
+    	"prodigal -i {input} -c -m -g 1 -p meta -f gff > {output}"
+
+rule segments_genemarks_cat:
+    input:
+    	"analysis/segments/{genome}/segments_split/{segment}.genemarks.gff",
+    	"analysis/segments/{genome}/segments_split/{segment}.prodigal.gff"
+    output:
+    	"analysis/segments/{genome}/segments_split/{segment}.combined.gtf"
+    params:
+    	outprefix = "analysis/segments/{genome}/segments_split/{segment}",
+    	cprefix = lambda wildcards:
+    		wildcards.genome.replace('-','') + '_' + sha256(wildcards.segment.encode('utf-8')).hexdigest()[0:6]
+    shell:
+    	"gffcompare -p {params.cprefix} -CTo {params.outprefix} {input}"
+
+rule segments_gffread:
+    input:
+    	gtf = "analysis/segments/{genome}/segments_split/{segment}.combined.gtf",
+    	fna = "analysis/segments/{genome}/segments_split/{segment}.fna",
+    	fai = "analysis/segments/{genome}/segments_split/{segment}.fna.fai"
+    output:
+    	gff = "analysis/segments/{genome}/segments_split/{segment}.gff",
+    	faa = "analysis/segments/{genome}/segments_split/{segment}.faa"
+    shell:
+    	"gffread -g {input.fna} -w - -o {output.gff} {input.gtf} | seqkit translate --trim -o {output.faa}"
+
+def aggregate_segments(wildcards, suffix):
+    split_dir = checkpoints.segments_split.get(**wildcards).output[0]
+    fna = path.join(split_dir, "{segment}.fna")
+    segments ,= glob_wildcards(fna)
+    files = path.join(split_dir, suffix)
+    return expand(files, segment = segments)
+
+rule segments_gff_cat:
+    input:
+    	lambda wildcards: aggregate_segments(wildcards, "{segment}.gff")
+    output:
+    	"analysis/segments/{genome}/segments.gff"
+    shell:
+    	"cat {input} > {output}"
+
+rule segments_faa_cat:
+    input:
+    	lambda wildcards: aggregate_segments(wildcards, "{segment}.faa")
+    output:
+    	"analysis/segments/{genome}/segments.faa"
+    shell:
+    	"cat {input} > {output}"
+
+rule segments_gvog:
+    input:
+    	hmm = "databases/GVDB/output/GVOG.hmm",
+    	fasta = "analysis/segments/{genome}/segments.faa"
+    output:
+    	tblout = "analysis/segments/{genome}/segments.gvog.tblout",
+    	domtblout = "analysis/segments/{genome}/segments.gvog.domtblout"
+    threads:
+    	4
+    shell:
+    	"hmmscan --cpu {threads} -o /dev/null --tblout {output.tblout} --domtblout {output.domtblout} {input.hmm} {input.fasta}"
+
+rule segments_bellas:
+    input:
+    	hmm = "databases/Bellas_Sommaruga/output/PCs.hmmdb",
+    	fasta = "analysis/segments/{genome}/segments.faa"
+    output:
+    	tblout = "analysis/segments/{genome}/segments.bellas.tblout",
+    	domtblout = "analysis/segments/{genome}/segments.bellas.domtblout"
+    threads:
+    	4
+    shell:
+    	"hmmscan --cpu {threads} -o /dev/null --tblout {output.tblout} --domtblout {output.domtblout} {input.hmm} {input.fasta}"
+
+rule segments_vogdb:
+    input:
+    	hmm = "databases/vogdb/output/vog.hmmdb",
+    	fasta = "analysis/segments/{genome}/segments.faa"
+    output:
+    	tblout = "analysis/segments/{genome}/segments.vogdb.tblout",
+    	domtblout = "analysis/segments/{genome}/segments.vogdb.domtblout"
+    threads:
+    	4
+    shell:
+    	"hmmscan --cpu {threads} -o /dev/null --tblout {output.tblout} --domtblout {output.domtblout} {input.hmm} {input.fasta}"
+
+rule segments_hmmsearch:
+    input:
+    	fasta = "analysis/segments/{genome}/segments.faa", hmm = "hmm/{hmm}.hmm"
+    output:
+    	"analysis/segments/{genome}/segments-hmm-{hmm}.tblout"
+    shell:
+    	"hmmsearch -o /dev/null --tblout {output} {input.hmm} {input.fasta}"
+
+rule segments_pfam:
+    input:
+    	"analysis/segments/{genome}/segments.faa"
+    output:
+    	"analysis/segments/{genome}/segments.pfam.txt"
+    params:
+    	pfam_dir = "databases/Pfam"
+    threads:
+    	4
+    shell:
+    	"pfam_scan.pl -fasta {input} -dir {params.pfam_dir} -outfile {output} -cpu {threads}"
+
+rule segments_blast:
+    input:
+    	fna = "analysis/segments/{genome}/segments.fna",
+    	ndb = "analysis/segments/{genome}/segments.fna.ndb"
+    output:
+    	"analysis/segments/{genome}/segments.fna.blastn"
+    shell:
+    	"blastn -query {input.fna} -db {input.fna} -outfmt 6 -out {output} -evalue 1e-20"
+
+rule segments_genbank:
+    input:
+    	fna = "analysis/segments/{genome}/segments.fna",
+    	gff = "analysis/segments/{genome}/segments.gff",
+    	hmm_dbs = [ "databases/Pfam/Pfam-A.hmm" ] + expand("hmm/{hmm}.hmm", hmm = hmms),
+    	blastn = "analysis/segments/{genome}/segments.fna.blastn",
+    	hmmscan = [
+    		"analysis/segments/{genome}/segments.gvog.tblout",
+    		"analysis/segments/{genome}/segments.vogdb.tblout",
+    		"analysis/segments/{genome}/segments.bellas.tblout"
+    	],
+    	markers = expand("analysis/segments/{{genome}}/segments-hmm-{hmm}.tblout", hmm = hmms),
+    	pfam = "analysis/segments/{genome}/segments.pfam.txt"
+    output:
+    	"analysis/segments/{genome}/segments.gbk"
+    params:
+    	coding_feature = "exon",
+    	evalue = 1e-5,
+    	min_repeat_len = 70,
+    	min_repeat_gap = 1000,
+    	min_repeat_id  = 90
+    script:
+    	"scripts/gff2gbk.py"
+
+rule segments_list:
+    input:
+    	lambda wildcards: aggregate_segments(wildcards, "{segment}.faa")
+    output:
+    	"analysis/proteinortho/{genome}-segements.txt"
+    shell:
+    	"ls {input} > {output}"
+
+#rule proteinortho:
+#    input:
+#    	expand("analysis/proteinortho/{genome}-segements.txt", genome = genomes)
+#    output:
+#    	"analysis/proteinortho/viruses.proteinortho.tsv"
+#    shadow:
+#    	"shallow"
+#    threads:
+#    	30
+#    params:
+#    	project = "viruses", dirname = "analysis/proteinortho"
+#    shell:
+#    	"""
+#    	cat {input} | xargs proteinortho -project={params.project} -cpus={threads} -p=ublast
+#    	mv {params.project}.* {params.dirname}/
+#    	"""
+
+rule segments_faa_split:
+    input:
+    	"analysis/segments/{genome}/segments.faa"
+    output:
+    	directory("analysis/segments/{genome}/split")
+    shell:
+    	"seqkit split -i -O {output} {input}"
+
+rule segments_hhblits:
+    input:
+    	"analysis/segments/{genome}/split"
+    output:
+    	directory("analysis/segments/{genome}/hhblits")
+    params:
+    	db = "databases/hhsuite/UniRef30_2020_06",
+    	n = 2,
+    	e = 1e-3,
+    	BZ = 250
+    threads:
+    	workflow.cores
+    shell:
+    	"""
+    	find {input} -name '*.faa' | \
+    		parallel -j{threads} hhblits -cpu 1 -v 0 -b 1 -z 1 -i {{}} -d {params.db} -o /dev/null -oa3m stdout -e {params.e} -n {params.n} -B {params.BZ} -Z {params.BZ} \| \
+    		addss.pl -i stdin -o {output}/{{/.}}.a3m
+    	"""
+
+rule segments_hhsearch:
+    input:
+    	"analysis/segments/{genome}/hhblits"
+    output:
+    	directory("analysis/segments/{genome}/hhsearch")
+    params:
+    	contxt = "databases/hhsuite/context_data.crf",
+    	db  = "vogdb/vog",
+    	BZ  = 250,
+    	p   = 20,
+    	ssm = 2
+    threads:
+    	workflow.cores
+    shell:
+    	"""
+    	mkdir -p {output}
+    	find {input} -name '*.a3m' | \
+    		parallel -j{threads} hhsearch -cpu 1 -b 1 -z 1 -i {{}} -d {params.db} -o {output}/{{/.}}.hhr -p {params.p} -Z {params.BZ} -B {params.BZ} -ssm {params.ssm} -contxt {params.contxt}
+    	"""
