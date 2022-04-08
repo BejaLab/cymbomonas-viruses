@@ -7,28 +7,38 @@ library(treeio)
 library(phangorn)
 library(stringr)
 library(ggplot2)
+library(phytools)
 
 #setClass("snake", slots = list(input = "list", output = "list"))
 #snakemake <- new("snake", input  = list(
 #        tree = "analysis/phylogeny/MCP_PLV.treefile",
-#        fasta = Sys.glob("analysis/blast_algae/*-MCP_PLV.faa"),
-#        tblout = Sys.glob("analysis/hmm_algae/*.tblout"),
+#        fasta_algae  = Sys.glob("analysis/phylogeny/algae/hmm/*-MCP_PLV.faa"),
+#        fasta_PLVs   = Sys.glob("analysis/phylogeny/PLVs/hmm/*/*-MCP_PLV.faa"),
+#        blast_algae  = Sys.glob("analysis/phylogeny/algae/blast/*-MCP_PLV.blast"),
+#        blast_PLVs   = Sys.glob("analysis/phylogeny/PLVs/blast/*/*-MCP_PLV.blast"),
+#        cp_queries   = "analysis/CPs/queries/MCP_PLV.faa",
+#        root_file    = "annotations/MCP_PLV_root.txt",
+#        neighbors_file = ""
 #        synonyms = "annotations/organisms.txt",
 #        hmm = Sys.glob("hmm_algae/*.hmm")
 #), output = list("test.svg"))
 
 with(snakemake@input, {
 	tree_file     <<- tree
-	tblout_files  <<- tblout
-	fasta_files   <<- fasta
+	fasta_files   <<- c(fasta_PLVs, fasta_algae)
 	synonyms_file <<- synonyms
 	hmm_files     <<- hmm
+	blast_files   <<- c(blast_algae, blast_PLVs)
+	cp_file       <<- cp_queries
+	root_file     <<- root_file
 })
 output_file <- unlist(snakemake@output)
 
-synonyms <- read.table(synonyms_file, header = T, sep = "\t") %>%
-	mutate(Len = nchar(Match))
+outgroups <- readLines(root_file)
 
+synonyms <- read.table(synonyms_file, header = T, sep = "\t", fill = T, na.strings = "") %>%
+	mutate(Len = nchar(Match)) %>%
+	mutate(Collapse = ifelse(is.na(Collapse), Name, Collapse))
 read.hmmer.tblout <- function(fname) {
 	col.names <- c(
 		"target.name",
@@ -61,6 +71,16 @@ read.hmmer.tblout <- function(fname) {
 		mutate_at(integer.cols, as.integer)
 }
 
+read.outfmt6 <- function(fname, col.names = c("qseqid", "sseqid", "pident", "length", "mismatch", "gapopen", "qstart", "qend", "sstart", "send", "evalue", "bitscore"), extra = c()) {
+	tbl <- read.table(fname, sep = "\t", col.names = c(col.names, extra)) %>%
+	`if`(nrow(.) > 0, ., NULL)
+}
+
+cp_queries <- treeio::read.fasta(cp_file) %>%
+	{data.frame(title = names(.))} %>%
+	extract(title, into = c("qseqid", "clade.color"), regex = "([^ ]+) .*group=([^ ]+)") %>%
+	filter(!is.na(clade.color))
+
 headers <- file.info(fasta_files) %>%
 	filter(size > 0) %>%
 	rownames %>%
@@ -68,23 +88,49 @@ headers <- file.info(fasta_files) %>%
 	lapply(names) %>%
 	unlist %>%
 	data.frame(full.label = .) %>%
-	extract(full.label, into = c("label", "start", "end", "desc"), regex = "^([^ ]+) \\[(\\d+) - (\\d+)\\](.*)", convert = T, remove = F) %>%
+	extract(full.label, into = c("label", "desc"), regex = "^([^ ]+) ?(.+)?", remove = F) %>%
+	extract(desc, into = c("start", "end"), regex = "\\[(\\d+) - (\\d+)\\]", convert = T, remove = F) %>%
 	crossing(synonyms) %>%
-	mutate(Start = str_locate(full.label, Match)[,1]) %>%
-	arrange(is.na(Start), -Len) %>%
-	mutate(label = ifelse(is.na(Start), full.label, label)) %>%
-	distinct(label, .keep_all = T)
+	mutate(Start = str_locate(full.label, Match)[,1], End = str_locate(full.label, Match)[,2]) %>%
+	arrange(is.na(Start), Start, Start - End) %>%
+	distinct(full.label, .keep_all = T)
 
-tree <- read.tree(tree_file) %>%
-	midpoint %>%
-	as_tibble %>%
+no_name <- filter(headers, is.na(Name)) %>%
+	pull(label) %>%
+	paste(collapse = ", ")
+if (no_name > 0) {
+	write(paste("No aliases found for: ", no_name))
+	quit(status = 1)
+}
+
+tree <- read.tree(tree_file)
+if (length(outgroups) > 0) {
+	tree <- reroot(tree, MRCA(tree, outgroups), position = 0.1, resolve.root = T)
+} else {
+	tree <- midpoint(tree)
+}
+tree <- as_tibble(tree) %>%
 	mutate(support = ifelse(node %in% parent & label != "", label, NA)) %>%
 	separate(support, into = c("SH_aLRT", "UFboot"), sep = "/", convert = T) %>%
 	mutate(contig = sub("_\\d+$", "", label)) %>%
 	left_join(headers, by = "label") %>%
-	mutate(label.show = Name) %>% # sprintf("%s (%s)", Name, contig)) %>%
+	mutate(label.show = ifelse(is.na(Name), desc, Name)) %>% # sprintf("%s (%s)", Name, contig)) %>%
 	mutate(isInternal = node %in% parent) %>%
 	`class<-`(c("tbl_tree", "tbl_df", "tbl", "data.frame"))
+tree_data <- as.treedata(tree)
+
+protein_blast <- lapply(blast_files, read.outfmt6, extra = "stitle") %>%
+	bind_rows %>%
+	filter(evalue < 1e-40, pident > 52) %>%
+	left_join(cp_queries, by = "qseqid") %>%
+	filter(!is.na(clade.color), sseqid %in% tree_data@phylo$tip.label) %>%
+        select(label = sseqid, clade.color) %>%
+        distinct(label, .keep_all = T) %>%
+	group_by(clade.color) %>%
+	group_map(function(x, y) {
+		if (length(x$label)) data.frame(node = MRCA(tree_data@phylo, x$label), clade.color = y)
+	}) %>%
+	bind_rows
 
 hmm <- lapply(hmm_files, readLines) %>%
 	lapply(as.data.frame) %>%
@@ -114,7 +160,7 @@ hmm <- lapply(hmm_files, readLines) %>%
 #	left_join(tree, by = "contig") %>%
 #	left_join(hmm, by = "query.name") %>%
 #	filter(!is.na(label)) %>%
-#	filter(pmin(abs(start.x - start.y), abs(end.x - end.y)) < 200000) %>%
+#	filter(pmin(abs(start.p - start.node), abs(end.p - end.node)) < 200000) %>%
 #	select(label, DESC, query.name, category)
 
 ntaxa <- filter(tree, ! node %in% parent) %>% nrow
@@ -123,54 +169,66 @@ colors <- list(
 	Haptophyta = "orange",
 	Chlorophyta = "green",
 	Streptophyta = "darkgreen",
-	PLV = "purple",
-	Ochrophyta = "brown",
-	Cryptophyta = "red"
+	MAG = "purple",
+	Stramenopiles = "brown",
+	Cryptophyta = "red",
+	Amoebozoa = "gold4",
+	Euglenozoa = "yellow",
+	Choanoflagellata = "darkslateblue",
+	Glaucophyta = "cyan",
+	Animals = "blue",
+	Dinoflagellata = "gray",
+	Rhizaria = "gray"
 )
 
-tree_data <- as.treedata(tree)
-
-multi_scale <- function(p, multi) {
-	with(multi, Reduce(function(.x, .y) {
-		scaleClade(.x, .y, 1 / (num_tips[node == .y] - 1))
-	}, node, p, accumulate = T)) %>%
-	`[[`(length(.))
+scaleClades <- function(p, df) {
+	with(df, Reduce(function(.p, .node) {
+		offs <- offspring(.p$data, .node)
+		scale <- 1 / (nrow(offs) - 1)
+		scaleClade(.p, .node, scale)
+	}, node, p))
 }
-multi_collapse <- function(p, multi) {
-	with(multi, Reduce(function(.x, .y) {
-		fill <- unlist(colors[Group[node == .y]])
-		.x$data[.x$data$node == .y, "label.show"] <- label.show[node == .y]
-		.x <- collapse(.x, .y, "mixed", fill = fill)
-		return(.x)
-	}, node, p, accumulate = T)) %>%
-	`[[`(length(.))
+collapseClades <- function(p, df) {
+	with(df, Reduce(function(.p, .node) {
+		fill <- unlist(colors[Host[node == .node]])
+		.p$data[.p$data$node == .node, "label.show"] <- label.show[node == .node]
+		collapse(.p, .node, "mixed", height = 1, fill = fill)
+	}, node, p))
+}
+labelClades <- function(p) {
+	with(df, Reduce(function(.p, .node) {
+		.p + geom_cladelab(node = .node, label = label[node == .node], align = T, offset = .2, textcolor = 'blue')
+	}, node, p))
 }
 
 multi_species <- allDescendants(tree_data@phylo) %>%
 	lapply(function(x) filter(tree, node %in% x)) %>%
 	bind_rows(.id = "ancestor") %>%
 	group_by(ancestor) %>%
-	mutate(Group = first(na.omit(Group))) %>%
-	filter(n_distinct(Name, na.rm = T) == 1, sum(!isInternal) > 2, !any(Group == "Haptophyta")) %>%
+	filter(n_distinct(Collapse, na.rm = T) == 1, sum(!isInternal) > 2) %>% # , !any(Group == "Haptophyta")) %>%
 	ungroup %>%
+	mutate(ancestor = as.numeric(ancestor)) %>%
 	filter(! ancestor %in% node) %>%
-	group_by(ancestor, Group) %>%
-	summarize(num_tips = sum(!isInternal), Name = first(na.omit(Name)), label.show = sprintf("%s (%d)", Name, num_tips)) %>%
-	mutate(node = as.numeric(ancestor))
-
-p <- ggtree(as.treedata(tree)) +
+	filter(!is.na(Collapse)) %>%
+	group_by(ancestor, Collapse) %>%
+	summarize(num_tips = sum(!isInternal), Host = first(na.omit(Host))) %>%
+	mutate(label.show = sprintf("%s (%d)", Collapse, num_tips)) %>%
+	rename(node = ancestor)
+p <- ggtree(tree_data) +
 	geom_nodepoint(aes(x = branch, subset = !is.na(UFboot) & UFboot >= 90, size = UFboot)) +
-	geom_tiplab(aes(label = label.show), size = 3, align = T, linesize = 0) +
-	geom_text2(aes(subset = node %in% multi_species$node, x = max(x, na.rm = T), label = label.show), nudge_x = 0.01, size = 3, hjust = 0) +
-	geom_tippoint(aes(color = Group), size = 3) +
+	geom_tiplab(aes(label = label.show), size = 4, align = T, linesize = 0) +
+	geom_text2(aes(subset = node %in% multi_species$node, x = max(x, na.rm = T), label = label.show), nudge_x = 0.01, size = 4.5, hjust = 0) +
+	geom_tippoint(aes(color = Host), size = 3) +
 	geom_treescale(width = 0.5) +
 	scale_size_continuous(range = c(1, 3)) +
 	scale_shape_manual(values = seq(0,15)) +
 	scale_color_manual(values = colors)
-	# geom_hilight()
 
-p <- multi_scale(p, multi_species)
-p <- multi_collapse(p, multi_species)
+p <- scaleClades(p, multi_species)
+p <- collapseClades(p, multi_species)
+if (length(protein_blast) > 0) {
+	p <- p + geom_hilight(data = protein_blast, aes(node = node, fill = clade.color))
+}
 
 # p <- facet_plot(p, mapping = aes(x = as.numeric(as.factor(query.name)), shape = DESC), data = genes, geom = geom_point, panel = 'Genes')
 

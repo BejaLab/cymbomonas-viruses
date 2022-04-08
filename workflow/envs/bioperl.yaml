@@ -1,0 +1,8 @@
+channels:
+ - conda-forge
+ - bioconda
+dependencies:
+ - perl=5.26.2
+ - perl-bioperl=1.7.2
+ - pfam_scan=1.6
+ - hmmer=3.3.2

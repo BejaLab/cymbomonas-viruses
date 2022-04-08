@@ -1,0 +1,12 @@
+channels:
+ - bioconda
+ - conda-forge
+dependencies:
+ - python=3.7
+ - conda-ecosystem-user-package-isolation
+ - pandas=0.25.3
+ - numpy=1.19.5
+ - mcl
+ - diamond
+ - clusterone=1.0
+ - vcontact2

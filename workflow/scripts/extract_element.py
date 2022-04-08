@@ -37,7 +37,7 @@ sub_record = record[segment_start:segment_end]
 if segment['strand'] < 0:
     sub_record = sub_record.reverse_complement()
 
-sub_record.name = "%s_%s" % (segment['genome'], segment['segment_name'])
+sub_record.name = segment['name']
 sub_record.id = "%s_%d-%d" % (segment['scaffold'], segment['scaffold_start'], segment['scaffold_end'])
 sub_record.description = sub_record.id
 

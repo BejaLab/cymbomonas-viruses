@@ -1,0 +1,6 @@
+channels:
+ - conda-forge
+dependencies:
+ - python=3.7
+ - biopython=1.79
+ - conda-ecosystem-user-package-isolation

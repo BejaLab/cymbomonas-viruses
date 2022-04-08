@@ -1,0 +1,23 @@
+channels:
+ - conda-forge
+ - bioconda
+dependencies:
+ - r=4.1
+ - r-dplyr
+ - r-tidyr
+ - r-tidyverse
+ - r-stringr
+ - r-readxl
+ - r-ggplot2
+ - r-ggforce
+ - r-ggraph
+ - r-ggseqlogo
+ - r-cowplot
+ - r-svglite
+ - r-xml
+ - r-igraph
+ - r-ape=5.5
+ - r-phangorn=2.8.0
+ - r-phytools=0.7_90
+ - bioconductor-ggtree=3.2.0
+ - bioconductor-treeio=1.18.0
