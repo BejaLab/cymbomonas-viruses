@@ -8,6 +8,7 @@ dependencies:
  - hmmer=3.3.2
  - iqtree=2.1.2
  - mafft=7.475
+ - mcl=14.137
  - meme=5.3.0
  - trimal=1.4.1
  - seqkit=0.14.0

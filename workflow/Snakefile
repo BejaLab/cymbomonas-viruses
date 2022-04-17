@@ -16,7 +16,7 @@ with open("metadata/capsid_proteins.txt") as fh:
         hmm, CP = line.rstrip().split()
         capsid_proteins[CP].append(hmm)
 
-segments_file = 'metadata/viral_elements.tsv'
+segments_file = 'metadata/viral_segments.tsv'
 viruses_file  = 'metadata/viruses.tsv'
 
 evalues = { "MCP_PLV": 1e-8, "MCP_NCLDV": 1e-8 }
@@ -25,21 +25,31 @@ evalues = { "MCP_PLV": 1e-8, "MCP_NCLDV": 1e-8 }
 search = [ "diamond" ]
 
 segments = {}
+PgVV_segments = []
 data = read_csv(segments_file, sep = '\t')
 for i, row in data.iterrows():
     if isnull(row['fragment']):
         short = row['short']
         segments[short] = row.to_dict()
+        if row['clade'] == 'PgVV':
+            PgVV_segments.append(short)
 segment_names = list(segments.keys())
 
 viruses = {}
-PgVV_group = []
+small_viruses = []
+PgVV_viruses = []
+Mesomimi_viruses = []
 data = read_csv(viruses_file, sep = '\t')
 for i, row in data.iterrows():
     if isnull(row['fragment']):
-        viruses[row['short']] = row.to_dict()
+        short = row['short']
+        viruses[short] = row.to_dict()
         if row['clade'] == 'PgVV':
-            PgVV_group.append(row['short'])
+            PgVV_viruses.append(short)
+        if row['clade'] == 'Mesomimi':
+            Mesomimi_viruses.append(short)
+        if row['group'] == 'small':
+            small_viruses.append(short)
 virus_names = list(viruses.keys())
 
 def orthology():
@@ -49,15 +59,11 @@ def orthology():
             prefix.append(short)
     return prefix
 
-def mesomimi():
-    prefix = []
-    for short, row in viruses.items():
-        if row['clade'] == "Mesomimi":
-            prefix.append(short)
-    return prefix
-
 rule all:
     input:
+        expand("analysis/PLV_segments_hh/{segment}-hhsearch-pfam.tsv", segment = segment_names),
+        expand("analysis/PLVs_hh/{segment}-hhsearch-pfam.tsv", segment = small_viruses + Mesomimi_viruses),
+        "analysis/hh_mcl/mcl.txt",
         # expand("analysis/PLVs/orthogroups/{search}", search = search),
         # expand("analysis/hmmsearch/{genome}-{hmm}.txt", genome = genomes, hmm = hmms),
         # expand("analysis/hmmsearch/{genome}-{hmm}.faa", genome = genomes, hmm = hmms),
@@ -66,8 +72,8 @@ rule all:
         # expand("analysis/blast_algae/{genome}.blast", genome = algal_genomes),
         # expand("analysis/phylogeny/{CP}.svg", CP = [ "MCP_NCLDV" ]),
         "analysis/promoters.svg",
-        "output/vcontact2_clusrtring.svg"
-        #"analysis/proteinortho/viruses.proteinortho.tsv",
+        "output/vcontact2_clustering.svg"
+        # "analysis/proteinortho/viruses.proteinortho.tsv",
 
 rule viruses_ncbi_fna:
     output:
@@ -93,18 +99,18 @@ rule viruses_ncbi_gbk:
     shell:
         "efetch -db nuccore -id {params.id} -format gb > {output}"
 
-rule extract_element:
+rule extract_segment:
     input:
         lambda w: expand("analysis/segments/{host}/segments.gbk", host = segments[w.segment]['genome'])
     output:
-        "analysis/PLV_elements/{segment}.gbk"
+        "analysis/PLV_segments/{segment}.gbk"
     params:
         flank = 50000,
         segment = lambda w: segments[w.segment]
     conda:
         "envs/biopython.yaml"
     script:
-        "scripts/extract_element.py"
+        "scripts/extract_segment.py"
 
 rule mv_faa:
     input:
@@ -143,7 +149,7 @@ rule flanks:
     conda:
         "envs/bioperl.yaml"
     shell:
-        "perl workflow/scripts/biotags.pl -i {input} -p CDS -t seq-{params.max_len} | awk '$1' | nl -w1 | seqkit tab2fx | seqkit seq -gm{params.min_len} -o {output}"
+        "perl workflow/helpers/biotags.pl -i {input} -p CDS -t seq-{params.max_len} | awk '$1' | nl -w1 | seqkit tab2fx | seqkit seq -gm{params.min_len} -o {output}"
 
 rule meme:
     input:
@@ -176,7 +182,7 @@ rule plot_meme:
 
 rule merge_meme:
     input:
-        expand("analysis/promoters/PLVs/{prefix}/meme/meme.svg", prefix = mesomimi())
+        expand("analysis/promoters/PLVs/{virus}/meme/meme.svg", virus = Mesomimi_viruses)
     output:
         "analysis/promoters.svg"
     shell:
@@ -184,7 +190,7 @@ rule merge_meme:
 
 rule extract_faa_bellas:
     input:
-        "databases/Bellas_Sommaruga/input/All_proteins.faa"
+        "databases/All_proteins_Sommaruga/input/All_proteins.faa"
     output:
         "analysis/PLV_annotate/bellas-{segment}.faa"
     params:
@@ -212,7 +218,7 @@ rule extract_faa_yutin:
     conda:
         "envs/bioperl.yaml"
     shell:
-        "biotags.pl -i {input} -p CDS -T id -t locus_tag,translation | awk '{{printf\"%s %s\\t%s\\n\",$2,$1,$3}}' | seqkit tab2fx -o {output}"
+        "perl workflow/helpers/biotags.pl -i {input} -p CDS -T id -t locus_tag,translation | awk '{{printf\"%s %s\\t%s\\n\",$2,$1,$3}}' | seqkit tab2fx -o {output}"
 
 rule extract_faa_ncbi_annotate:
     input:
@@ -222,7 +228,7 @@ rule extract_faa_ncbi_annotate:
     conda:
         "envs/bioperl.yaml"
     shell:
-        "biotags.pl -i {input} -p CDS -T description -t locus_tag,translation | awk -F\\\\t '$2{{printf\"%s %s\\t%s\\n\",$2,$1,$3}}' | seqkit tab2fx -o {output}"
+        "perl workflow/helpers/biotags.pl -i {input} -p CDS -T description -t locus_tag,translation | awk -F\\\\t '$2{{printf\"%s %s\\t%s\\n\",$2,$1,$3}}' | seqkit tab2fx -o {output}"
 
 rule extract_faa_ncbi:
     input:
@@ -232,21 +238,21 @@ rule extract_faa_ncbi:
     conda:
         "envs/bioperl.yaml"
     shell:
-        "biotags.pl -i {input} -p CDS -T description -t protein_id,translation | awk -F\\\\t '$2{{printf\"%s %s\\t%s\\n\",$2,$1,$3}}' | seqkit tab2fx -o {output}"
+        "perl workflow/helpers/biotags.pl -i {input} -p CDS -T description -t protein_id,translation | awk -F\\\\t '$2{{printf\"%s %s\\t%s\\n\",$2,$1,$3}}' | seqkit tab2fx -o {output}"
 
-rule extract_faa_elements:
+rule extract_faa_segments:
     input:
-        "analysis/PLV_elements/{segment}.gbk"
+        "analysis/PLV_segments/{segment}.gbk"
     output:
-        "analysis/PLV_elements/{segment}.faa"
+        "analysis/PLV_segments/{segment}.faa"
     conda:
         "envs/bioperl.yaml"
     shell:
-        "biotags.pl -i {input} -p CDS -t locus_tag,translation | awk '$1' | seqkit tab2fx -o {output}"
+        "perl workflow/helpers/biotags.pl -i {input} -p CDS -t locus_tag,translation | awk '$1' | seqkit tab2fx -o {output}"
 
 rule proteinortho:
     input:
-        expand("analysis/PLV_elements/{segment}.faa", segment = segments.keys()),
+        expand("analysis/PLV_segments/{segment}.faa", segment = segments.keys()),
         expand("analysis/PLVs/{prefix}.faa", prefix = orthology())
     output:
         "analysis/proteinortho/viruses.proteinortho.tsv"
@@ -279,7 +285,7 @@ checkpoint proteinortho_collect:
     conda:
         "envs/bioperl.yaml"
     shell:
-        "perl workflow/scripts/proteinortho_grab_proteins.pl -t -s -output_dir={output} -output_file=sequences.faa -exact {input}"
+        "perl workflow/helpers/proteinortho_grab_proteins.pl -t -s -output_dir={output} -output_file=sequences.faa -exact {input}"
 
 rule getorf:
     input:
@@ -546,7 +552,6 @@ rule algae_hmm:
     shell:
         "hmmsearch -o /dev/null --tblout {output} {input.hmm} {input.fasta}"
 
-
 #rule blast_extract_cat:
 #    input:
 #        expand("analysis/phylogeny/algae/blast/{genome}-MCP_NCLDV.faa", genome = algal_genomes),
@@ -807,7 +812,7 @@ rule segments_faa_cat:
 
 rule segments_gvog:
     input:
-        hmm = "databases/GVDB/output/GVOG.hmm",
+        hmm = "databases/GVAll_proteins/output/GVOG.hmm",
         fasta = "analysis/segments/{genome}/segments.faa"
     output:
         tblout = "analysis/segments/{genome}/segments.gvog.tblout",
@@ -821,7 +826,7 @@ rule segments_gvog:
 
 rule segments_bellas:
     input:
-        hmm = "databases/Bellas_Sommaruga/output/PCs.hmmdb",
+        hmm = "databases/All_proteins_Sommaruga/output/PCs.hmmdb",
         fasta = "analysis/segments/{genome}/segments.faa"
     output:
         tblout = "analysis/segments/{genome}/segments.bellas.tblout",
@@ -933,59 +938,131 @@ rule segments_list:
 #        mv {params.project}.* {params.dirname}/
 #        """
 
-rule segments_faa_split:
+rule collect_proteins:
     input:
-        "analysis/segments/{genome}/segments.faa"
+        expand("analysis/PLVs/{genome}.faa", genome = small_viruses + Mesomimi_viruses),
+        expand("analysis/PLV_segments/{segment}.faa", segment = segment_names)
     output:
-        directory("analysis/segments/{genome}/split")
+        "analysis/hhblits_db/All_proteins.faa"
     conda:
         "envs/tools.yaml"
     shell:
-        "seqkit split -i -O {output} {input}"
+        "seqkit seq -o {output} {input}"
 
-rule segments_hhblits:
+rule segments_faa_ffindex:
     input:
-        "analysis/segments/{genome}/split"
+        "analysis/PLVs/{segment}.faa"
     output:
-        directory("analysis/segments/{genome}/hhblits")
-    params:
-        db = "databases/hhsuite/UniRef30_2020_06",
-        n = 2,
-        e = 1e-3,
-        BZ = 250
-    threads:
-        workflow.cores
+        data  = "analysis/PLVs/{segment}.ffdata",
+        index = "analysis/PLVs/{segment}.ffindex"
+    conda:
+        "envs/soedinglab.yaml"
     shell:
-        """
-        find {input} -name '*.faa' | \
-            parallel -j{threads} hhblits -cpu 1 -v 0 -b 1 -z 1 -i {{}} -d {params.db} -o /dev/null -oa3m stdout -e {params.e} -n {params.n} -B {params.BZ} -Z {params.BZ} \| \
-            addss.pl -i stdin -o {output}/{{/.}}.a3m
-        """
+        "ffdb fasta -d {output.data} -i {output.index} {input}"
 
-rule segments_hhsearch:
+rule PLV_faa_ffindex:
     input:
-        "analysis/segments/{genome}/hhblits"
+        "analysis/PLV_segments/{segment}.faa"
     output:
-        directory("analysis/segments/{genome}/hhsearch")
+        data  = "analysis/PLV_segments/{segment}.ffdata",
+        index = "analysis/PLV_segments/{segment}.ffindex"
+    conda:
+        "envs/soedinglab.yaml"
+    shell:
+        "ffdb fasta -d {output.data} -i {output.index} {input}"
+
+rule ffindex_num:
+    input:
+        "{prefix}.ffindex"
+    output:
+        "{prefix}.ffindex.num"
+    shell:
+        "cut -f2,3 {input} | nl -w1 > {output}"
+
+rule hhblits_a3m:
+    input:
+        data  = "analysis/{dir}/{segment}.ffdata",
+        index = "analysis/{dir}/{segment}.ffindex.num",
+        msa_ffdata = "analysis/hhblits_db/All_proteins_msa_sequence.ffdata",
+        msa_cs219_ffdata = "analysis/hhblits_db/All_proteins_msa_cs219.ffdata"
+    output:
+        data  = "analysis/{dir}_hh/{segment}-hhblits.a3m.ffdata",
+        index = "analysis/{dir}_hh/{segment}-hhblits.a3m.ffindex"
     params:
-        contxt = "databases/hhsuite/context_data.crf",
-        db  = "vogdb/vog",
+        db = "analysis/hhblits_db/All_proteins_msa",
+        n = 3,
+        e = 1e-5
+    conda:
+        "envs/soedinglab.yaml"
+    shell:
+        "ffindex_apply -q -d {output.data} -i {output.index} {input.data} {input.index} -- hhblits -cpu 1 -v 0 -b 1 -z 1 -d {params.db} -i stdin -oa3m stdout -e {params.e} -n {params.n}"
+
+rule hhblits_ss:
+    input:
+        data  = "analysis/{dir}_hh/{segment}-hhblits.a3m.ffdata",
+        index = "analysis/{dir}_hh/{segment}-hhblits.a3m.ffindex"
+    output:
+        data  = "analysis/{dir}_hh/{segment}-hhblits-ss.a3m.ffdata",
+        index = "analysis/{dir}_hh/{segment}-hhblits-ss.a3m.ffindex"
+    conda:
+        "envs/soedinglab.yaml"
+    shell:
+        "ffindex_apply -q -d {output.data} -i {output.index} {input.data} {input.index} -- $CONDA_PREFIX/scripts/addss.pl -v 0 /dev/stdin /dev/stdout"
+
+rule hhsearch_self:
+    input:
+        data  = "analysis/{dir}_hh/{segment}-hhblits.a3m.ffdata",
+        index = "analysis/{dir}_hh/{segment}-hhblits.a3m.ffindex",
+        contxt = "databases/hhsuite/data/context_data.crf",
+        msa_ffdata = "analysis/hhblits_db/All_proteins_msa_sequence.ffdata",
+        msa_cs219_ffdata = "analysis/hhblits_db/All_proteins_msa_cs219.ffdata"
+    output:
+        data  = "analysis/{dir}_hh/{segment}-hhsearch-self.hhr.ffdata",
+        index = "analysis/{dir}_hh/{segment}-hhsearch-self.hhr.ffindex"
+    params:
+        db = "analysis/hhblits_db/All_proteins_msa",
         BZ  = 250,
         p   = 20,
         ssm = 2
-    threads:
-        workflow.cores
+    conda:
+        "envs/soedinglab.yaml"
     shell:
-        """
-        mkdir -p {output}
-        find {input} -name '*.a3m' | \
-            parallel -j{threads} hhsearch -cpu 1 -b 1 -z 1 -i {{}} -d {params.db} -o {output}/{{/.}}.hhr -p {params.p} -Z {params.BZ} -B {params.BZ} -ssm {params.ssm} -contxt {params.contxt}
-        """
+        "ffindex_apply -q -d {output.data} -i {output.index} {input.data} {input.index} -- hhsearch -v 1 -cpu 1 -b 1 -z 1 -i stdin -d {params.db} -o stdout -p {params.p} -Z {params.BZ} -B {params.BZ} -ssm {params.ssm} -contxt {input.contxt}"
+
+rule hhsearch_pfam:
+    input:
+        data  = "analysis/{dir}_hh/{segment}-hhblits-ss.a3m.ffdata",
+        index = "analysis/{dir}_hh/{segment}-hhblits-ss.a3m.ffindex",
+        contxt = "databases/hhsuite/data/context_data.crf",
+        db = "databases/hhsuite/data/pfam_hhm.ffdata"
+    output:
+        data  = "analysis/{dir}_hh/{segment}-hhsearch-pfam.hhr.ffdata",
+        index = "analysis/{dir}_hh/{segment}-hhsearch-pfam.hhr.ffindex"
+    params:
+        db = "databases/hhsuite/data/pfam",
+        BZ  = 250,
+        p   = 20,
+        ssm = 2
+    conda:
+        "envs/soedinglab.yaml"
+    shell:
+        "ffindex_apply -q -d {output.data} -i {output.index} {input.data} {input.index} -- hhsearch -v 1 -cpu 1 -b 1 -z 1 -i stdin -d {params.db} -o stdout -p {params.p} -Z {params.BZ} -B {params.BZ} -ssm {params.ssm} -contxt {input.contxt}"
+
+rule hhsuite_parse:
+    input:
+        data  = "{prefix}.hhr.ffdata",
+        index = "{prefix}.hhr.ffindex"
+    output:
+        "{prefix}.tsv"
+    conda:
+        "envs/soedinglab.yaml"
+    shell:
+        "ffindex_apply -q {input.data} {input.index} -- Rscript workflow/helpers/parse_hhsuite.R | sed '2,${{/^Query/d}}' > {output}"
 
 rule vcontact2_cat:
     input:
-        expand("analysis/PLV_elements/{segment}.faa", segment = segments.keys()),
-        expand("analysis/PLVs/{genome}.faa", genome = PgVV_group)
+        expand("analysis/PLV_segments/{segment}.faa", segment = PgVV_segments),
+        expand("analysis/PLVs/{genome}.faa", genome = PgVV_viruses)
     output:
         "analysis/vcontact2/proteins.faa"
     shell:
@@ -993,8 +1070,8 @@ rule vcontact2_cat:
 
 rule vcontact2_map:
     input:
-        expand("analysis/PLV_elements/{segment}.faa", segment = segments.keys()),
-        expand("analysis/PLVs/{genome}.faa", genome = PgVV_group)
+        expand("analysis/PLV_segments/{segment}.faa", segment = PgVV_segments),
+        expand("analysis/PLVs/{genome}.faa", genome = PgVV_viruses)
     output:
         "analysis/vcontact2/proteins.csv"
     conda:
@@ -1017,23 +1094,156 @@ rule vcontact2:
         "envs/vcontact2.yaml"
     params:
         db = "None",
+        rel_mode = "Diamond",
         pcs_mode = "MCL",
         vcs_mode = "ClusterONE"
     threads:
         workflow.cores
     shell:
-        "vcontact2 --threads {threads} --db {params.db} --raw-proteins {input.fasta} --rel-mode Diamond --proteins-fp {input.mapping} --pcs-mode {params.pcs_mode} --vcs-mode {params.vcs_mode} --c1-bin $CONDA_PREFIX/lib/cluster_one-v1.0.jar --output-dir {output.outdir}"
+        "vcontact2 --threads {threads} --db {params.db} --raw-proteins {input.fasta} --rel-mode {params.rel_mode} --proteins-fp {input.mapping} --pcs-mode {params.pcs_mode} --vcs-mode {params.vcs_mode} --c1-bin $CONDA_PREFIX/lib/cluster_one-v1.0.jar --output-dir {output.outdir}"
 
 rule vcontact2_plot:
     input:
         network  = "analysis/vcontact2/results/c1.ntw",
         genomes  = "analysis/vcontact2/results/genome_by_genome_overview.csv",
         profiles = "analysis/vcontact2/results/vConTACT_profiles.csv",
-        elements = "metadata/viral_elements.tsv",
+        segments = "metadata/viral_segments.tsv",
         viruses  = "metadata/viruses.tsv"
     output:
-        clustering = "output/vcontact2_clusrtring.svg"
+        clustering = "output/vcontact2_clustering.svg"
     conda:
         "envs/r.yaml"
     script:
         "scripts/vcontact2.R"
+
+rule protein_createdb_bellas:
+    input:
+        "databases/All_proteins_Sommaruga/input/All_proteins.faa"
+    output:
+        "analysis/hhblits_db/Bellas"
+    conda:
+        "envs/soedinglab.yaml"
+    shell:
+        "mmseqs createdb {input} {output}"
+
+rule protein_createdb:
+    input:
+        "analysis/hhblits_db/All_proteins.faa"
+    output:
+        "analysis/hhblits_db/All_proteins"
+    conda:
+        "envs/soedinglab.yaml"
+    shell:
+        "mmseqs createdb {input} {output}"
+
+rule protein_cluster:
+    input:
+        "analysis/hhblits_db/All_proteins"
+    output:
+        "analysis/hhblits_db/All_proteins_clu.0",
+        "analysis/hhblits_db/All_proteins_clu.dbtype",
+        "analysis/hhblits_db/All_proteins_clu.index"
+    params:
+        output_prefix = "analysis/hhblits_db/All_proteins_clu",
+        tmp = "analysis/hhblits_db/tmp",
+        min_seq_id = 0.3,
+        coverage = 0.8
+    threads:
+        10
+    conda:
+        "envs/soedinglab.yaml"
+    shell:
+        "mmseqs cluster --min-seq-id {params.min_seq_id} -c {params.coverage} --threads {threads} {input} {params.output_prefix} {params.tmp}"
+
+rule protein_result2msa:
+    input:
+        clu = "analysis/hhblits_db/All_proteins_clu.0",
+        db = "analysis/hhblits_db/All_proteins"
+    output:
+        expand("analysis/hhblits_db/All_proteins_msa_{type}.{ext}", type = [ "ca3m", "header", "sequence" ], ext = [ "ffdata", "ffindex" ])
+    params:
+        input_prefix  = "analysis/hhblits_db/All_proteins_clu",
+        output_prefix = "analysis/hhblits_db/All_proteins_msa"
+    conda:
+        "envs/soedinglab.yaml"
+    shell:
+        "mmseqs result2msa {input.db} {input.db} {params.input_prefix} {params.output_prefix} --msa-format-mode 1"
+
+rule protein_cstranslate:
+    input:
+        msa_header_ffdata = "analysis/hhblits_db/All_proteins_msa_header.ffdata",
+        db = "analysis/hhblits_db/All_proteins",
+        cs219_lib = "databases/hhsuite/data/cs219.lib",
+        context = "databases/hhsuite/data/context_data.lib"
+    output:
+        "analysis/hhblits_db/All_proteins_msa_cs219.ffdata",
+        "analysis/hhblits_db/All_proteins_msa_cs219.ffindex"
+    params:
+        input_prefix  = "analysis/hhblits_db/All_proteins_msa",
+        output_prefix = "analysis/hhblits_db/All_proteins_msa_cs219"
+    threads:
+        30
+    # NB: conda doesn't have mpi version of hhsuite
+    #conda:
+    #    "envs/soedinglab.yaml"
+    shell:
+        "mpirun -np {threads} cstranslate_mpi -i {params.input_prefix} -o {params.output_prefix} -A {input.cs219_lib} -D {input.context} -x 0.3 -c 4 -I ca3m -b"
+
+rule createtsv:
+    input:
+        db = "analysis/hhblits_db/All_proteins",
+        clu = "analysis/hhblits_db/All_proteins_clu.0"
+    output:
+        "analysis/hhblits_db/All_proteins_clu.tsv"
+    params:
+        clu_prefix = "analysis/hhblits_db/All_proteins_clu"
+    conda:
+        "envs/soedinglab.yaml"
+    shell:
+        "mmseqs createtsv {input.db} {input.db} {params.clu_prefix} {output}"
+
+rule mcl_abc:
+    input:
+        clu_tsv = "analysis/hhblits_db/All_proteins_clu.tsv",
+        segment_tsv = expand("analysis/PLV_segments_hh/{segment}-hhsearch-self.tsv", segment = segment_names),
+        virus_tsv = expand("analysis/PLVs_hh/{segment}-hhsearch-self.tsv", segment = small_viruses + Mesomimi_viruses),
+    output:
+        "analysis/hh_mcl/abc.tsv"
+    params:
+        coverage = 60,
+        probab = 90
+    conda:
+        "envs/r.yaml"
+    script:
+        "scripts/abc_graph.R"
+
+rule mcl_run:
+    input:
+        "analysis/hh_mcl/abc.tsv"
+    output:
+        "analysis/hh_mcl/mcl.txt"
+    params:
+        I = 1.5,
+        scheme = 7
+    conda:
+        "envs/tools.yaml"
+    threads:
+        10
+    shell:
+        "mcl {input} -o {output} --abc -scheme {params.scheme} -te {threads} -I {params.I}"
+
+rule mcl_analyze:
+    input:
+        "analysis/hh_mcl/mcl.txt",
+        segment_index = expand("analysis/PLV_segments/{segment}.ffindex", segment = segment_names),
+        virus_index   = expand("analysis/PLVs/{virus}.ffindex", virus = small_viruses + Mesomimi_viruses),
+        segment_pfam  = expand("analysis/PLV_segments_hh/{segment}-hhsearch-pfam.tsv", segment = segment_names),
+        virus_pfam    = expand("analysis/PLVs_hh/{virus}-hhsearch-pfam.tsv", virus = small_viruses + Mesomimi_viruses)
+    output:
+        "analysis/hh_mcl/mcl_genomes.txt"
+    params:
+        probab = 80
+    conda:
+        "envs/r.yaml"
+    script:
+        "scripts/mcl_graph.R"

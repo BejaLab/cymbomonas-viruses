@@ -13,17 +13,17 @@ Phaglo-B321	Phaglo-B321	Phaglo	Phaglo_scaffold_321_100892-104706	Phaglo_scaffold
 Phaglo-B199	Phaglo-B199	Phaglo	Phaglo_scaffold_199_13864-22902	Phaglo_scaffold_199	6390	31847	-1				PgVV	PgVV-1	blue	25458	yes	yes	
 Phaglo-B117	Phaglo-B117	Phaglo	Phaglo_scaffold_117_276273-285063	Phaglo_scaffold_117	268529	293463	-1				PgVV	PgVV-1	blue	24935	yes	yes	
 Phaglo-B74	Phaglo-B74	Phaglo	Phaglo_scaffold_74_7845-30317	Phaglo_scaffold_74	1	30709	-1		1	1	PgVV	PgVV-1	blue	30709			
-Phaglo-P224frag	Phaglo-P224frag	Phaglo	Phaglo_scaffold_224_212132-213871	Phaglo_scaffold_224	209015	220000	1	fragment	1	1	PgVV	PgVV-1	purple	10986			
-Phaant-E7	Phaant-E7	Phaant	Phaant_scaffold_7_1061391-1069190	Phaant_scaffold_7	1048634	1095378	1				Endemic			46745			
-Phaant-E26	Phaant-E26	Phaant	Phaant_scaffold_26_1242384-1250323	Phaant_scaffold_26	1226099	1278591	1				Endemic			52493			
-Phaant-E21	Phaant-E21	Phaant	Phaant_scaffold_21_2243220-2250408	Phaant_scaffold_21	2211450	2264998	-1				Endemic			53549			
-Phaglo-E38	Phaglo-E38	Phaglo	Phaglo_scaffold_38_359727-381224	Phaglo_scaffold_38	357691	381393	-1		1		Endemic			23703			
+Phaglo-P224frag	Phaglo-P224frag	Phaglo	Phaglo_scaffold_224_212132-213871	Phaglo_scaffold_224	209015	220000	1	fragment	1	1	PgVV	PgVV-2	purple	10986			
+Phaant-E7	Phaant-E7	Phaant	Phaant_scaffold_7_1061391-1069190	Phaant_scaffold_7	1048634	1095378	1				Endemic	Endemic	Endemic	46745			
+Phaant-E26	Phaant-E26	Phaant	Phaant_scaffold_26_1242384-1250323	Phaant_scaffold_26	1226099	1278591	1				Endemic	Endemic	Endemic	52493			
+Phaant-E21	Phaant-E21	Phaant	Phaant_scaffold_21_2243220-2250408	Phaant_scaffold_21	2211450	2264998	-1				Endemic	Endemic	Endemic	53549			
+Phaglo-E38	Phaglo-E38	Phaglo	Phaglo_scaffold_38_359727-381224	Phaglo_scaffold_38	357691	381393	-1		1		Endemic	Endemic	Endemic	23703			
 Isogal-13	Isogal-13	Isogal	Isogal_CM030943.1_157153-161599	Isogal_CM030943.1	156444	165798	1				PgVV	PgVV-1	Isogal	9355			
 Isogal-4	Isogal-4	Isogal	Isogal_CM030934.1_3583018-3586854	Isogal_CM030934.1	3579060	3589834	-1				PgVV	PgVV-1	Isogal	10775			
 Isogal-2	Isogal-2	Isogal	Isogal_CM030932.1_6833132-6838396	Isogal_CM030932.1	6830324	6841632	-1				PgVV	PgVV-1	Isogal	11309			
 Phaglo-R227	Phaglo-R227	Phaglo	Phaglo_scaffold_227_169709-173230	Phaglo_scaffold_227	166125	180048	-1			1	PgVV	PgVV-1	red	13924			
 Phaglo-R440	Phaglo-R440	Phaglo	Phaglo_scaffold_440_55206-67028	Phaglo_scaffold_440	45636	78384	1				PgVV	PgVV-1	red	32749			
-Phaglo-U45	Phaglo-U45	Phaglo	Phaglo_scaffold_45_37290-42148	Phaglo_scaffold_45	36912	48521	-1	no_capsid_proteins	1	1			unknown	11610			
+Phaglo-U45	Phaglo-U45	Phaglo	Phaglo_scaffold_45_37290-42148	Phaglo_scaffold_45	36912	48521	-1	no_capsid_proteins	1	1				11610			
 Phaant-Y37	Phaant-Y37	Phaant	Phaant_scaffold_37_407794-414639	Phaant_scaffold_37	397985	416332	-1				PgVV	PgVV-1	yellow	18348			
 Phaglo-Y235	Phaglo-Y235	Phaglo	Phaglo_scaffold_235_85248-94428	Phaglo_scaffold_235	84686	107351	1				PgVV	PgVV-1	yellow	22666			
 Phaant-Y21	Phaant-Y21	Phaant	Phaant_scaffold_21_1684477-1691294	Phaant_scaffold_21	1664742	1693596	-1				PgVV	PgVV-1	yellow	28855			interrupted by a host-gene insertion

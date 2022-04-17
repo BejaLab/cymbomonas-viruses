@@ -9,4 +9,4 @@ dependencies:
  - mcl
  - diamond
  - clusterone=1.0
- - vcontact2
+ - vcontact2=0.9.19

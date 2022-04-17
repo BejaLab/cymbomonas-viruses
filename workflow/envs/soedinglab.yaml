@@ -1,0 +1,13 @@
+channels:
+ - bioconda
+ - conda-forge
+dependencies:
+ - hhsuite=3.3.0
+ - ffindex=0.98
+ - mmseqs2=13.45111
+ - r-dplyr
+ - r-tidyr
+ - r-stringr
+ - pip
+ - pip:
+   - ffindexdb==0.0.2
