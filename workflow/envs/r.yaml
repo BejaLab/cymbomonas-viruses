@@ -3,9 +3,11 @@ channels:
  - bioconda
 dependencies:
  - r=4.1
+ - r-scatterpie
  - r-dplyr
  - r-tidyr
  - r-tidyverse
+ - r-rvcheck=0.1.8
  - r-stringr
  - r-readxl
  - r-ggplot2

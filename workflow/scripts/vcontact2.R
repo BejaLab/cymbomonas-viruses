@@ -83,27 +83,3 @@ p <- ggraph(network, "fr") +
     scale_color_manual(values = subsubclades) # +
     #theme_graph()
 ggsave(clustering_file, p, width = 10, height = 10)
-q()
-
-g <- read.csv(profiles_file) %>%
-    filter(pc_id != "") %>%
-    left_join(genomes, by = c(contig_id = "Genome")) %>%
-    filter(!is.na(Cluster)) %>%
-    distinct(contig_id, pc_id) %>%
-    group_by(pc_id) %>%
-    filter(n() > 1) %>%
-    mutate(present = T) %>%
-    spread(contig_id, present, F) %>%
-    column_to_rownames("pc_id") %>%
-    as.matrix %>%
-    graph.incidence %>%
-    set_vertex_attr("subclade",    value = subclades[V(.)$name]) %>%
-    set_vertex_attr("subsubclade", value = subsubclades[V(.)$name])
-
-p <- ggraph(g, "fr") +
-    geom_edge_link(alpha = .1) +
-    geom_node_point(aes(shape = subclade, colour = subsubclade)) +
-    geom_node_text(aes(filter = type, label = name), repel = T, nudge_y = -0.01, hjust = "right") +
-    theme_graph()
-ggsave("plot2.pdf", p, width = 20, height = 20)
-

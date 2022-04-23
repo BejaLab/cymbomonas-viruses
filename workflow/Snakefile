@@ -63,7 +63,7 @@ rule all:
     input:
         expand("analysis/PLV_segments_hh/{segment}-hhsearch-pfam.tsv", segment = segment_names),
         expand("analysis/PLVs_hh/{segment}-hhsearch-pfam.tsv", segment = small_viruses + Mesomimi_viruses),
-        "analysis/hh_mcl/mcl.txt",
+        "output/core_genes.pdf",
         # expand("analysis/PLVs/orthogroups/{search}", search = search),
         # expand("analysis/hmmsearch/{genome}-{hmm}.txt", genome = genomes, hmm = hmms),
         # expand("analysis/hmmsearch/{genome}-{hmm}.faa", genome = genomes, hmm = hmms),
@@ -1234,13 +1234,18 @@ rule mcl_run:
 
 rule mcl_analyze:
     input:
-        "analysis/hh_mcl/mcl.txt",
-        segment_index = expand("analysis/PLV_segments/{segment}.ffindex", segment = segment_names),
-        virus_index   = expand("analysis/PLVs/{virus}.ffindex", virus = small_viruses + Mesomimi_viruses),
-        segment_pfam  = expand("analysis/PLV_segments_hh/{segment}-hhsearch-pfam.tsv", segment = segment_names),
-        virus_pfam    = expand("analysis/PLVs_hh/{virus}-hhsearch-pfam.tsv", virus = small_viruses + Mesomimi_viruses)
+        mcl = "analysis/hh_mcl/mcl.txt",
+        segment_ffindex  = expand("analysis/PLV_segments/{segment}.ffindex", segment = segment_names),
+        virus_ffindex    = expand("analysis/PLVs/{virus}.ffindex", virus = small_viruses + Mesomimi_viruses),
+        segment_pfam     = expand("analysis/PLV_segments_hh/{segment}-hhsearch-pfam.tsv", segment = segment_names),
+        virus_pfam       = expand("analysis/PLVs_hh/{virus}-hhsearch-pfam.tsv", virus = small_viruses + Mesomimi_viruses),
+        virus_metadata   = "metadata/viruses.tsv",
+        segment_metadata = "metadata/viral_segments.tsv",
+        genes_cluster    = "metadata/genes_cluster.tsv",
+        genes_pfam       = "metadata/genes_pfam.tsv"
     output:
-        "analysis/hh_mcl/mcl_genomes.txt"
+        core_genes = "output/core_genes.pdf",
+        bipartite  = "output/bipartite.pdf"
     params:
         probab = 80
     conda:
