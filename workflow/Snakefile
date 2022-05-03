@@ -59,6 +59,8 @@ def orthology():
             prefix.append(short)
     return prefix
 
+models = { "MCP_PLV": "Blosum62+F+R5" }
+
 rule all:
     input:
         expand("analysis/PLV_segments_hh/{segment}-hhsearch-pfam.tsv", segment = segment_names),
@@ -70,9 +72,10 @@ rule all:
         expand("analysis/segments/{genome}/segments.gbk", genome = genomes),
         "analysis/vcontact2/results",
         # expand("analysis/blast_algae/{genome}.blast", genome = algal_genomes),
-        # expand("analysis/phylogeny/{CP}.svg", CP = [ "MCP_NCLDV" ]),
+        expand("output/{CP}.svg", CP = [ "MCP_PLV" ]),
         "analysis/promoters.svg",
-        "output/vcontact2_clustering.svg"
+        "output/vcontact2_clustering.svg",
+        "output/viral_segments.gbk",
         # "analysis/proteinortho/viruses.proteinortho.tsv",
 
 rule viruses_ncbi_fna:
@@ -153,11 +156,11 @@ rule flanks:
 
 rule meme:
     input:
-        "analysis/promoters/PLVs/{source}/{genome}.fna"
+        "analysis/promoters/PLVs/{genome}.fna"
     output:
-        "analysis/promoters/PLVs/{source}/{genome}/meme/meme.xml"
+        "analysis/promoters/PLVs/{genome}/meme/meme.xml"
     params:
-        outdir = "analysis/promoters/PLVs/{source}/{genome}/meme/",
+        outdir = "analysis/promoters/PLVs/{genome}/meme/",
         minw = 6,
         maxw = 16,
         nmotifs = 10,
@@ -169,9 +172,9 @@ rule meme:
 
 rule plot_meme:
     input:
-        "analysis/promoters/PLVs/{source}/{genome}/meme/meme.xml"
+        "analysis/promoters/PLVs/{genome}/meme/meme.xml"
     output:
-        "analysis/promoters/PLVs/{source}/{genome}/meme/meme.svg"
+        "analysis/promoters/PLVs/{genome}/meme/meme.svg"
     params:
         motif_res = [ "[ATW][ATW][ATW][ATW][ATW]TG[ATW]", "TCCGGA" ],
         meme_name = "{genome}"
@@ -314,11 +317,13 @@ rule extract_hmmsearch:
         txt = "analysis/hmmsearch/{genome}-{hmm}.txt"
     output:
         "analysis/hmmsearch/{genome}-{hmm}.faa"
+    params:
+        evalue = 0.001
     conda:
         "envs/tools.yaml"
     shell:
         """
-        awk '!/^#/&&$5<0.001{{print $1,$3}}' OFS=\\\\t {input.txt} | \
+        awk '!/^#/&&$5<{params.evalue}{{print $1,$3}}' OFS=\\\\t {input.txt} | \
             parallel --colsep \\\\t seqkit faidx -f {input.fasta} {{1}} \| seqkit replace -p "'$'" -r '" {{2}}"' | seqkit  seqkit seq -gm 100
         """
 
@@ -361,7 +366,7 @@ rule extract_core_genes:
         fasta = "analysis/segments/{genome}/segments.faa",
         faidx = "analysis/segments/{genome}/segments.faa.fai"
     output:
-        "analysis/CPs/core/{genome}-{hmm}.faa"
+        "metadata/core/{genome}-{hmm}.faa"
     params:
         evalue = 1e-5
     conda:
@@ -373,15 +378,15 @@ rule extract_core_genes:
 #    input:
 #        fasta = lambda w: expand("analysis/CPs/core/{genome}-{hmm}.faa", genome = core_genomes, hmm = capsid_proteins[w.CP])
 #    output:
-#        "analysis/CPs/queries/{CP}.faa"
+#        "metadata/queries/{CP}.faa"
 #    shell:
 #        "cat {input} > {output}"
 
 rule cluster_core_genes:
     input:
-        "analysis/CPs/queries/{CP}.faa"
+        "metadata/queries/{CP}.faa"
     output:
-        "analysis/CPs/queries/{CP}.cdhit"
+        "analysis/queries/{CP}.cdhit"
     params:
         c = 0.9
     conda:
@@ -391,9 +396,9 @@ rule cluster_core_genes:
 
 rule CP_align:
     input:
-        "analysis/CPs/queries/{CP}.faa"
+        "metadata/queries/{CP}.faa"
     output:
-        "analysis/CPs/queries/{CP}.align"
+        "analysis/queries/{CP}.align"
     conda:
         "envs/tools.yaml"
     shell:
@@ -401,9 +406,9 @@ rule CP_align:
 
 rule CP_hmmbuild:
     input:
-        "analysis/CPs/queries/{CP}.align"
+        "analysis/queries/{CP}.align"
     output:
-        "analysis/CPs/queries/{CP}.hmm"
+        "analysis/queries/{CP}.hmm"
     conda:
         "envs/tools.yaml"
     shell:
@@ -412,7 +417,7 @@ rule CP_hmmbuild:
 rule algae_hmmsearch:
     input:
         faa = "analysis/getorf_algae/{genome}.faa",
-        hmm = "analysis/CPs/queries/{CP}.hmm"
+        hmm = "analysis/queries/{CP}.hmm"
     output:
         "analysis/phylogeny/algae/hmm/{genome}-{CP}.tblout"
     conda:
@@ -422,10 +427,10 @@ rule algae_hmmsearch:
 
 rule PLV_hmmsearch:
     input:
-        faa = "analysis/PLVs/{source}/{genome}.faa",
-        hmm = "analysis/CPs/queries/{CP}.hmm"
+        faa = "analysis/PLVs/{genome}.faa",
+        hmm = "analysis/queries/{CP}.hmm"
     output:
-        "analysis/phylogeny/PLVs/hmm/{source}/{genome}-{CP}.tblout"
+        "analysis/phylogeny/PLVs/hmm/{genome}-{CP}.tblout"
     conda:
         "envs/tools.yaml"
     shell:
@@ -435,7 +440,7 @@ rule algae_blast:
     input:
         faa = "analysis/getorf_algae/{genome}.faa",
         pdb = "analysis/getorf_algae/{genome}.faa.pdb",
-        query = "analysis/CPs/queries/{CP}.faa"
+        query = "metadata/queries/{CP}.faa"
     output:
         "analysis/phylogeny/algae/blast/{genome}-{CP}.blast"
     params:
@@ -447,11 +452,11 @@ rule algae_blast:
 
 rule PLV_blast:
     input:
-        faa = "analysis/PLVs/{source}/{genome}.faa",
-        pdb = "analysis/PLVs/{source}/{genome}.faa.pdb",
-        query = "analysis/CPs/queries/{CP}.faa"
+        faa = "analysis/PLVs/{genome}.faa",
+        pdb = "analysis/PLVs/{genome}.faa.pdb",
+        query = "metadata/queries/{CP}.faa"
     output:
-        "analysis/phylogeny/PLVs/blast/{source}/{genome}-{CP}.blast"
+        "analysis/phylogeny/PLVs/blast/{genome}-{CP}.blast"
     params:
         headers = "qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore stitle"
     conda:
@@ -491,21 +496,21 @@ rule hmmsearch_extract_algae:
     conda:
         "envs/tools.yaml"
     shell:
-        "awk -ve={params.evalue} '$5<e' {input.tblout} | grep -v '^#' | cut -f1 -d' ' | sort -u | xargs -r seqkit faidx -f {input.fasta} > {output}"
+        "awk -ve={params.evalue} '!/^#/&&$5<e{{print$1}}' {input.tblout} | sort -u | xargs -r seqkit faidx -f {input.fasta} | seqkit replace -p '^([^ ]+)' -r '$1 {wildcards.genome}' -o {output}"
 
 rule hmmsearch_extract_PLV:
     input:
-        fasta = "analysis/PLVs/{source}/{genome}.faa",
-        fai = "analysis/PLVs/{source}/{genome}.faa.seqkit.fai",
-        tblout = "analysis/phylogeny/PLVs/hmm/{source}/{genome}-{CP}.tblout"
+        fasta = "analysis/PLVs/{genome}.faa",
+        fai = "analysis/PLVs/{genome}.faa.seqkit.fai",
+        tblout = "analysis/phylogeny/PLVs/hmm/{genome}-{CP}.tblout"
     output:
-        "analysis/phylogeny/PLVs/hmm/{source}/{genome}-{CP}.faa"
+        "analysis/phylogeny/PLVs/hmm/{genome}-{CP}.faa"
     params:
         evalue = lambda w: evalues[w.CP]
     conda:
         "envs/tools.yaml"
     shell:
-        "awk -ve={params.evalue} '$5<e' {input.tblout} | grep -v '^#' | cut -f1 -d' ' | sort -u | xargs -r seqkit faidx -f {input.fasta} > {output}"
+        "awk -ve={params.evalue} '!/^#/&&$5<e{{print$1}}' {input.tblout} | sort -u | xargs -r seqkit faidx -f {input.fasta} | seqkit replace -p '^([^ ]+)' -r '$1 {wildcards.genome}' -o {output}"
 
 rule mad:
     input:
@@ -529,11 +534,11 @@ rule blast_extract_algae:
 
 rule blast_extract_PLVs:
     input:
-        fasta = "analysis/PLVs/{source}/{genome}.faa",
-        fai = "analysis/PLVs/{source}/{genome}.faa.seqkit.fai",
-        blast = "analysis/phylogeny/PLVs/blast/{source}/{genome}-{CP}.blast"
+        fasta = "analysis/PLVs/{genome}.faa",
+        fai = "analysis/PLVs/{genome}.faa.seqkit.fai",
+        blast = "analysis/phylogeny/PLVs/blast/{genome}-{CP}.blast"
     output:
-        "analysis/phylogeny/PLVs/blast/{source}/{genome}-{CP}.faa"
+        "analysis/phylogeny/PLVs/blast/{genome}-{CP}.faa"
     params:
         evalue = 1e-10
     conda:
@@ -555,7 +560,7 @@ rule algae_hmm:
 #rule blast_extract_cat:
 #    input:
 #        expand("analysis/phylogeny/algae/blast/{genome}-MCP_NCLDV.faa", genome = algal_genomes),
-#        expand("analysis/phylogeny/PLVs/blast/{source}/{genome}-MCP_NCLDV.faa", zip, source = all_sources, genome = all_genomes)
+#        expand("analysis/phylogeny/PLVs/blast/{genome}-MCP_NCLDV.faa", genome = all_genomes)
 #    output:
 #        "analysis/phylogeny/MCP_NCLDV.fasta"
 #    shell:
@@ -563,14 +568,17 @@ rule algae_hmm:
 
 rule hmm_extract_cat:
     input:
+        "metadata/queries/{CP}_outgroups.faa",
         expand("analysis/phylogeny/algae/hmm/{genome}-{{CP}}.faa", genome = algal_genomes),
         expand("analysis/phylogeny/PLVs/hmm/{genome}-{{CP}}.faa", genome = virus_names)
     output:
         "analysis/phylogeny/{CP}.fasta"
+    params:
+        m = 200
     conda:
-        "tools.yaml"
+        "envs/tools.yaml"
     shell:
-        "seqkit seq -gm200 {input} -o {output}"
+        "seqkit seq -gm{params.m} {input} | seqkit rmdup -o {output}"
 
 rule fasta_mafft:
     input:
@@ -587,7 +595,7 @@ rule fasta_mafft:
 rule fasta_hmmalign:
     input:
         fasta = "analysis/phylogeny/{profile}.fasta",
-        hmm = "analysis/CPs/queries/{profile}.hmm"
+        hmm = "metadata/queries/{profile}_hmmalign.hmm"
     output:
         "analysis/phylogeny/{profile}.a2m"
     conda:
@@ -606,7 +614,65 @@ rule hmmalign_trim:
     conda:
         "envs/tools.yaml"
     shell:
-        "seqkit replace -sp [a-z] {input.a2m} | seqkit seq -nigm{params.m} | xargs seqkit faidx -f {input.a2m} | seqkit replace -sp [a-z] | seqkit rmdup -so {output}"
+        "seqkit replace -sp [a-z] {input.a2m} | seqkit seq -nigm{params.m} | xargs seqkit faidx {input.a2m} | seqkit replace -sp [a-z] | seqkit rmdup -so {output}"
+
+rule hmmalign_select_short:
+    input:
+        a2m = "analysis/phylogeny/{profile}.a2m",
+        trim = "analysis/phylogeny/{profile}.a2m.trim"
+    output:
+        "analysis/phylogeny/{profile}.a2m.trim.short"
+    params:
+        M = 299
+    shell:
+        "seqkit replace -sp [a-z] {input.a2m} | seqkit seq -nigM{params.M} | xargs seqkit faidx {input.a2m} | seqkit replace -sp [a-z] | seqkit rmdup -so {output}"
+
+rule raxml_evaluate:
+    input:
+        fasta  = "analysis/phylogeny/{profile}.a2m.trim",
+        iqtree = "analysis/phylogeny/{profile}.treefile"
+    output:
+        "analysis/phylogeny/{profile}.raxml.bestTree",
+        "analysis/phylogeny/{profile}.raxml.bestModel"
+    params:
+        prefix = "analysis/phylogeny/{profile}",
+        seed = 123,
+        model = lambda w: models[w.profile]
+    log:
+        "analysis/phylogeny/{profile}.raxml.log"
+    conda:
+        "envs/placement.yaml"
+    shell:
+        "raxml-ng --redo --evaluate --msa {input.fasta} --tree {input.iqtree} --model {params.model} --seed {params.seed} --prefix {params.prefix} &> {log}"
+
+rule epa:
+    input:
+        fasta = "analysis/phylogeny/{profile}.a2m.trim",
+        tree  = "analysis/phylogeny/{profile}.raxml.bestTree",
+        model = "analysis/phylogeny/{profile}.raxml.bestModel",
+        short = "analysis/phylogeny/{profile}.a2m.trim.short"
+    output:
+        "analysis/phylogeny/{profile}_epa/epa_result.jplace"
+    params:
+        dir = "analysis/phylogeny/{profile}_epa"
+    log:
+        "analysis/phylogeny/{profile}_epa/epa.log"
+    conda:
+        "envs/placement.yaml"
+    shell:
+        "epa-ng --redo -s {input.fasta} -t {input.tree} --model {input.model} -q {input.short} -w {params.dir} &> {log}"
+
+rule gappa:
+    input:
+        "analysis/phylogeny/{profile}_epa/epa_result.jplace"
+    output:
+        "analysis/phylogeny/{profile}_epa/epa_result.newick"
+    params:
+        out_dir = "analysis/phylogeny/{profile}_epa"
+    conda:
+        "envs/placement.yaml"
+    shell:
+        "gappa examine graft --jplace-path {input} --fully-resolve --out-dir {params.out_dir}"
 
 rule mafft_trimal:
     input:
@@ -633,6 +699,7 @@ rule algae_rmdup:
 rule algae_iqtree_hmm:
     input:
         "{prefix}.a2m.trim"
+        # "{prefix}.trimal.uniq"
     output:
         "{prefix}.treefile"
     params:
@@ -647,41 +714,30 @@ rule algae_iqtree_hmm:
 rule algae_ggtree_MCP_NCLDV:
     input:
         tree = "analysis/phylogeny/MCP_NCLDV.treefile",
-        fasta_algae = expand("analysis/phylogeny/algae/hmm/{genome}-MCP_NCLDV.faa", genome = algal_genomes),
-        fasta_PLVs  = expand("analysis/phylogeny/PLVs/hmm/{genome}-MCP_NCLDV.faa", genome = virus_names),
-        blast_algae = expand("analysis/phylogeny/algae/blast/{genome}-MCP_NCLDV.blast", genome = algal_genomes),
-        blast_PLVs  = expand("analysis/phylogeny/PLVs/blast/{genome}-MCP_NCLDV.blast", genome = virus_names),
-        cp_queries  = "analysis/CPs/queries/MCP_NCLDV.faa",
-        synonyms = "annotations/organisms.txt",
-        neighnor_hmm = expand("hmm_algae/{hmm}.hmm", hmm = hmm_algae),
-        neighbor_algae = expand("analysis/phylogeny/algae/neighbors/{genome}-{hmm}.tblout", genome = algal_genomes, hmm = hmm_algae),
-        neighbor_PLVs = expand(expand("analysis/phylogeny/PLVs/neighbors/{genome}-{{hmm}}.tblout", genome = virus_names), hmm = hmm_algae),
-        root_file = "annotations/MCP_NCLDV_root.txt"
+        fasta = "analysis/phylogeny/MCP_NCLDV.fasta",
+        synonyms = "metadata/organisms.txt",
+        outgroups = "metadata/queries/MCP_NCLDV_outgroups.faa"
     output:
-        "analysis/phylogeny/MCP_NCLDV.svg"
+        image = "output/MCP_NCLDV.svg",
+        jtree = "output/MCP_NCLDV.jtree"
     conda:
         "envs/r.yaml"
     script:
-        "scripts/ggtree_collapse.R"
+        "scripts/ggtree.R"
 
 rule algae_ggtree_MCP_PLV:
     input:
-        tree = "analysis/phylogeny/MCP_PLV.treefile",
-        fasta_algae  = expand("analysis/phylogeny/algae/hmm/{genome}-{{CP}}.faa", genome = algal_genomes),
-        fasta_PLVs   = expand("analysis/phylogeny/PLVs/hmm/{genome}-{{CP}}.faa", genome = virus_names),
-        blast_algae  = expand("analysis/phylogeny/algae/blast/{genome}-{{CP}}.blast", genome = algal_genomes),
-        blast_PLVs   = expand("analysis/phylogeny/PLVs/blast/{genome}-{{CP}}.blast", genome = virus_names),
-        cp_queries   = "analysis/CPs/queries/{CP}.faa",
-        # tblout = expand("analysis/hmm_algae/{genome}-{hmm}.tblout", genome = algal_genomes, hmm = hmm_algae),
-        synonyms = "annotations/organisms.txt",
-        hmm = expand("hmm_algae/{hmm}.hmm", hmm = hmm_algae),
-        root_file = "annotations/MCP_PLV_root.txt"
+        tree = "analysis/phylogeny/MCP_PLV_epa/epa_result.newick",
+        fasta = "analysis/phylogeny/MCP_PLV.fasta",
+        synonyms = "metadata/organisms.txt",
+        outgroups = "metadata/queries/MCP_PLV_outgroups.faa"
     output:
-        "analysis/phylogeny/{CP}.svg"
+        image = "output/MCP_PLV.svg",
+        jtree = "output/MCP_PLV.jtree"
     conda:
         "envs/r.yaml"
     script:
-        "scripts/ggtree_collapse.R"
+        "scripts/ggtree.R"
 
 rule algae_ggtree_MCP:
     input:
@@ -1242,13 +1298,28 @@ rule mcl_analyze:
         virus_metadata   = "metadata/viruses.tsv",
         segment_metadata = "metadata/viral_segments.tsv",
         genes_cluster    = "metadata/genes_cluster.tsv",
-        genes_pfam       = "metadata/genes_pfam.tsv"
+        genes_pfam       = "metadata/genes_pfam.tsv",
+        jtree            = "output/MCP_PLV.jtree",
+        segments         = "metadata/viral_segments.tsv"
     output:
         core_genes = "output/core_genes.pdf",
-        bipartite  = "output/bipartite.pdf"
+        bipartite  = "output/bipartite.pdf",
+        data       = "output/mcl_genes.tsv",
+        reduced_tree = "output/MCP_PLV_reduced.svg"
     params:
         probab = 80
     conda:
         "envs/r.yaml"
     script:
         "scripts/mcl_graph.R"
+
+rule mcl_add_to_gbk:
+    input:
+        data = "output/mcl_genes.tsv",
+        gbk = expand("analysis/PLV_segments/{segment}.gbk", segment = segment_names)
+    output:
+        "output/viral_segments.gbk"
+    conda:
+        "envs/biopython.yaml"
+    script:
+        "scripts/mcl_add_to_gbk.py"

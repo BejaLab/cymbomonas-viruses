@@ -1,0 +1,6 @@
+channels:
+ - bioconda
+dependencies:
+ - raxml-ng=1.0.1
+ - epa-ng=0.3.8
+ - gappa=0.8.0

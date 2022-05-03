@@ -1,0 +1,78 @@
+ID	Name	Host	Collapse
+TVV-N1	TVV-N1	Chlorophyta	TVS
+Soyang530	Soyang530	MAG	PLV-YSL3, Soyang458, Soyang530
+Soyang458	Soyang458	MAG	PLV-YSL3, Soyang458, Soyang530
+Soyang406	Soyang406	MAG	Han884, Han847, Soyang317, Soyang406
+Soyang317	Soyang317	MAG	Han884, Han847, Soyang317, Soyang406
+PRJNA534927	Phaeocystis rex	Haptophyta	Phaeocystis rex
+PLV-YSL6	PLV-YSL6	MAG	PLV-YSL2, YSL5, YSL4, YSL6
+PLV-YSL5	PLV-YSL5	MAG	PLV-YSL2, YSL5, YSL4, YSL6
+PLV-YSL4	PLV-YSL4	MAG	PLV-YSL2, YSL5, YSL4, YSL6
+PLV-YSL3	PLV-YSL3	MAG	PLV-YSL3, Soyang458, Soyang530
+PLV-YSL2	PLV-YSL2	MAG	PLV-YSL2, YSL5, YSL4, YSL6
+PLV-YSL1	PLV-YSL1	MAG	PLV-YSL1, Han442, Han2744, Montjoie2259
+PLV-SPO2	PLV-SPO2	MAG	TVS
+PLV-SPO1	PLV-SPO1	MAG	TVS
+PLV-SAF6	PLV-SAF6	MAG	
+PLV-SAF5	PLV-SAF5	MAG	
+PLV-SAF4	PLV-SAF4	MAG	
+PLV-SAF3	PLV-SAF3	MAG	PLV-SAF2, PLV-SAF3
+PLV-SAF2	PLV-SAF2	MAG	PLV-SAF2, PLV-SAF3
+PLV-SAF1	PLV-SAF1	MAG	
+PLV-RED2	PLV-RED2	MAG	
+PLV-RED1	PLV-RED1	MAG	TVS
+PLV-ACE1	PLV-ACE1	MAG	
+PleuroPLV	PleuroPLV	Haptophyta	
+Phaglo	Phaeocystis globosa	Haptophyta	Phaeocystis globosa
+Phaant	Phaeocystis antarctica	Haptophyta	Phaeocystis antarctica
+PgVV-16T	PgVV	Haptophyta	
+Montjoie2259	Montjoie2259	MAG	PLV-YSL1, Han442, Han2744, Montjoie2259
+Moe	Moe	Haptophyta	
+MMETSP1081	Pyramimonas amylifera	Chlorophyta	
+MMETSP0815	Prymnesium parvum	Haptophyta	
+MMETSP0814	Prymnesium parvum	Haptophyta	
+MMETSP0287	Chrysochromulina rotalis	Haptophyta	
+MMETSP0008	Prymnesium parvum	Haptophyta	
+MMETSP0007	Prymnesium parvum	Haptophyta	
+PLV-MED1	PLV-MED1	MAG	TVS
+Larry	Larry	Haptophyta	
+JGI_Guith1	Guillardia theta	Cryptophyta	
+JGI_Chrzof1	Chromochloris zofingiensis	Chlorophyta	
+JGI_Astpho2	Asterochloris sp. Cgr/DA1pho	Chlorophyta	
+Han884	Han884	MAG	Han884, Han847, Soyang317, Soyang406
+Han847	Han847	MAG	Han884, Han847, Soyang317, Soyang406
+Han442	Han442	MAG	PLV-YSL1, Han442, Han2744, Montjoie2259
+Han2744	Han2744	MAG	PLV-YSL1, Han442, Han2744, Montjoie2259
+Han1312	Han1312	MAG	
+Han1023	Han1023	MAG	
+GCA_900108755.1	Tetradesmus obliquus	Chlorophyta	Scenedesmaceae
+GCA_018136815.1	Isochrysis galbana	Haptophyta	
+GCA_016834595.1	Chlamydomonas schloesseri	Chlorophyta	Chlamydomonadaceae
+GCA_007449985.2	Desmodesmus armatus	Chlorophyta	Scenedesmaceae
+GCA_004335895.1	Chlamydomonas sp. AIC 3563	Chlorophyta	Chlamydomonadaceae
+GCA_004000685.1	Mesostigma viride	Streptophyta	
+GCA_003573635.1	Goniomonas avonlea	Cryptophyta	
+GCA_003117195.1	Eudorina sp. 2006-703-Eu-15	Chlorophyta	Chlamydomonadaceae
+GCA_003117095.1	Eudorina sp. 2006-703-Eu-15	Chlorophyta	Chlamydomonadaceae
+GCA_002891735.1	Tetrabaena socialis	Chlorophyta	Chlamydomonadaceae
+GCA_002814315.1	Monoraphidium sp. 549	Chlorophyta	
+GCA_002588565.1	Coelastrella sp. UTEX B 3026	Chlorophyta	Scenedesmaceae
+GCA_002149895.1	Tetradesmus obliquus	Chlorophyta	Scenedesmaceae
+GCA_002005505.1	Botryococcus braunii	Chlorophyta	
+GCA_001662425.1	Chlamydomonas sphaeroides	Chlorophyta	Chlamydomonadaceae
+GCA_001584585.1	Gonium pectorale	Chlorophyta	Chlamydomonadaceae
+GCA_001247695.1	Cymbomonas tetramitiformis	Chlorophyta	
+GCA_000708835.1	Klebsormidium nitens	Streptophyta	
+GCA_000611645.1	Monoraphidium neglectum	Chlorophyta	
+GCA_000441915.1	Genlisea aurea	Streptophyta	
+GCA_000186865.1	Aureococcus anophagefferens	Stramenopiles	
+GCA_000002595.3	Chlamydomonas reinhardtii	Chlorophyta	Chlamydomonadaceae
+Etoliko555	Etoliko555	MAG	Chesapeake430, Chesapeake726, Etoliko555
+Delaware572	Delaware572	MAG	
+Delaware1642	Delaware1642	MAG	
+Curly	Curly	Haptophyta	
+Chesapeake726	Chesapeake726	MAG	Chesapeake430, Chesapeake726, Etoliko555
+Chesapeake430	Chesapeake430	MAG	Chesapeake430, Chesapeake726, Etoliko555
+ALTPLV2	ALTPLV2	Haptophyta	
+GCA_000372725.1	Emiliania huxleyi	Haptophyta
+GCA_001662365.1	Chlamydomonas applanata	Chlorophyta	Chlamydomonadaceae

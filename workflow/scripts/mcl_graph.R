@@ -3,8 +3,10 @@ library(dplyr)
 library(tidyr)
 library(scatterpie)
 library(tibble)
+library(treeio)
 library(igraph)
 library(ggraph)
+library(ape)
 
 if (interactive()) {
     mcl_file <- "analysis/hh_mcl/mcl.txt"
@@ -14,36 +16,39 @@ if (interactive()) {
     virus_ffindex_files   <- Sys.glob("analysis/PLVs/*.ffindex")
     segment_pfam_files    <- Sys.glob("analysis/PLV_segments_hh/*-hhsearch-pfam.tsv")
     virus_pfam_files      <- Sys.glob("analysis/PLVs_hh/*-hhsearch-pfam.tsv")
-    segments <- basename(segment_ffindex_files) %>% sub(".ffindex", "", .)
-    viruses  <- basename(virus_ffindex_files)   %>% sub(".ffindex", "", .)
     genes_cluster_file <- "metadata/genes_cluster.tsv"
     genes_pfam_file <- "metadata/genes_pfam.tsv"
     probab_threshold <- 80
     core_genes_file <- "pie.pdf"
+    jtree_file      <- "output/MCP_PLV.jtree"
+    segments_file   <- "metadata/viral_segments.tsv"
+    reduced_tree_file <- "output/MCP_PLV_reduced.svg"
 } else {
     with(snakemake@input, {
         mcl_file              <<- mcl
         virus_metadata_file   <<- virus_metadata
-        segment_metadata_file <<- segments_metadata
+        segment_metadata_file <<- segment_metadata
         segment_pfam_files    <<- segment_pfam
         virus_pfam_files      <<- virus_pfam
         segment_ffindex_files <<- segment_ffindex
         virus_ffindex_files   <<- virus_ffindex
         genes_cluster_file    <<- genes_cluster
         genes_pfam_file       <<- genes_pfam
+        jtree_file            <<- jtree
+        segments_file         <<- segments
     })
     with(snakemake@params, {
         probab_threshold  <<- probab
     })
-    with(snakemake@wildcards, {
-        segments <<- segment
-        viruses  <<- virus
-    })
     with(snakemake@output, {
+        data_file       <<- data
         core_genes_file <<- core_genes
-        bipartite_file  <<- bipartite
+        bipart_file     <<- bipartite
+        reduced_tree_file <<- reduced_tree
     })
 }
+segments <- basename(segment_ffindex_files) %>% sub(".ffindex", "", .)
+viruses  <- basename(virus_ffindex_files)   %>% sub(".ffindex", "", .)
 
 genes_pfam <- read.table(genes_pfam_file, header = T, sep = "\t", fill = T, na.strings = "") %>%
     mutate(Comb = 1:n()) %>%
@@ -105,10 +110,39 @@ data <- c(segment_genes, virus_genes) %>%
     mutate(Gene_Pfam = most_freq(Gene_Pfam), Gene_Cluster = most_freq(Gene_Cluster)) %>%
     mutate(Gene = ifelse(is.na(Gene_Cluster), Gene_Pfam, Gene_Cluster), Gene = ifelse(is.na(Gene), paste0("Cluster_", Cluster), Gene), Gene = ifelse(is.na(Gene), paste0("ID_", ID), Gene)) %>%
     ungroup
+write.table(data, data_file, sep = "\t", quote = F, row.names = F)
+
+virus_segments <- read.table(segments_file, sep = "\t", header = T)
+tree <- read.jtree(jtree_file)
+tip.data <- filter(tree@data, !isInternal) %>%
+    mutate(label = sub(" .*", "", title)) %>%
+    extract(title, into = c("scaffold", "gene_num", "genome", "start", "end"), regex = "^(.+?)_(\\d+) (.+?) \\[(\\d+) - (\\d+)\\]", remove = F, convert = T) %>%
+    left_join(virus_segments, by = c("scaffold")) %>%
+    filter(is.na(scaffold_start) | is.na(start) | start >= scaffold_start & end <= scaffold_end) %>%
+    mutate(Name = ifelse(is.na(short), Name, short)) %>%
+    {setNames(.$Name, .$label)}
+tree@phylo$tip.label <- tip.data[tree@phylo$tip.label]
+tips.to.keep <- filter(data, clade == "PgVV") %>%
+    pull(Genome) %>%
+    `[`(. %in% tree@phylo$tip.label) %>%
+    c("PgVV")
+tips.to.drop <- tree@phylo$tip.label[! tree@phylo$tip.label %in% tips.to.keep]
+my.tree <- tree@phylo %>%
+    keep.tip(tips.to.keep) %>%
+    drop.tip(tips.to.drop) %>%
+    ladderize %>%
+    chronos(lambda = 0.1)
+svg(reduced_tree_file)
+plot(my.tree)
+dev.off()
+order.tips <- data.frame(tip.num = my.tree$edge[,2]) %>%
+    filter(tip.num <= length(my.tree$tip.label)) %>%
+    mutate(Genome = my.tree$tip.label[tip.num], num = n():1)
 
 chosen_clades <- c("PgVV", "Endemic", "Mesomimi")
-clade_levels <- c("Mesomimi", "Endemic", "TVS", "Mavirus", "Virophage", "PgVV")
+clade_levels <- c("Mesomimi", "Endemic", "Mavirus", "Virophage", "TVS", "PgVV")
 ref_genomes <- c("Sputnik", "Mavirus_Spezl", "TVV_N1")
+
 clades.data <- filter(data, clade %in% chosen_clades | Genome %in% ref_genomes) %>%
     mutate(Count = 1) %>%
     complete(Gene, nesting(Genome, clade, subclade, subsubclade), fill = list(Count = 0)) %>%
@@ -116,11 +150,12 @@ clades.data <- filter(data, clade %in% chosen_clades | Genome %in% ref_genomes) 
     mutate(N_Subsubclades = n_distinct(subsubclade[clade == "PgVV" & Count > 0]), N_Genomes = n_distinct(Genome[clade == "PgVV" & Count > 0])) %>%
     filter(N_Subsubclades > 2) %>%
     mutate(clade = factor(clade, levels = clade_levels)) %>%
-    arrange(-N_Genomes, Gene, clade, desc(subclade), subsubclade, Genome) %>%
+    left_join(order.tips, by = "Genome") %>%
+    replace_na(list(num = 0)) %>%
+    arrange(-N_Genomes, num, Gene, clade, desc(subclade), subsubclade, Genome) %>%
     ungroup %>%
     mutate(Gene = factor(Gene, levels = unique(Gene)), Genome = factor(Genome, levels = unique(Genome))) %>%
     filter(Count > 0)
-
 ggplot_scatterpie <- function(.data, x.col, y.col, z.col, val.col, group.col) {
     x_uniq <- levels(.data[[x.col]])
     y_uniq <- levels(.data[[y.col]])
@@ -141,8 +176,8 @@ p <- ggplot_scatterpie(clades.data, "Gene", "Genome", "Cluster", "Count", "subsu
 ggsave(core_genes_file, p, height = 12)
 
 vertex_metadata <- list(
-        Cluster = distinct(my.clades, Cluster, Gene) %>%
-            mutate(label = ifelse(grepl("Cluster", Gene), NA, Gene), subclade = "Cluster", subsubclade = "Cluster") %>%
+        Cluster = distinct(clades.data, Cluster, Gene) %>%
+            mutate(label = ifelse(grepl("Cluster", Gene), NA, as.character(Gene)), subclade = "Cluster", subsubclade = "Cluster") %>%
             column_to_rownames("Cluster"),
         Genome = mutate(metadata, label = short)
     ) %>% bind_rows(.id = "Type")

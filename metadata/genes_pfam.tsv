@@ -1,80 +1,83 @@
 Pfam	Gene_Pfam	No_threshold
-DNA_pol_A,Baculo_helicase	TVpol
-DUF5754	Tlr6F/DUF5754
-Phage_int_SAM_1	Yrec_int
-Phage_int_SAM_3	Yrec_int
-Phage_integrase	Yrec_int
-Phage_int_SAM_5	Yrec_int
-Mbeg1-like	AB_hydrolase
-Phage_Capsid_P3	MCP
-Capsid_N	MCP
-Phage_T4_gp36	gp36-like
-SLATT_4	SLATT	2
-DUF5871	DUF2738/DUF5871
-DNA_methylase	MTase
-MethyltransfD12	MTase
-Methyltransf_21	MTase
-EcoRI_methylase	MTase
-DUF5710	DUF5710
-Endonuclease_7	Endo_VII
-Phage_term_sma	HTH	V17
-Pox_VLTF3	Pox_VLTF3	
-DNA_pol_delta_4	Pol_delta_4	
-Peptidase_C57	C57_peptidase
-Capsid_NCLDV	MCP
-YqaJ	YqaJ_exo
-GREB1_C	GREB1
-HNH_3	HNH_endo
-DDE_Tnp_IS240	DDE-type_transposase
-DDE_Tnp_ISAZ013	DDE-type_transposase
-rve	DDE-type_transposase
-RVT_2	RVT
-RVT_1	RVT
-DUF1040	YihD-like
+DNA_pol_A,Baculo_helicase	TVpol	
+DUF5754	Tlr6F/DUF5754	
+Phage_int_SAM_1	Yrec	
+Phage_int_SAM_3	Yrec	
+Phage_integrase	Yrec	
+Phage_int_SAM_5	Yrec	
+Mbeg1-like	AB hydrolase	
+Phage_Capsid_P3	MCP	
+Capsid_N	MCP	
+Phage_T4_gp36	gp36-like	
+SLATT_4	SLATT (=GtG)	2
+DUF5871	DUF2738/DUF5871	
+DNA_methylase	C-MTase	1
+EcoRI_methylase	N-MTase	1
+MethyltransfD12	N-MTase	1
+Dam	N-MTase	1
+N6_N4_Mtase	N-MTase (N6-N4)	1
+MmeI_Mtase	N-MTase	1
+N6_Mtase	N-MTase	1
+DUF5710	DUF5710	
+Endonuclease_7	Endo VII	2
+Phage_term_sma	HTH	2
+Pox_VLTF3	Pox VLTF3	
+DNA_pol_delta_4	Pol delta 4	2
+Peptidase_C57	C57 peptidase	
+Capsid_NCLDV	MCP	
+YqaJ	YqaJ exo	
+GREB1_C	GREB1	
+HNH_3	HNH endo	
+DDE_Tnp_IS240	DDE-type transposase	
+DDE_Tnp_ISAZ013	DDE-type transposase	
+rve	DDE-type transposase	
+RVT_2	RVT	
+RVT_1	RVT	
+DUF1040	YihD-like	2
 DNA_pol_B_2	PolB	1
 GIY-YIG	GIY-YIG	1
-PIF1	SF1_helicase	1
-Pox_A32	A32_ATPase	1
-Abhydrolase_6	AB_hydrolase
-TBP	TFIID
-DUF2738	DUF2738/DUF5871
-DUF927	SF2_helicase	1
+PIF1	SF1 helicase	1
+Pox_A32	A32 ATPase	1
+Abhydrolase_6	AB hydrolase	
+TBP	TFIID	
+DUF2738	DUF2738/DUF5871	
+DUF927	SF2 helicase	1
 Pox_A22	Resolvase	1
 DUF5767	DUF5767	1
 Glyco_transf_10	GT10	1
 Glyco_tranf_2_3	GT2	1
 DUF285	DUF285	1
-Thioredoxin	Thioredoxin
-Pox_E10	Pox_E10	1
-RNA_pol_Rpb2_1,RNA_pol_Rpb2_7	RNA_pol_Rpb2
-Glyco_transf_25	GT25
+Thioredoxin	Thioredoxin	
+Pox_E10	Pox E10	1
+RNA_pol_Rpb2_1,RNA_pol_Rpb2_7	RNA_pol_Rpb2	
+Glyco_transf_25	GT25	
 DUF5760	DUF5760	1
 Hus1	PCNA	1
 DUF5761	DUF5761	1
 DNA_pol_B	PolB	1
 dUTPase	dUTPase	1
-Herpes_Helicase	SF1_helicase	1
+Herpes_Helicase	SF1 helicase	1
 Glyco_transf_15	GT15	1
 SegE_GIY-YIG	GIY-YIG	1
-Poly_A_pol_cat	PolyA_pol_cat	1
+Poly_A_pol_cat	Poly_A_pol_cat	1
 DUF5824	DUF5824	1
 PNK3P	PNK3P	1
 PAP2_3	PAP2	1
 IF4E	IF4E	1
-Pox_C4_C10	Pox_C4_C10	1
+Pox_C4_C10	Pox C4 C10	1
 Ribonuc_red_sm	Ribonuc_red_sm	1
-Pkinase	Protein_kinase	1
-Haspin_kinase	Protein_kinase	1
-Thymidylat_synt	Thymidylate_synthase	1
-Asn_synthase	Asn_synthase	1
-Ribonucleas_3_3	Ribonuclease_III	1
+Pkinase	Protein kinase	1
+Haspin_kinase	Protein kinase	1
+Thymidylat_synt	Thymidylate synt	1
+Asn_synthase	Asn synt	1
+Ribonucleas_3_3	Ribonuclease III	1
 ERCC4	ERCC4	1
 RNA_pol_Rpb5_C	RNA_pol_Rpb5	1
 RNA_pol_Rpb6	RNA_pol_Rpb6	1
 RNA_POL_M_15KD	RNA_pol_Rpb9	1
 TFIIS_C	TFIIS	1
-RNA_pol_L	RNA_pol_Rpb3/Rpb11
-PK_Tyr_Ser-Thr	Protein_kinase	1
+RNA_pol_L	RNA_pol_Rpb3/Rpb11	2
+PK_Tyr_Ser-Thr	Protein kinase	1
 DUF5891	DUF5891	1
 DUF5762	DUF5762	1
 Patatin	Patatin-like	1
@@ -82,6 +85,7 @@ RNA_pol_Rpb1_5	RNA_pol_Rpb1	1
 Ribonuc_red_lgC	Ribonuc_red_large	1
 MutS_III	MutS	1
 MutS_V	MutS	1
-mRNA_cap_enzyme	mRNA_capping_enzyme	1
-Baculo_RING	Znf_RING	2
-DUF3945	DUF3945-like
+mRNA_cap_enzyme	mRNA capping enzyme	1
+Baculo_RING	ac53-Zfp	2
+DUF3945	DUF3945-like	2
+DUF2075	SF1 helicase	1

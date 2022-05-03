@@ -21,5 +21,6 @@ dependencies:
  - r-ape=5.5
  - r-phangorn=2.8.0
  - r-phytools=0.7_90
+ - bioconductor-biostrings=2.62.0
  - bioconductor-ggtree=3.2.0
  - bioconductor-treeio=1.18.0
