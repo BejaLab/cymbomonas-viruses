@@ -23,6 +23,10 @@ if (interactive()) {
     jtree_file      <- "output/MCP_PLV.jtree"
     segments_file   <- "metadata/viral_segments.tsv"
     reduced_tree_file <- "output/MCP_PLV_reduced.svg"
+    chosen_clades <- c("PgVV", "Endemic", "Mesomimi")
+    clade_levels <- c("Mesomimi", "Endemic", "Mavirus", "Virophage", "TVS", "PgVV")
+    ref_genomes <- c("Sputnik", "Mavirus_Spezl", "TVV_S1")
+    colors_file <- "metadata/subclade_colors.txt"
 } else {
     with(snakemake@input, {
         mcl_file              <<- mcl
@@ -36,9 +40,13 @@ if (interactive()) {
         genes_pfam_file       <<- genes_pfam
         jtree_file            <<- jtree
         segments_file         <<- segments
+        colors_file           <<- colors
     })
     with(snakemake@params, {
         probab_threshold  <<- probab
+        chosen_clades     <<- chosen_clades
+        clade_levels      <<- clade_levels
+        ref_genomes       <<- ref_genomes
     })
     with(snakemake@output, {
         data_file       <<- data
@@ -104,7 +112,9 @@ data <- c(segment_genes, virus_genes) %>%
     mutate(Gene_Pfam = ifelse(n_distinct(Hit.ID) >= Comb.Num, Gene_Pfam, NA), Gene_Pfam = ifelse(is.na(No_threshold) | No <= No_threshold, Gene_Pfam, NA)) %>%
     left_join(clusters, by = "ID") %>%
     mutate(Cluster = as.character(ifelse(is.na(Cluster), ID, Cluster))) %>%
-    group_by(Genome, ID, Cluster, clade, subclade, subsubclade) %>%
+    ungroup %>%
+    arrange(No, -Comb.Num) %>%
+    group_by(Genome, ID, Cluster, clade, subclade) %>%
     summarize(Gene_Pfam = first_nona(Gene_Pfam), Gene_Cluster = first_nona(Gene_Cluster), Hit.ID = first(Hit.ID), Hit.Description = first(Hit.Description), Probab = first(Probab)) %>%
     group_by(Cluster) %>%
     mutate(Gene_Pfam = most_freq(Gene_Pfam), Gene_Cluster = most_freq(Gene_Cluster)) %>%
@@ -112,7 +122,8 @@ data <- c(segment_genes, virus_genes) %>%
     ungroup
 write.table(data, data_file, sep = "\t", quote = F, row.names = F)
 
-virus_segments <- read.table(segments_file, sep = "\t", header = T)
+virus_segments <- read.table(segments_file, sep = "\t", header = T) %>%
+    mutate(scaffold = sub("Isogal_", "", scaffold)) # NB: workaround for Isogal scaffolds. TODO: do a proper fix
 tree <- read.jtree(jtree_file)
 tip.data <- filter(tree@data, !isInternal) %>%
     mutate(label = sub(" .*", "", title)) %>%
@@ -139,20 +150,16 @@ order.tips <- data.frame(tip.num = my.tree$edge[,2]) %>%
     filter(tip.num <= length(my.tree$tip.label)) %>%
     mutate(Genome = my.tree$tip.label[tip.num], num = n():1)
 
-chosen_clades <- c("PgVV", "Endemic", "Mesomimi")
-clade_levels <- c("Mesomimi", "Endemic", "Mavirus", "Virophage", "TVS", "PgVV")
-ref_genomes <- c("Sputnik", "Mavirus_Spezl", "TVV_N1")
-
 clades.data <- filter(data, clade %in% chosen_clades | Genome %in% ref_genomes) %>%
     mutate(Count = 1) %>%
-    complete(Gene, nesting(Genome, clade, subclade, subsubclade), fill = list(Count = 0)) %>%
+    complete(Gene, nesting(Genome, clade, subclade), fill = list(Count = 0)) %>%
     group_by(Gene) %>%
-    mutate(N_Subsubclades = n_distinct(subsubclade[clade == "PgVV" & Count > 0]), N_Genomes = n_distinct(Genome[clade == "PgVV" & Count > 0])) %>%
-    filter(N_Subsubclades > 2) %>%
+    mutate(N_Subclades = n_distinct(subclade[clade == "PgVV" & Count > 0]), N_Genomes = n_distinct(Genome[clade == "PgVV" & Count > 0])) %>%
+    filter(N_Subclades > 2) %>%
     mutate(clade = factor(clade, levels = clade_levels)) %>%
     left_join(order.tips, by = "Genome") %>%
     replace_na(list(num = 0)) %>%
-    arrange(-N_Genomes, num, Gene, clade, desc(subclade), subsubclade, Genome) %>%
+    arrange(-N_Genomes, num, Gene, clade, desc(subclade), Genome) %>%
     ungroup %>%
     mutate(Gene = factor(Gene, levels = unique(Gene)), Genome = factor(Genome, levels = unique(Genome))) %>%
     filter(Count > 0)
@@ -169,15 +176,15 @@ ggplot_scatterpie <- function(.data, x.col, y.col, z.col, val.col, group.col) {
         xlab(x.col) + ylab(y.col) #+
         #facet_grid(rows = group.col, scales = "free_y", space = "free_y")
 }
-p <- ggplot_scatterpie(clades.data, "Gene", "Genome", "Cluster", "Count", "subsubclade") +
+p <- ggplot_scatterpie(clades.data, "Gene", "Genome", "Cluster", "Count", "subclade") +
     coord_equal() +
     theme_void() +
-    theme(axis.title.x = element_blank(), axis.title.y = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), axis.text.y = element_text())
+    theme(axis.title.x = element_blank(), axis.title.y = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 90, vjust = 1, hjust = 1), axis.text.y = element_text())
 ggsave(core_genes_file, p, height = 12)
 
 vertex_metadata <- list(
-        Cluster = distinct(clades.data, Cluster, Gene) %>%
-            mutate(label = ifelse(grepl("Cluster", Gene), NA, as.character(Gene)), subclade = "Cluster", subsubclade = "Cluster") %>%
+        Cluster = distinct(data, Cluster, Gene) %>%
+            mutate(label = ifelse(grepl("Cluster", Gene), NA, as.character(Gene)), subclade = "Cluster") %>%
             column_to_rownames("Cluster"),
         Genome = mutate(metadata, label = short)
     ) %>% bind_rows(.id = "Type")
@@ -191,34 +198,22 @@ g <- filter(data, clade == "PgVV") %>%
     column_to_rownames("Cluster") %>%
     as.matrix %>%
     graph.incidence %>%
-    set_vertex_attr("subclade",    value = vertex_metadata[V(.)$name,"subclade"]) %>%
-    set_vertex_attr("subsubclade", value = vertex_metadata[V(.)$name,"subsubclade"]) %>%
-    set_vertex_attr("label",       value = vertex_metadata[V(.)$name,"label"]) %>%
-    set_vertex_attr("gene",        value = vertex_metadata[V(.)$name,"Gene"])
+    set_vertex_attr("subclade", value = vertex_metadata[match(V(.)$name, rownames(vertex_metadata)),"subclade"]) %>%
+    set_vertex_attr("label",    value = vertex_metadata[match(V(.)$name, rownames(vertex_metadata)),"label"]) %>%
+    set_vertex_attr("gene",     value = vertex_metadata[match(V(.)$name, rownames(vertex_metadata)),"Gene"]) %>%
+    set_vertex_attr("node_type", value = vertex_metadata[match(V(.)$name, rownames(vertex_metadata)),"Type"])
 
-subsubclades <- list(
-    blue = "#1F78B4",
-    purple = "#6A3D9A",
-    Isogal = "#B2DF8A",
-    red = "#E31A1C",
-    yellow = "yellow4",
-    PleuPLV = "#33A02C",
-    MLC = "#FDBF6F",
-    SAF1 = "#FF7F00",
-    RED2 = "#CAB2D6",
-    Han1023 = "#A6CEE3",
-    CCE = "#FB9A99",
-    Delaware572 = "#B15928",
-    Cluster = "black",
-    "darkgray"
-)
+colors <- read.table(colors_file, comment.char = "") %>%
+    with(setNames(V2,V1)) %>%
+    c(Cluster = "black", "darkgray")
 
+set.seed(1234)
 p <- ggraph(g, "fr") +
     geom_edge_link(alpha = .1) +
-    geom_node_point(aes(shape = subclade, colour = subsubclade, size = type)) +
+    geom_node_point(aes(shape = node_type, colour = subclade, size = type)) +
     geom_node_text(aes(filter = !type, label = label), size = 1.5, color = "red",   repel = T, nudge_y = -0.01, hjust = "right") +
     geom_node_text(aes(filter = type,  label = label), size = 2,   color = "black", repel = T, nudge_y = -0.01, hjust = "right") +
     scale_size_manual(values = c(1,2)) +
-    scale_color_manual(values = subsubclades) +
+    scale_color_manual(values = colors) +
     theme_graph(base_family = "sans")
 ggsave(bipart_file, p, width = 10, height = 8)

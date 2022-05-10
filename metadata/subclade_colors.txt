@@ -1,0 +1,10 @@
+blue	#3672c9
+purple	#6A3D9A
+Isogal	#B2DF8A
+red	#ff8080
+yellow	#ffe880
+PleuPLV	#33A02C
+MLC	#8b8b00
+Han1023	#a600e3
+CCE	#fa0099
+Delaware572	#B15928

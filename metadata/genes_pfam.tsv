@@ -1,6 +1,6 @@
 Pfam	Gene_Pfam	No_threshold
-DNA_pol_A,Baculo_helicase	TVpol	
-DUF5754	Tlr6F/DUF5754	
+DNA_pol_A,Baculo_helicase	TVpol-S3H	
+DUF5754	Tlr6F	
 Phage_int_SAM_1	Yrec	
 Phage_int_SAM_3	Yrec	
 Phage_integrase	Yrec	
@@ -9,7 +9,7 @@ Mbeg1-like	AB hydrolase
 Phage_Capsid_P3	MCP	
 Capsid_N	MCP	
 Phage_T4_gp36	gp36-like	
-SLATT_4	SLATT (=GtG)	2
+SLATT_4	SLATT	2
 DUF5871	DUF2738/DUF5871	
 DNA_methylase	C-MTase	1
 EcoRI_methylase	N-MTase	1
@@ -26,7 +26,7 @@ DNA_pol_delta_4	Pol delta 4	2
 Peptidase_C57	C57 peptidase	
 Capsid_NCLDV	MCP	
 YqaJ	YqaJ exo	
-GREB1_C	GREB1	
+GREB1_C	TAGT	
 HNH_3	HNH endo	
 DDE_Tnp_IS240	DDE-type transposase	
 DDE_Tnp_ISAZ013	DDE-type transposase	
@@ -34,14 +34,13 @@ rve	DDE-type transposase
 RVT_2	RVT	
 RVT_1	RVT	
 DUF1040	YihD-like	2
-DNA_pol_B_2	PolB	1
-GIY-YIG	GIY-YIG	1
-PIF1	SF1 helicase	1
+DNA_pol_B_2	pPolB	1
+PIF1	S1H	1
 Pox_A32	A32 ATPase	1
 Abhydrolase_6	AB hydrolase	
 TBP	TFIID	
 DUF2738	DUF2738/DUF5871	
-DUF927	SF2 helicase	1
+DUF927	S2H	1
 Pox_A22	Resolvase	1
 DUF5767	DUF5767	1
 Glyco_transf_10	GT10	1
@@ -56,9 +55,8 @@ Hus1	PCNA	1
 DUF5761	DUF5761	1
 DNA_pol_B	PolB	1
 dUTPase	dUTPase	1
-Herpes_Helicase	SF1 helicase	1
+Herpes_Helicase	S1H	1
 Glyco_transf_15	GT15	1
-SegE_GIY-YIG	GIY-YIG	1
 Poly_A_pol_cat	Poly_A_pol_cat	1
 DUF5824	DUF5824	1
 PNK3P	PNK3P	1
@@ -88,4 +86,6 @@ MutS_V	MutS	1
 mRNA_cap_enzyme	mRNA capping enzyme	1
 Baculo_RING	ac53-Zfp	2
 DUF3945	DUF3945-like	2
-DUF2075	SF1 helicase	1
+DUF2075	S1H	1
+Herpes_Helicase,DNA_pol_B_2	pPolB
+Pox_A22	Pox_A22

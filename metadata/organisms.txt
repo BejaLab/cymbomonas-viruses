@@ -1,78 +1,198 @@
-ID	Name	Host	Collapse
-TVV-N1	TVV-N1	Chlorophyta	TVS
-Soyang530	Soyang530	MAG	PLV-YSL3, Soyang458, Soyang530
-Soyang458	Soyang458	MAG	PLV-YSL3, Soyang458, Soyang530
-Soyang406	Soyang406	MAG	Han884, Han847, Soyang317, Soyang406
-Soyang317	Soyang317	MAG	Han884, Han847, Soyang317, Soyang406
-PRJNA534927	Phaeocystis rex	Haptophyta	Phaeocystis rex
-PLV-YSL6	PLV-YSL6	MAG	PLV-YSL2, YSL5, YSL4, YSL6
-PLV-YSL5	PLV-YSL5	MAG	PLV-YSL2, YSL5, YSL4, YSL6
-PLV-YSL4	PLV-YSL4	MAG	PLV-YSL2, YSL5, YSL4, YSL6
-PLV-YSL3	PLV-YSL3	MAG	PLV-YSL3, Soyang458, Soyang530
-PLV-YSL2	PLV-YSL2	MAG	PLV-YSL2, YSL5, YSL4, YSL6
-PLV-YSL1	PLV-YSL1	MAG	PLV-YSL1, Han442, Han2744, Montjoie2259
-PLV-SPO2	PLV-SPO2	MAG	TVS
-PLV-SPO1	PLV-SPO1	MAG	TVS
-PLV-SAF6	PLV-SAF6	MAG	
-PLV-SAF5	PLV-SAF5	MAG	
-PLV-SAF4	PLV-SAF4	MAG	
-PLV-SAF3	PLV-SAF3	MAG	PLV-SAF2, PLV-SAF3
-PLV-SAF2	PLV-SAF2	MAG	PLV-SAF2, PLV-SAF3
-PLV-SAF1	PLV-SAF1	MAG	
-PLV-RED2	PLV-RED2	MAG	
-PLV-RED1	PLV-RED1	MAG	TVS
-PLV-ACE1	PLV-ACE1	MAG	
-PleuroPLV	PleuroPLV	Haptophyta	
-Phaglo	Phaeocystis globosa	Haptophyta	Phaeocystis globosa
-Phaant	Phaeocystis antarctica	Haptophyta	Phaeocystis antarctica
-PgVV-16T	PgVV	Haptophyta	
-Montjoie2259	Montjoie2259	MAG	PLV-YSL1, Han442, Han2744, Montjoie2259
-Moe	Moe	Haptophyta	
-MMETSP1081	Pyramimonas amylifera	Chlorophyta	
-MMETSP0815	Prymnesium parvum	Haptophyta	
-MMETSP0814	Prymnesium parvum	Haptophyta	
-MMETSP0287	Chrysochromulina rotalis	Haptophyta	
-MMETSP0008	Prymnesium parvum	Haptophyta	
-MMETSP0007	Prymnesium parvum	Haptophyta	
-PLV-MED1	PLV-MED1	MAG	TVS
-Larry	Larry	Haptophyta	
-JGI_Guith1	Guillardia theta	Cryptophyta	
-JGI_Chrzof1	Chromochloris zofingiensis	Chlorophyta	
-JGI_Astpho2	Asterochloris sp. Cgr/DA1pho	Chlorophyta	
-Han884	Han884	MAG	Han884, Han847, Soyang317, Soyang406
-Han847	Han847	MAG	Han884, Han847, Soyang317, Soyang406
-Han442	Han442	MAG	PLV-YSL1, Han442, Han2744, Montjoie2259
-Han2744	Han2744	MAG	PLV-YSL1, Han442, Han2744, Montjoie2259
-Han1312	Han1312	MAG	
-Han1023	Han1023	MAG	
-GCA_900108755.1	Tetradesmus obliquus	Chlorophyta	Scenedesmaceae
-GCA_018136815.1	Isochrysis galbana	Haptophyta	
-GCA_016834595.1	Chlamydomonas schloesseri	Chlorophyta	Chlamydomonadaceae
-GCA_007449985.2	Desmodesmus armatus	Chlorophyta	Scenedesmaceae
-GCA_004335895.1	Chlamydomonas sp. AIC 3563	Chlorophyta	Chlamydomonadaceae
-GCA_004000685.1	Mesostigma viride	Streptophyta	
-GCA_003573635.1	Goniomonas avonlea	Cryptophyta	
-GCA_003117195.1	Eudorina sp. 2006-703-Eu-15	Chlorophyta	Chlamydomonadaceae
-GCA_003117095.1	Eudorina sp. 2006-703-Eu-15	Chlorophyta	Chlamydomonadaceae
-GCA_002891735.1	Tetrabaena socialis	Chlorophyta	Chlamydomonadaceae
-GCA_002814315.1	Monoraphidium sp. 549	Chlorophyta	
-GCA_002588565.1	Coelastrella sp. UTEX B 3026	Chlorophyta	Scenedesmaceae
-GCA_002149895.1	Tetradesmus obliquus	Chlorophyta	Scenedesmaceae
-GCA_002005505.1	Botryococcus braunii	Chlorophyta	
-GCA_001662425.1	Chlamydomonas sphaeroides	Chlorophyta	Chlamydomonadaceae
-GCA_001584585.1	Gonium pectorale	Chlorophyta	Chlamydomonadaceae
-GCA_001247695.1	Cymbomonas tetramitiformis	Chlorophyta	
-GCA_000708835.1	Klebsormidium nitens	Streptophyta	
-GCA_000611645.1	Monoraphidium neglectum	Chlorophyta	
-GCA_000441915.1	Genlisea aurea	Streptophyta	
-GCA_000186865.1	Aureococcus anophagefferens	Stramenopiles	
-GCA_000002595.3	Chlamydomonas reinhardtii	Chlorophyta	Chlamydomonadaceae
-Etoliko555	Etoliko555	MAG	Chesapeake430, Chesapeake726, Etoliko555
-Delaware572	Delaware572	MAG	
-Delaware1642	Delaware1642	MAG	
-Curly	Curly	Haptophyta	
-Chesapeake726	Chesapeake726	MAG	Chesapeake430, Chesapeake726, Etoliko555
-Chesapeake430	Chesapeake430	MAG	Chesapeake430, Chesapeake726, Etoliko555
-ALTPLV2	ALTPLV2	Haptophyta	
-GCA_000372725.1	Emiliania huxleyi	Haptophyta
-GCA_001662365.1	Chlamydomonas applanata	Chlorophyta	Chlamydomonadaceae
+ID	Name	Host	Group	Collapse
+AaV	Aureococcus anophagefferens virus	Stramenopiles	Mimiviridae: Mesomimiviruses	
+Acanthamoeba_castellanii_medusavirus	Acanthamoeba castellanii medusavirus	Amoebozoa	Mollivirus-Medusavirus	Medusavirus and Acanthamoeba castellanii copies
+# Acanthamoeba_castellanii_medusavirus	Acanthamoeba castellanii medusavirus	Amoebozoa	Mollivirus-Medusavirus	Medusavirus
+Acanthamoeba_polyphaga_mimivirus	Acanthamoeba polyphaga mimivirus	Amoebozoa	Mimiviridae: Megavirinae	Mimiviridae s.s.
+Acanthamoeba_polyphaga_moumouvirus	Acanthamoeba polyphaga moumouvirus	Amoebozoa	Mimiviridae: Megavirinae	Mimiviridae s.s.
+Acanthocystis_turfacea_Chlorella_virus_1	Acanthocystis turfacea Chlorella virus 1	Chlorophyta	Phycodnaviridae: Chlorovirus	Phycodnaviridae: Chlorovirus
+African_swine_fever_virus	African swine fever virus	Animals	Asfarviridae	
+ALTPLV2	ALTPLV2	Haptophyta		
+Barrevirus	Barrevirus	MAG	Mimiviridae: Klosneuvirinae	Mimiviridae s.s.
+Bathycoccus_sp._RCC1105_virus_BpV1	Bathycoccus sp. RCC1105 virus BpV1	Chlorophyta	Phycodnaviridae: Prasinovirus	Phycodnaviridae: Prasinovirus
+Bathycoccus_sp._RCC1105_virus_BpV2	Bathycoccus sp. RCC1105 virus BpV2	Chlorophyta	Phycodnaviridae: Prasinovirus	Phycodnaviridae: Prasinovirus
+Bodo_saltans_virus_NG1	Bodo saltans virus NG1	Euglenozoa	Mimiviridae: Klosneuvirinae	Mimiviridae s.s.
+Catovirus_CTV1	Catovirus CTV1	MAG	Mimiviridae: Klosneuvirinae	Mimiviridae s.s.
+CeV-01B	Chrysochromulina ericina virus CeV-01B	Haptophyta	Mimiviridae: Mesomimiviruses	
+Cherax_quadricarinatus_iridovirus	Cherax quadricarinatus iridovirus	Animals	Irido+Ascoviridae	Marseille-/Irido-/Ascoviridae
+Chesapeake430	Chesapeake430	MAG		Chesapeake430, Chesapeake726, Etoliko555
+Chesapeake726	Chesapeake726	MAG		Chesapeake430, Chesapeake726, Etoliko555
+ChoanoV1	Choanovirus ChoanoV1	MAG	Mimiviridae: Mesomimiviruses
+cPacV-1605	cPacV-1605	MAG	Mimiviridae: PPVC	Mimiviridae s.s.
+CpV-BQ2	Chrysochromulina parva virus BQ2	Haptophyta	Mimiviridae: Mesomimiviruses	
+CroV	Cafeteria roenbergensis virus	Stramenopiles	Mimiviridae: PPVC	Mimiviridae s.s.
+Curly	Curly	Haptophyta		
+Dasosvirus	Dasosvirus	MAG	Mimiviridae: Klosneuvirinae	Mimiviridae s.s.
+Delaware1642	Delaware1642	MAG		
+Delaware572	Delaware572	MAG		
+Diadromus_pulchellus_ascovirus_4a	Diadromus pulchellus ascovirus 4a	Animals	Irido+Ascoviridae	Marseille-/Irido-/Ascoviridae
+Dishui_lake_phycodnavirus_1	Dishui lake phycodnavirus 1	MAG	Phycodnaviridae: Prasinovirus	Phycodnaviridae: Prasinovirus
+Ectocarpus_siliculosus_virus_1	Ectocarpus siliculosus virus 1	Stramenopiles	Phycodnaviridae: Phaeovirus	
+Edafosvirus	Edafosvirus	MAG	Mimiviridae: Klosneuvirinae	Mimiviridae s.s.
+Emiliania_huxleyi_virus_156	Emiliania huxleyi virus 156	Haptophyta	Phycodnaviridae: Coccolithovirus	Phycodnaviridae: Coccolithovirus
+Emiliania_huxleyi_virus_86	Emiliania huxleyi virus 86	Haptophyta	Phycodnaviridae: Coccolithovirus	Phycodnaviridae: Coccolithovirus
+Emiliania_huxleyi_virus_PS401	Emiliania huxleyi virus PS401	Haptophyta	Phycodnaviridae: Coccolithovirus	Phycodnaviridae: Coccolithovirus
+Etoliko555	Etoliko555	MAG		Chesapeake430, Chesapeake726, Etoliko555
+Fadolivirus_1	Fadolivirus 1	Amoebozoa	Mimiviridae: Klosneuvirinae	Mimiviridae s.s.
+Faunusvirus	Faunusvirus	MAG	Mimiviridae: PPVC	Mimiviridae s.s.
+Faustovirus_D5a	Faustovirus D5a	Amoebozoa	Asfarviridae	Mimiviridae s.s.
+# Faustovirus_D5a	Faustovirus D5a	Amoebozoa	Asfarviridae	
+Feldmannia_species_virus	Feldmannia species virus	Stramenopiles	Phycodnaviridae: Phaeovirus	
+Frog_virus_3	Frog virus 3	Animals	Irido+Ascoviridae	Marseille-/Irido-/Ascoviridae
+GCA_000002595.3	Chlamydomonas reinhardtii	Chlorophyta		Chlamydomonadaceae
+GCA_000186865.1	Aureococcus anophagefferens	Stramenopiles		
+GCA_000310025.1	Ectocarpus siliculosus	Stramenopiles		
+GCA_000372725.1	Emiliania huxleyi	Haptophyta		
+GCA_000441915.1	Genlisea aurea	Streptophyta		
+GCA_000611645.1	Monoraphidium neglectum	Chlorophyta		
+GCA_000708835.1	Klebsormidium nitens	Streptophyta		
+GCA_000812005.1	Coccomyxa sp. LA000219	Chlorophyta		
+GCA_001021125.1	Chlorella vulgaris	Chlorophyta		Chlorellaceae
+GCA_001247695.1	Cymbomonas tetramitiformis	Chlorophyta		
+GCA_001584585.1	Gonium pectorale	Chlorophyta		Chlamydomonadaceae
+GCA_001662365.1	Chlamydomonas applanata	Chlorophyta		Chlamydomonadaceae
+GCA_001662385.1	Chlamydomonas asymmetrica	Chlorophyta		Chlamydomonadaceae
+GCA_001662405.1	Chlamydomonas debaryana	Chlorophyta		Chlamydomonadaceae
+GCA_001662425.1	Chlamydomonas sphaeroides	Chlorophyta		Chlamydomonadaceae
+GCA_002005505.1	Botryococcus braunii	Chlorophyta		
+GCA_002149895.1	Tetradesmus obliquus	Chlorophyta		Scenedesmaceae
+GCA_002154235.1	Thraustochytrium sp. ATCC 26185	Stramenopiles		Labyrinthulea
+GCA_002335675.1	Chlamydomonas eustigma	Chlorophyta		Chlamydomonadaceae
+GCA_002588565.1	Coelastrella sp. UTEX B 3026	Chlorophyta		Scenedesmaceae
+GCA_002814315.1	Monoraphidium sp. 549	Chlorophyta		
+GCA_002891735.1	Tetrabaena socialis	Chlorophyta		Chlamydomonadaceae
+GCA_002896455.3	Chlorella sp. ArM0029B	Chlorophyta		Chlorellaceae
+GCA_003116995.1	Yamagishiella unicocca	Chlorophyta		Chlamydomonadaceae
+GCA_003117035.1	Yamagishiella unicocca	Chlorophyta		Chlamydomonadaceae
+GCA_003117095.1	Eudorina sp. 2006-703-Eu-15	Chlorophyta		Chlamydomonadaceae
+GCA_003117195.1	Eudorina sp. 2006-703-Eu-15	Chlorophyta		Chlamydomonadaceae
+GCA_003573635.1	Goniomonas avonlea	Cryptophyta		
+GCA_004000685.1	Mesostigma viride	Streptophyta		
+GCA_004335715.1	Chlamydomonas sp. WS7	Chlorophyta		Chlamydomonadaceae
+GCA_004335735.1	Chlorella sp. KRBP 19589	Chlorophyta		Chlorellaceae
+GCA_004335755.1	Chlamydomonas sp. WS3	Chlorophyta		Chlamydomonadaceae
+GCA_004335795.1	Chlamydomonas sp. 3222	Chlorophyta		Chlamydomonadaceae
+GCA_004335865.1	Chlamydomonas sp. 3112	Chlorophyta		Chlamydomonadaceae
+GCA_004335895.1	Chlamydomonas sp. AIC 3563	Chlorophyta		Chlamydomonadaceae
+GCA_004764695.1	Schizochytrium sp. TIO01	Stramenopiles		Labyrinthulea
+GCA_007449985.2	Desmodesmus armatus	Chlorophyta		Scenedesmaceae
+GCA_008828725.1	Saccharina japonica	Stramenopiles		
+GCA_009720205.1	Chlorella vulgaris	Chlorophyta		Chlorellaceae
+GCA_009720215.1	Chlorella vulgaris	Chlorophyta		Chlorellaceae
+GCA_012862495.1	Thraustochytrium aureum ATCC 34304	Stramenopiles		Labyrinthulea
+GCA_012862575.1	Parietichytrium sp. I65-24A	Stramenopiles		Labyrinthulea
+GCA_016834595.1	Chlamydomonas schloesseri	Chlorophyta		Chlamydomonadaceae
+GCA_017506865.1	Tribonema minus	Stramenopiles		
+GCA_018136815.1	Isochrysis galbana	Haptophyta		
+GCA_018697155.1	Pyramimonas parkeae	Chlorophyta		
+GCA_900088475.1	Hyphochytrium catenoides	Stramenopiles		
+GCA_900108755.1	Tetradesmus obliquus	Chlorophyta		Scenedesmaceae
+GCF_000247585.1	Phytophthora parasitica INRA-310	Stramenopiles		
+GCF_000313135.1	Acanthamoeba castellanii	Amoebozoa		Medusavirus and Acanthamoeba castellanii copies
+# GCF_000313135.1	Acanthamoeba castellanii	Amoebozoa		
+Golden_Marseillevirus	Golden Marseillevirus	Amoebozoa	Marseilleviridae	Marseille-/Irido-/Ascoviridae
+Han1023	Han1023	MAG		
+Han1312	Han1312	MAG		
+Han2744	Han2744	MAG		PLV-YSL1, Han442, Han2744, Montjoie2259
+Han442	Han442	MAG		PLV-YSL1, Han442, Han2744, Montjoie2259
+Han847	Han847	MAG		Han884, Han847, Soyang317, Soyang406
+Han884	Han884	MAG		Han884, Han847, Soyang317, Soyang406
+Harvfovirus	Harvfovirus	MAG	Mimiviridae: Klosneuvirinae	Mimiviridae s.s.
+Heterosigma_akashiwo_virus_01	Heterosigma akashiwo virus 01	Stramenopiles	Phycodnaviridae: Raphidovirus	
+Hirudovirus_Sangsue	Hirudovirus Sangsue	Amoebozoa	Mimiviridae: Megavirinae	Mimiviridae s.s.
+Hokovirus_HKV1	Hokovirus HKV1	MAG	Mimiviridae: Klosneuvirinae	Mimiviridae s.s.
+Homavirus	Homavirus	MAG	Mimiviridae: Klosneuvirinae	Mimiviridae s.s.
+Hyperionvirus	Hyperionvirus	MAG	Mimiviridae: Klosneuvirinae	Mimiviridae s.s.
+Indivirus_ILV1	Indivirus ILV1	MAG	Mimiviridae: Klosneuvirinae	Mimiviridae s.s.
+Invertebrate_iridescent_virus_3	Invertebrate iridescent virus 3	Animals	Irido+Ascoviridae	Marseille-/Irido-/Ascoviridae
+Invertebrate_iridescent_virus_6	Invertebrate iridescent virus 6	Animals	Irido+Ascoviridae	Marseille-/Irido-/Ascoviridae
+JGI_Astpho2	Asterochloris sp. Cgr/DA1pho	Chlorophyta		
+JGI_Bigna1	Bigelowiella natans	Rhizaria		
+JGI_Chrzof1	Chromochloris zofingiensis	Chlorophyta		
+JGI_Cyapar1	Cyanophora paradoxa	Glaucophyta		
+JGI_Guith1	Guillardia theta	Cryptophyta		
+Klosneuvirus_KNV1	Klosneuvirus KNV1	MAG	Mimiviridae: Klosneuvirinae	Mimiviridae s.s.
+Larry	Larry	Haptophyta		
+Lymphocystis_disease_virus_1	Lymphocystis disease virus 1	Animals	Irido+Ascoviridae	Marseille-/Irido-/Ascoviridae
+Marseillevirus_LCMAC101	Marseillevirus LCMAC101	MAG	Marseilleviridae	Marseille-/Irido-/Ascoviridae
+Marseillevirus_marseillevirus_T19	Marseillevirus marseillevirus T19	Amoebozoa	Marseilleviridae	Marseille-/Irido-/Ascoviridae
+Megavirus_chiliensis	Megavirus chiliensis	Amoebozoa	Mimiviridae: Megavirinae	Mimiviridae s.s.
+Micromonas_pusilla_virus_12T	Micromonas pusilla virus 12T	Chlorophyta	Phycodnaviridae: Prasinovirus	Phycodnaviridae: Prasinovirus
+Micromonas_pusilla_virus_SP1	Micromonas pusilla virus SP1	Chlorophyta	Phycodnaviridae: Prasinovirus	Phycodnaviridae: Prasinovirus
+Micromonas_sp._RCC1109_virus_MpV1	Micromonas sp. RCC1109 virus MpV1	Chlorophyta	Phycodnaviridae: Prasinovirus	Phycodnaviridae: Prasinovirus
+MMETSP0007	Prymnesium parvum	Haptophyta		
+MMETSP0008	Prymnesium parvum	Haptophyta		
+MMETSP0287	Chrysochromulina rotalis	Haptophyta		
+MMETSP0814	Prymnesium parvum	Haptophyta		
+MMETSP0815	Prymnesium parvum	Haptophyta		
+MMETSP1081	Pyramimonas amylifera	Chlorophyta		
+Moe	Moe	Haptophyta		
+Mollivirus_sibericum	Mollivirus sibericum	Amoebozoa	Mollivirus-Medusavirus	
+Montjoie2259	Montjoie2259	MAG		PLV-YSL1, Han442, Han2744, Montjoie2259
+Moumouvirus_goulette	Moumouvirus goulette	Amoebozoa	Mimiviridae: Megavirinae	Mimiviridae s.s.
+mPacV-611	mPacV-611	Choanoflagellata	Mimiviridae: PPVC	Mimiviridae s.s.
+OLP1	Organic Lake phycodnavirus 1	MAG	Mimiviridae: Mesomimiviruses	
+OLP2	Organic Lake phycodnavirus 2	MAG	Mimiviridae: Mesomimiviruses	
+Only_Syngen_Nebraska_virus_5	Only Syngen Nebraska virus 5	Chlorophyta	Phycodnaviridae: Chlorovirus	Phycodnaviridae: Chlorovirus
+oPacV-421	oPacV-421	MAG	Mimiviridae: Mesomimiviruses	
+oPacV-662	oPacV-662	MAG	Mimiviridae: PPVC	Mimiviridae s.s.
+Ostreococcus_lucimarinus_virus_1	Ostreococcus lucimarinus virus 1	Chlorophyta	Phycodnaviridae: Prasinovirus	Phycodnaviridae: Prasinovirus
+Ostreococcus_lucimarinus_virus_2	Ostreococcus lucimarinus virus 2	Chlorophyta	Phycodnaviridae: Prasinovirus	Phycodnaviridae: Prasinovirus
+Ostreococcus_tauri_virus_5	Ostreococcus tauri virus 5	Chlorophyta	Phycodnaviridae: Prasinovirus	Phycodnaviridae: Prasinovirus
+Ostreococcus_tauri_virus_RT-2011	Ostreococcus tauri virus RT-2011	Chlorophyta	Phycodnaviridae: Prasinovirus	Phycodnaviridae: Prasinovirus
+Pacmanvirus_A23	Pacmanvirus A23	Amoebozoa	Asfarviridae	
+Paramecium_bursaria_Chlorella_virus_1	Paramecium bursaria Chlorella virus 1	Chlorophyta	Phycodnaviridae: Chlorovirus	Phycodnaviridae: Chlorovirus
+Paramecium_bursaria_Chlorella_virus_AR158	Paramecium bursaria Chlorella virus AR158	Chlorophyta	Phycodnaviridae: Chlorovirus	Phycodnaviridae: Chlorovirus
+Paramecium_bursaria_Chlorella_virus_FR483	Paramecium bursaria Chlorella virus FR483	Chlorophyta	Phycodnaviridae: Chlorovirus	Phycodnaviridae: Chlorovirus
+Paramecium_bursaria_Chlorella_virus_MT325	Paramecium bursaria chlorella virus MT325	Chlorophyta	Phycodnaviridae: Chlorovirus	Phycodnaviridae: Chlorovirus
+Paramecium_bursaria_Chlorella_virus_NY2A	Paramecium bursaria Chlorella virus NY2A	Chlorophyta	Phycodnaviridae: Chlorovirus	Phycodnaviridae: Chlorovirus
+PgV-16T	Phaeocystis globosa virus	Haptophyta	Mimiviridae: Mesomimiviruses	
+PgVV-16T	PgVV	Haptophyta		
+Phaant	Phaeocystis antarctica	Haptophyta		Phaeocystis antarctica
+Phaeocystis_pouchetii_virus_01	Phaeocystis pouchetii virus	Haptophyta	Mimiviridae: Mesomimiviruses	
+Phaglo	Phaeocystis globosa	Haptophyta		Phaeocystis globosa
+PleuroPLV	PleuroPLV	Haptophyta		
+PLV-ACE1	PLV-ACE1	MAG		
+PLV-MED1	PLV-MED1	MAG		TVS
+PLV-RED1	PLV-RED1	MAG		TVS
+PLV-RED2	PLV-RED2	MAG		
+PLV-SAF1	PLV-SAF1	MAG		
+PLV-SAF2	PLV-SAF2	MAG		PLV-SAF2, PLV-SAF3
+PLV-SAF3	PLV-SAF3	MAG		PLV-SAF2, PLV-SAF3
+PLV-SAF4	PLV-SAF4	MAG		
+PLV-SAF5	PLV-SAF5	MAG		
+PLV-SAF6	PLV-SAF6	MAG		
+PLV-SPO1	PLV-SPO1	MAG		TVS
+PLV-SPO2	PLV-SPO2	MAG		TVS
+PLV-YSL1	PLV-YSL1	MAG		PLV-YSL1, Han442, Han2744, Montjoie2259
+PLV-YSL2	PLV-YSL2	MAG		PLV-YSL2, YSL5, YSL4, YSL6
+PLV-YSL3	PLV-YSL3	MAG		PLV-YSL3, Soyang458, Soyang530
+PLV-YSL4	PLV-YSL4	MAG		PLV-YSL2, YSL5, YSL4, YSL6
+PLV-YSL5	PLV-YSL5	MAG		PLV-YSL2, YSL5, YSL4, YSL6
+PLV-YSL6	PLV-YSL6	MAG		PLV-YSL2, YSL5, YSL4, YSL6
+PoV-01B	Pyramimonas orientalis virus	Chlorophyta	Mimiviridae: Mesomimiviruses	
+Powai_lake_megavirus	Powai lake megavirus	Amoebozoa	Mimiviridae: Megavirinae	Mimiviridae s.s.
+PRJNA534927	Phaeocystis rex	Haptophyta		Phaeocystis rex
+PsEV1a	Pleurochrysis sp. endemic virus 1a	Haptophyta		
+PsEV1b	Pleurochrysis sp. endemic virus 1b	Haptophyta		
+PsEV2	Pleurochrysis sp. endemic virus 2	Haptophyta		
+RG_SymbC1	Cladocopium goreaui	Dinoflagellata		
+Satyrvirus	Satyrvirus	MAG	Mimiviridae: Megavirinae	Mimiviridae s.s.
+Scale_drop_disease_virus	Scale drop disease virus	Animals	Irido+Ascoviridae	Marseille-/Irido-/Ascoviridae
+Shrimp_hemocyte_iridescent_virus	Shrimp hemocyte iridescent virus	Animals	Irido+Ascoviridae	Marseille-/Irido-/Ascoviridae
+Soyang317	Soyang317	MAG		Han884, Han847, Soyang317, Soyang406
+Soyang406	Soyang406	MAG		Han884, Han847, Soyang317, Soyang406
+Soyang458	Soyang458	MAG		PLV-YSL3, Soyang458, Soyang530
+Soyang530	Soyang530	MAG		PLV-YSL3, Soyang458, Soyang530
+TARA-BBMO-MAST-1D-sp2	MAST-1D sp. 2	Stramenopiles		
+TARA-BBMO-MAST-4A-sp1	MAST-4A sp. 1	Stramenopiles		
+Terrestrivirus	Terrestrivirus	MAG	Mimiviridae: Klosneuvirinae	Mimiviridae s.s.
+TetV	Tetraselmis virus 1	Chlorophyta	Mimiviridae: Mesomimiviruses	
+Tunisvirus_fontaine2_U484	Tunisvirus fontaine2 U484	Amoebozoa	Marseilleviridae	Marseille-/Irido-/Ascoviridae
+Tupanvirus_deep_ocean	Tupanvirus deep ocean	Amoebozoa	Mimiviridae: Megavirinae	Mimiviridae s.s.
+Tupanvirus_soda_lake	Tupanvirus soda lake	Amoebozoa	Mimiviridae: Megavirinae	Mimiviridae s.s.
+TVV-N1	TVV-N1	Chlorophyta		TVS
+Yasminevirus	Yasminevirus	Amoebozoa	Mimiviridae: Klosneuvirinae	Mimiviridae s.s.
+Yellowstone_lake_phycodnavirus_1	Yellowstone lake phycodnavirus 1	MAG	Phycodnaviridae: Prasinovirus	Phycodnaviridae: Prasinovirus
+Yellowstone_lake_phycodnavirus_2	Yellowstone lake phycodnavirus 2	MAG	Phycodnaviridae: Prasinovirus	Phycodnaviridae: Prasinovirus
+Yellowstone_lake_phycodnavirus_3	Yellowstone lake phycodnavirus 3	MAG	Phycodnaviridae: Prasinovirus	Phycodnaviridae: Prasinovirus
+YSLGV	Yellowstone lake mimivirus	MAG	Mimiviridae: Mesomimiviruses	

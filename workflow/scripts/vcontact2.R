@@ -15,7 +15,8 @@ if (interactive()) {
             genomes  = "analysis/vcontact2/results/genome_by_genome_overview.csv",
             profiles = "analysis/vcontact2/results/vConTACT_profiles.csv",
             segments = "metadata/viral_segments.tsv",
-            viruses  = "metadata/viruses.tsv"
+            viruses  = "metadata/viruses.tsv",
+            colors   = "metadata/subclade_colors.txt"
         ),
         output = list(
             clustering = "output/vcontact2_clustering.svg"
@@ -28,6 +29,7 @@ with(snakemake@input, {
     profiles_file <<- profiles
     segments_file <<- segments
     viruses_file  <<- viruses
+    colors_file   <<- colors
 })
 
 with(snakemake@output, {
@@ -38,10 +40,8 @@ segments <- read.table(segments_file, sep = "\t", header = T)
 viruses  <- bind_rows(
     read.table(segments_file, sep = "\t", header = T),
     read.table(viruses_file, sep = "\t", header = T)
-) %>%
-    mutate(subsubclade = ifelse(is.na(subsubclade), subclade, subsubclade))
+)
 subclades <- with(viruses, setNames(subclade, short))
-subsubclades <- with(viruses, setNames(subsubclade, short))
 
 sort_components <- function(.graph) {
     decompose(.graph) %>%
@@ -57,29 +57,16 @@ self_edges <- with(genomes, data.frame(A = Genome, B = Genome, weight = 0))
 network <- read.table(network_file, col.names = c("A","B","weight")) %>%
     bind_rows(self_edges) %>%
     graph_from_data_frame(directed = F) %>%
-    set_vertex_attr("subclade", value = subclades[V(.)$name]) %>%
-    set_vertex_attr("subsubclade", value = subsubclades[V(.)$name])
+    set_vertex_attr("subclade", value = subclades[V(.)$name])
 
-subsubclades <- list(
-    blue = "#1F78B4",
-    purple = "#6A3D9A",
-    Isogal = "#B2DF8A",
-    red = "#E31A1C",
-    yellow = "yellow4",
-    PleuPLV = "#33A02C",
-    MLC = "#FDBF6F",
-    SAF1 = "#FF7F00",
-    RED2 = "#CAB2D6",
-    Han1023 = "#A6CEE3",
-    CCE = "#FB9A99",
-    Delaware572 = "#B15928",
-    Endemic = "Darkgray",
-    "Gray"
-)
+colors <- read.table(colors_file, comment.char = "") %>%
+    with(setNames(V2,V1)) %>%
+    c("darkgray")
+
 p <- ggraph(network, "fr") +
     geom_edge_link(aes(color = -weight, width = weight), alpha = .1) +
-    geom_node_point(aes(shape = subclade, colour = subsubclade), size = 2) +
+    geom_node_point(aes(color = subclade), size = 2) +
     geom_node_text(aes(label = name), repel = T, nudge_y = -0.01) + 
-    scale_color_manual(values = subsubclades) # +
+    scale_color_manual(values = colors) # +
     #theme_graph()
 ggsave(clustering_file, p, width = 10, height = 10)

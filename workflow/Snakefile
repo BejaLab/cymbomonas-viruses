@@ -11,6 +11,8 @@ hmms,          = glob_wildcards("hmm/{hmm}.hmm")
 hmm_algae,     = glob_wildcards("hmm_algae/{hmm}.hmm")
 capsid_proteins = defaultdict(list)
 
+promoter_re = "[ATW][ATW][ATW][ATW][ATW]TG[ATW]"
+
 with open("metadata/capsid_proteins.txt") as fh:
     for line in fh:
         hmm, CP = line.rstrip().split()
@@ -59,7 +61,7 @@ def orthology():
             prefix.append(short)
     return prefix
 
-models = { "MCP_PLV": "Blosum62+F+R5" }
+models = { "MCP_PLV": "Blosum62+F+R5", "MCP_NCLDV": "LG+F+R9" }
 
 rule all:
     input:
@@ -71,9 +73,10 @@ rule all:
         # expand("analysis/hmmsearch/{genome}-{hmm}.faa", genome = genomes, hmm = hmms),
         expand("analysis/segments/{genome}/segments.gbk", genome = genomes),
         "analysis/vcontact2/results",
+        "output/fimo.gff",
         # expand("analysis/blast_algae/{genome}.blast", genome = algal_genomes),
-        expand("output/{CP}.svg", CP = [ "MCP_PLV" ]),
-        "analysis/promoters.svg",
+        expand("output/{CP}.svg", CP = [ "MCP_NCLDV" ]),
+        "output/promoters.svg",
         "output/vcontact2_clustering.svg",
         "output/viral_segments.gbk",
         # "analysis/proteinortho/viruses.proteinortho.tsv",
@@ -115,6 +118,14 @@ rule extract_segment:
     script:
         "scripts/extract_segment.py"
 
+rule cp_gbk:
+    input:
+        lambda w: expand("analysis/PLV_annotate/{annotations}-{genome}.gbk", annotations = viruses[w.genome]['annotations'], genome = w.genome)
+    output:
+        "analysis/PLVs/{genome}.gbk"
+    shell:
+        "cp {input} {output}"
+
 rule mv_faa:
     input:
         lambda w: expand("analysis/PLV_annotate/{annotations}-{genome}.faa", annotations = viruses[w.genome]['annotations'], genome = w.genome)
@@ -143,9 +154,9 @@ rule prokka_gbk:
 
 rule flanks:
     input:
-        "analysis/PLV_annotate/{genome}.gbk"
+        "analysis/PLVs/{genome}.gbk"
     output:
-        "analysis/promoters/PLVs/{genome}.fna"
+        "analysis/promoters/{genome}.fna"
     params:
         min_len = 100,
         max_len = 150
@@ -156,11 +167,12 @@ rule flanks:
 
 rule meme:
     input:
-        "analysis/promoters/PLVs/{genome}.fna"
+        "analysis/promoters/{genome}.fna"
     output:
-        "analysis/promoters/PLVs/{genome}/meme/meme.xml"
+        "analysis/promoters/{genome}/meme/meme.xml",
+        "analysis/promoters/{genome}/meme/meme.txt"
     params:
-        outdir = "analysis/promoters/PLVs/{genome}/meme/",
+        outdir = "analysis/promoters/{genome}/meme/",
         minw = 6,
         maxw = 16,
         nmotifs = 10,
@@ -170,14 +182,63 @@ rule meme:
     shell:
         "meme -minw {params.minw} -maxw {params.maxw} -nmotifs {params.nmotifs} -minsites {params.minsites} -maxsites Inf -dna -oc {params.outdir} {input}"
 
+rule meme_extract:
+    input:
+        "analysis/promoters/{genome}/meme/meme.txt"
+    output:
+        "analysis/promoters/{genome}/meme/meme.extract.txt"
+    params:
+        motif_re = promoter_re
+    shell:
+        """
+        awk -vm='{params.motif_re}' '$1=="MOTIF"{{s=$2!~m}}!s' {input} > {output}
+        """
+
+rule gbk2fna:
+    input:
+        "metadata/PgVV-14T.gbk"
+    output:
+        "analysis/PgVV-14T/PgVV-14T.fna"
+    conda:
+        "envs/emboss.yaml"
+    shell:
+        "seqret -supper1 -filter -outseq {output} {input}"
+
+rule fimo:
+    input:
+        meme = "analysis/promoters/PgV-16T/meme/meme.extract.txt",
+        fasta = "analysis/PgVV-14T/PgVV-14T.fna"
+    output:
+        "analysis/fimo/fimo.tsv"
+    params:
+        out_dir= "analysis/fimo"
+    conda:
+        "envs/tools.yaml"
+    shell:
+        "fimo --oc {params.out_dir} {input.meme} {input.fasta}"
+
+rule fimo_filter:
+    input:
+        "analysis/fimo/fimo.tsv"
+    output:
+        "output/fimo.gff"
+    params:
+        q_thresh = 0.05,
+        motif_re = promoter_re
+    conda:
+        "envs/r.yaml"
+    script:
+        "scripts/fimo.R"
+
 rule plot_meme:
     input:
-        "analysis/promoters/PLVs/{genome}/meme/meme.xml"
+        "analysis/promoters/{genome}/meme/meme.xml"
     output:
-        "analysis/promoters/PLVs/{genome}/meme/meme.svg"
+        "analysis/promoters/{genome}/meme/meme.svg"
     params:
-        motif_res = [ "[ATW][ATW][ATW][ATW][ATW]TG[ATW]", "TCCGGA" ],
-        meme_name = "{genome}"
+        motif_res = [ promoter_re, "TCCGGA" ],
+        meme_name = "{genome}",
+        max_len   = 150
     conda:
         "envs/r.yaml"
     script:
@@ -185,9 +246,9 @@ rule plot_meme:
 
 rule merge_meme:
     input:
-        expand("analysis/promoters/PLVs/{virus}/meme/meme.svg", virus = Mesomimi_viruses)
+        expand("analysis/promoters/{virus}/meme/meme.svg", virus = Mesomimi_viruses)
     output:
-        "analysis/promoters.svg"
+        "output/promoters.svg"
     shell:
         "python workflow/scripts/svg_stack.py --direction=v {input} > {output}"
 
@@ -713,7 +774,8 @@ rule algae_iqtree_hmm:
 
 rule algae_ggtree_MCP_NCLDV:
     input:
-        tree = "analysis/phylogeny/MCP_NCLDV.treefile",
+        tree = "analysis/phylogeny/MCP_NCLDV_epa/epa_result.newick",
+        # tree = "analysis/phylogeny/MCP_NCLDV.treefile",
         fasta = "analysis/phylogeny/MCP_NCLDV.fasta",
         synonyms = "metadata/organisms.txt",
         outgroups = "metadata/queries/MCP_NCLDV_outgroups.faa"
@@ -1164,7 +1226,8 @@ rule vcontact2_plot:
         genomes  = "analysis/vcontact2/results/genome_by_genome_overview.csv",
         profiles = "analysis/vcontact2/results/vConTACT_profiles.csv",
         segments = "metadata/viral_segments.tsv",
-        viruses  = "metadata/viruses.tsv"
+        viruses  = "metadata/viruses.tsv",
+        colors   = "metadata/subclade_colors.txt"
     output:
         clustering = "output/vcontact2_clustering.svg"
     conda:
@@ -1300,14 +1363,18 @@ rule mcl_analyze:
         genes_cluster    = "metadata/genes_cluster.tsv",
         genes_pfam       = "metadata/genes_pfam.tsv",
         jtree            = "output/MCP_PLV.jtree",
-        segments         = "metadata/viral_segments.tsv"
+        segments         = "metadata/viral_segments.tsv",
+        colors           = "metadata/subclade_colors.txt"
     output:
         core_genes = "output/core_genes.pdf",
         bipartite  = "output/bipartite.pdf",
         data       = "output/mcl_genes.tsv",
         reduced_tree = "output/MCP_PLV_reduced.svg"
     params:
-        probab = 80
+        probab = 80,
+        chosen_clades = [ "PgVV", "Endemic", "Mesomimi" ],
+        clade_levels  = [ "Mesomimi", "Endemic", "Mavirus", "Virophage", "TVS", "PgVV" ],
+        ref_genomes   = [ "Sputnik", "Mavirus_Spezl", "TVV_S1" ]
     conda:
         "envs/r.yaml"
     script:

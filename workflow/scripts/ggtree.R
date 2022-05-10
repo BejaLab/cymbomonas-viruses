@@ -12,14 +12,14 @@ library(phytools)
 if (interactive()) {
     setClass("snake", slots = list(input = "list", output = "list"))
     snakemake <- new("snake", input  = list(
-            tree = "analysis/phylogeny/MCP_PLV.treefile",
-            fasta = "analysis/phylogeny/MCP_PLV.fasta",
-            outgroups    = "metadata/queries/MCP_PLV_outgroups.faa",
+            tree = "analysis/phylogeny/MCP_NCLDV_epa/epa_result.newick",
+            fasta = "analysis/phylogeny/MCP_NCLDV.fasta",
+            outgroups    = "metadata/queries/MCP_NCLDV_outgroups.faa",
             synonyms = "metadata/organisms.txt",
             hmm = Sys.glob("hmm_algae/*.hmm")
     ), output = list(
         image = "test.svg",
-        jtree = "output/MCP_PLV.jtree"
+        jtree = "output/MCP_NCLDV.jtree"
     ))
 }
 
@@ -62,12 +62,14 @@ if (no_name != "") {
 }
 
 tree <- read.tree(tree_file)
+tree <- phangorn::midpoint(tree, node.labels = "support")
 if (nrow(outgroup_df) > 0) {
     outgroups <- with(outgroup_df, sub(" .*", "", title))
+    #    MRCA(tree, .) %>%
+    #    Descendants(tree, ., "tips") %>%
+    #    first
     # tree <- reroot(tree, MRCA(tree, outgroups), position = 1, resolve.root = T)
-    tree <- ape::root(tree, outgroup = outgroups, resolve.root = T)
-} else {
-    tree <- midpoint(tree)
+    tree <- ape::root(tree, node = MRCA(tree, outgroups), edgelabel = T, resolve.root = T)
 }
 tree <- as_tibble(tree) %>%
     mutate(support = ifelse(node %in% parent & label != "", label, NA)) %>%
@@ -93,8 +95,8 @@ colors <- list(
     Choanoflagellata = "darkslateblue",
     Glaucophyta = "cyan",
     Animals = "blue",
-    Dinoflagellata = "gray",
-    Rhizaria = "gray"
+    Dinoflagellata = "gray50",
+    Rhizaria = "gray30"
 )
 
 scaleClades <- function(p, df) {
@@ -108,14 +110,14 @@ collapseClades <- function(p, df) {
     with(df, Reduce(function(.p, .node) {
         fill <- unlist(colors[Host[node == .node]])
         .p$data[.p$data$node == .node, "label.show"] <- label.show[node == .node]
-        collapse(.p, .node, "mixed", height = 1, fill = fill)
+        collapse(.p, .node, "mixed", fill = fill)
     }, node, p))
 }
-labelClades <- function(p) {
-    with(df, Reduce(function(.p, .node) {
-        .p + geom_cladelab(node = .node, label = label[node == .node], align = T, offset = .2, textcolor = 'blue')
-    }, node, p))
-}
+#labelClades <- function(p) {
+#    with(df, Reduce(function(.p, .node) {
+#        .p + geom_cladelab(node = .node, label = label[node == .node], align = T, offset = .2, textcolor = 'blue')
+#    }, node, p))
+#}
 
 multi_species <- allDescendants(tree_data@phylo) %>%
     lapply(function(x) filter(tree, node %in% x)) %>%
