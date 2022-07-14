@@ -14,16 +14,16 @@ Bodo_saltans_virus_NG1	Bodo saltans virus NG1	Euglenozoa	Mimiviridae: Klosneuvir
 Catovirus_CTV1	Catovirus CTV1	MAG	Mimiviridae: Klosneuvirinae	Mimiviridae s.s.
 CeV-01B	Chrysochromulina ericina virus CeV-01B	Haptophyta	Mimiviridae: Mesomimiviruses	
 Cherax_quadricarinatus_iridovirus	Cherax quadricarinatus iridovirus	Animals	Irido+Ascoviridae	Marseille-/Irido-/Ascoviridae
-Chesapeake430	Chesapeake430	MAG		Chesapeake430, Chesapeake726, Etoliko555
-Chesapeake726	Chesapeake726	MAG		Chesapeake430, Chesapeake726, Etoliko555
-ChoanoV1	Choanovirus ChoanoV1	MAG	Mimiviridae: Mesomimiviruses
+Chesapeake-430	Chesapeake-430	MAG		Chesapeake-430, Chesapeake-726, Etoliko-555
+Chesapeake-726	Chesapeake-726	MAG		Chesapeake-430, Chesapeake-726, Etoliko-555
+ChoanoV1	Choanovirus ChoanoV1	MAG	Mimiviridae: Mesomimiviruses	
 cPacV-1605	cPacV-1605	MAG	Mimiviridae: PPVC	Mimiviridae s.s.
 CpV-BQ2	Chrysochromulina parva virus BQ2	Haptophyta	Mimiviridae: Mesomimiviruses	
 CroV	Cafeteria roenbergensis virus	Stramenopiles	Mimiviridae: PPVC	Mimiviridae s.s.
 Curly	Curly	Haptophyta		
 Dasosvirus	Dasosvirus	MAG	Mimiviridae: Klosneuvirinae	Mimiviridae s.s.
-Delaware1642	Delaware1642	MAG		
-Delaware572	Delaware572	MAG		
+Delaware-1642	Delaware-1642	MAG		
+Delaware-572	Delaware-572	MAG		
 Diadromus_pulchellus_ascovirus_4a	Diadromus pulchellus ascovirus 4a	Animals	Irido+Ascoviridae	Marseille-/Irido-/Ascoviridae
 Dishui_lake_phycodnavirus_1	Dishui lake phycodnavirus 1	MAG	Phycodnaviridae: Prasinovirus	Phycodnaviridae: Prasinovirus
 Ectocarpus_siliculosus_virus_1	Ectocarpus siliculosus virus 1	Stramenopiles	Phycodnaviridae: Phaeovirus	
@@ -31,7 +31,7 @@ Edafosvirus	Edafosvirus	MAG	Mimiviridae: Klosneuvirinae	Mimiviridae s.s.
 Emiliania_huxleyi_virus_156	Emiliania huxleyi virus 156	Haptophyta	Phycodnaviridae: Coccolithovirus	Phycodnaviridae: Coccolithovirus
 Emiliania_huxleyi_virus_86	Emiliania huxleyi virus 86	Haptophyta	Phycodnaviridae: Coccolithovirus	Phycodnaviridae: Coccolithovirus
 Emiliania_huxleyi_virus_PS401	Emiliania huxleyi virus PS401	Haptophyta	Phycodnaviridae: Coccolithovirus	Phycodnaviridae: Coccolithovirus
-Etoliko555	Etoliko555	MAG		Chesapeake430, Chesapeake726, Etoliko555
+Etoliko-555	Etoliko-555	MAG		Chesapeake430, Chesapeake726, Etoliko555
 Fadolivirus_1	Fadolivirus 1	Amoebozoa	Mimiviridae: Klosneuvirinae	Mimiviridae s.s.
 Faunusvirus	Faunusvirus	MAG	Mimiviridae: PPVC	Mimiviridae s.s.
 Faustovirus_D5a	Faustovirus D5a	Amoebozoa	Asfarviridae	Mimiviridae s.s.
@@ -90,12 +90,12 @@ GCF_000247585.1	Phytophthora parasitica INRA-310	Stramenopiles
 GCF_000313135.1	Acanthamoeba castellanii	Amoebozoa		Medusavirus and Acanthamoeba castellanii copies
 # GCF_000313135.1	Acanthamoeba castellanii	Amoebozoa		
 Golden_Marseillevirus	Golden Marseillevirus	Amoebozoa	Marseilleviridae	Marseille-/Irido-/Ascoviridae
-Han1023	Han1023	MAG		
-Han1312	Han1312	MAG		
-Han2744	Han2744	MAG		PLV-YSL1, Han442, Han2744, Montjoie2259
-Han442	Han442	MAG		PLV-YSL1, Han442, Han2744, Montjoie2259
-Han847	Han847	MAG		Han884, Han847, Soyang317, Soyang406
-Han884	Han884	MAG		Han884, Han847, Soyang317, Soyang406
+Han-1023	Han-1023	MAG		
+Han-1312	Han-1312	MAG		
+Han-2744	Han-2744	MAG		PLV-YSL1, Han-442, Han-2744, Montjoie-2259
+Han-442	Han-442	MAG		PLV-YSL1, Han-442, Han-2744, Montjoie-2259
+Han-847	Han-847	MAG		Han-884, Han-847, Soyang-317, Soyang-406
+Han-884	Han-884	MAG		Han-884, Han-847, Soyang-317, Soyang-406
 Harvfovirus	Harvfovirus	MAG	Mimiviridae: Klosneuvirinae	Mimiviridae s.s.
 Heterosigma_akashiwo_virus_01	Heterosigma akashiwo virus 01	Stramenopiles	Phycodnaviridae: Raphidovirus	
 Hirudovirus_Sangsue	Hirudovirus Sangsue	Amoebozoa	Mimiviridae: Megavirinae	Mimiviridae s.s.
@@ -127,7 +127,7 @@ MMETSP0815	Prymnesium parvum	Haptophyta
 MMETSP1081	Pyramimonas amylifera	Chlorophyta		
 Moe	Moe	Haptophyta		
 Mollivirus_sibericum	Mollivirus sibericum	Amoebozoa	Mollivirus-Medusavirus	
-Montjoie2259	Montjoie2259	MAG		PLV-YSL1, Han442, Han2744, Montjoie2259
+Montjoie-2259	Montjoie-2259	MAG		PLV-YSL1, Han-442, Han-2744, Montjoie-2259
 Moumouvirus_goulette	Moumouvirus goulette	Amoebozoa	Mimiviridae: Megavirinae	Mimiviridae s.s.
 mPacV-611	mPacV-611	Choanoflagellata	Mimiviridae: PPVC	Mimiviridae s.s.
 OLP1	Organic Lake phycodnavirus 1	MAG	Mimiviridae: Mesomimiviruses	
@@ -146,7 +146,7 @@ Paramecium_bursaria_Chlorella_virus_FR483	Paramecium bursaria Chlorella virus FR
 Paramecium_bursaria_Chlorella_virus_MT325	Paramecium bursaria chlorella virus MT325	Chlorophyta	Phycodnaviridae: Chlorovirus	Phycodnaviridae: Chlorovirus
 Paramecium_bursaria_Chlorella_virus_NY2A	Paramecium bursaria Chlorella virus NY2A	Chlorophyta	Phycodnaviridae: Chlorovirus	Phycodnaviridae: Chlorovirus
 PgV-16T	Phaeocystis globosa virus	Haptophyta	Mimiviridae: Mesomimiviruses	
-PgVV-16T	PgVV	Haptophyta		
+PgVV-14T	PgVV	Haptophyta		
 Phaant	Phaeocystis antarctica	Haptophyta		Phaeocystis antarctica
 Phaeocystis_pouchetii_virus_01	Phaeocystis pouchetii virus	Haptophyta	Mimiviridae: Mesomimiviruses	
 Phaglo	Phaeocystis globosa	Haptophyta		Phaeocystis globosa
@@ -163,15 +163,15 @@ PLV-SAF5	PLV-SAF5	MAG
 PLV-SAF6	PLV-SAF6	MAG		
 PLV-SPO1	PLV-SPO1	MAG		TVS
 PLV-SPO2	PLV-SPO2	MAG		TVS
-PLV-YSL1	PLV-YSL1	MAG		PLV-YSL1, Han442, Han2744, Montjoie2259
+PLV-YSL1	PLV-YSL1	MAG		PLV-YSL1, Han-442, Han-2744, Montjoie-2259
 PLV-YSL2	PLV-YSL2	MAG		PLV-YSL2, YSL5, YSL4, YSL6
-PLV-YSL3	PLV-YSL3	MAG		PLV-YSL3, Soyang458, Soyang530
+PLV-YSL3	PLV-YSL3	MAG		PLV-YSL3, Soyang-458, Soyang-530
 PLV-YSL4	PLV-YSL4	MAG		PLV-YSL2, YSL5, YSL4, YSL6
 PLV-YSL5	PLV-YSL5	MAG		PLV-YSL2, YSL5, YSL4, YSL6
 PLV-YSL6	PLV-YSL6	MAG		PLV-YSL2, YSL5, YSL4, YSL6
 PoV-01B	Pyramimonas orientalis virus	Chlorophyta	Mimiviridae: Mesomimiviruses	
 Powai_lake_megavirus	Powai lake megavirus	Amoebozoa	Mimiviridae: Megavirinae	Mimiviridae s.s.
-PRJNA534927	Phaeocystis rex	Haptophyta		Phaeocystis rex
+Pharex	Phaeocystis rex	Haptophyta		Phaeocystis rex
 PsEV1a	Pleurochrysis sp. endemic virus 1a	Haptophyta		
 PsEV1b	Pleurochrysis sp. endemic virus 1b	Haptophyta		
 PsEV2	Pleurochrysis sp. endemic virus 2	Haptophyta		
@@ -179,10 +179,10 @@ RG_SymbC1	Cladocopium goreaui	Dinoflagellata
 Satyrvirus	Satyrvirus	MAG	Mimiviridae: Megavirinae	Mimiviridae s.s.
 Scale_drop_disease_virus	Scale drop disease virus	Animals	Irido+Ascoviridae	Marseille-/Irido-/Ascoviridae
 Shrimp_hemocyte_iridescent_virus	Shrimp hemocyte iridescent virus	Animals	Irido+Ascoviridae	Marseille-/Irido-/Ascoviridae
-Soyang317	Soyang317	MAG		Han884, Han847, Soyang317, Soyang406
-Soyang406	Soyang406	MAG		Han884, Han847, Soyang317, Soyang406
-Soyang458	Soyang458	MAG		PLV-YSL3, Soyang458, Soyang530
-Soyang530	Soyang530	MAG		PLV-YSL3, Soyang458, Soyang530
+Soyang-317	Soyang-317	MAG		Han-884, Han-847, Soyang-317, Soyang-406
+Soyang-406	Soyang-406	MAG		Han-884, Han-847, Soyang-317, Soyang-406
+Soyang-458	Soyang-458	MAG		PLV-YSL3, Soyang-458, Soyang-530
+Soyang-530	Soyang-530	MAG		PLV-YSL3, Soyang-458, Soyang-530
 TARA-BBMO-MAST-1D-sp2	MAST-1D sp. 2	Stramenopiles		
 TARA-BBMO-MAST-4A-sp1	MAST-4A sp. 1	Stramenopiles		
 Terrestrivirus	Terrestrivirus	MAG	Mimiviridae: Klosneuvirinae	Mimiviridae s.s.
@@ -196,3 +196,9 @@ Yellowstone_lake_phycodnavirus_1	Yellowstone lake phycodnavirus 1	MAG	Phycodnavi
 Yellowstone_lake_phycodnavirus_2	Yellowstone lake phycodnavirus 2	MAG	Phycodnaviridae: Prasinovirus	Phycodnaviridae: Prasinovirus
 Yellowstone_lake_phycodnavirus_3	Yellowstone lake phycodnavirus 3	MAG	Phycodnaviridae: Prasinovirus	Phycodnaviridae: Prasinovirus
 YSLGV	Yellowstone lake mimivirus	MAG	Mimiviridae: Mesomimiviruses	
+Palmer-1083764	Palmer-1083764	MAG		Palmer Sta.* and Arthur Harb.*
+ArthurHarbor-1220975	ArthurHarbor-1220975	MAG		Palmer Sta.* and Arthur Harb.*
+Palmer-10667058	Palmer-10667058	MAG		Palmer Sta.* and Arthur Harb.*
+Palmer-10810350	Palmer-10810350	MAG		Palmer Sta.*
+Pithovirus_LCPAC304	Pithovirus LCPAC304	MAG	Pithoviridae	Pithoviridae
+Pithovirus_LCPAC104	Pithovirus LCPAC104	MAG	Pithoviridae	Pithoviridae

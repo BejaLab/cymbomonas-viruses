@@ -21,12 +21,13 @@ if (interactive()) {
     probab_threshold <- 80
     core_genes_file <- "pie.pdf"
     jtree_file      <- "output/MCP_PLV.jtree"
-    segments_file   <- "metadata/viral_segments.tsv"
     reduced_tree_file <- "output/MCP_PLV_reduced.svg"
     chosen_clades <- c("PgVV", "Endemic", "Mesomimi")
     clade_levels <- c("Mesomimi", "Endemic", "Mavirus", "Virophage", "TVS", "PgVV")
     ref_genomes <- c("Sputnik", "Mavirus_Spezl", "TVV_S1")
     colors_file <- "metadata/subclade_colors.txt"
+    plv_order_file <- "metadata/plv_order.txt"
+    family_colors_file <- "metadata/family_colors.txt"
 } else {
     with(snakemake@input, {
         mcl_file              <<- mcl
@@ -39,8 +40,9 @@ if (interactive()) {
         genes_cluster_file    <<- genes_cluster
         genes_pfam_file       <<- genes_pfam
         jtree_file            <<- jtree
-        segments_file         <<- segments
         colors_file           <<- colors
+        plv_order_file        <<- plv_order
+        family_colors_file    <<- family_colors
     })
     with(snakemake@params, {
         probab_threshold  <<- probab
@@ -122,7 +124,7 @@ data <- c(segment_genes, virus_genes) %>%
     ungroup
 write.table(data, data_file, sep = "\t", quote = F, row.names = F)
 
-virus_segments <- read.table(segments_file, sep = "\t", header = T) %>%
+virus_segments <- read.table(segment_metadata_file, sep = "\t", header = T) %>%
     mutate(scaffold = sub("Isogal_", "", scaffold)) # NB: workaround for Isogal scaffolds. TODO: do a proper fix
 tree <- read.jtree(jtree_file)
 tip.data <- filter(tree@data, !isInternal) %>%
@@ -146,9 +148,13 @@ my.tree <- tree@phylo %>%
 svg(reduced_tree_file)
 plot(my.tree)
 dev.off()
-order.tips <- data.frame(tip.num = my.tree$edge[,2]) %>%
-    filter(tip.num <= length(my.tree$tip.label)) %>%
-    mutate(Genome = my.tree$tip.label[tip.num], num = n():1)
+
+#order.tips <- data.frame(tip.num = my.tree$edge[,2]) %>%
+#    filter(tip.num <= length(my.tree$tip.label)) %>%
+#    mutate(Genome = my.tree$tip.label[tip.num], num = n():1)
+
+order.tips <- read.table(plv_order_file, col.names = "Genome") %>%
+    mutate(num = n():1)
 
 clades.data <- filter(data, clade %in% chosen_clades | Genome %in% ref_genomes) %>%
     mutate(Count = 1) %>%
@@ -163,20 +169,34 @@ clades.data <- filter(data, clade %in% chosen_clades | Genome %in% ref_genomes) 
     ungroup %>%
     mutate(Gene = factor(Gene, levels = unique(Gene)), Genome = factor(Genome, levels = unique(Genome))) %>%
     filter(Count > 0)
+family_colors <- read.table(family_colors_file, sep = "\t", col.names = c("Gene", "color"), comment.char = "") %>%
+    right_join(clades.data, by = "Gene") %>%
+    group_by(Gene, Cluster, color) %>%
+    filter(!is.na(color)) %>% 
+    summarize(n = n(), .groups = "drop") %>%
+    group_by(Gene) %>%
+    arrange(n) %>%
+    mutate(a = seq(0.6, 0, len = n())) %>%
+    mutate(r = col2rgb(color)[1], g = col2rgb(color)[2], b = col2rgb(color)[3]) %>%
+    mutate(r = (255 - r) * a + r, g = (255 - g) * a + g, b = (255 - b) * a + b) %>%
+    mutate(color = rgb(r / 255, g / 255, b / 255)) %>%
+    with(setNames(color, Cluster))
 ggplot_scatterpie <- function(.data, x.col, y.col, z.col, val.col, group.col) {
     x_uniq <- levels(.data[[x.col]])
     y_uniq <- levels(.data[[y.col]])
     .data <- ungroup(.data) %>%
         mutate(x = as.numeric(.[[x.col]]), y = as.numeric(.[[y.col]])) %>%
-        rename(value = !!val.col)
+        rename(value = !!val.col, z = !!z.col)
     ggplot() +
-        geom_scatterpie(aes(x = x, y = y), data = .data, long_format = T, cols = z.col, color = NA) +
+        geom_scatterpie(aes(x = x, y = y), data = .data, long_format = T, cols = "z", color = NA) +
         scale_x_continuous(breaks = 1:length(x_uniq), labels = x_uniq) +
         scale_y_continuous(breaks = 1:length(y_uniq), labels = y_uniq) +
         xlab(x.col) + ylab(y.col) #+
         #facet_grid(rows = group.col, scales = "free_y", space = "free_y")
 }
+
 p <- ggplot_scatterpie(clades.data, "Gene", "Genome", "Cluster", "Count", "subclade") +
+    scale_fill_manual(values = family_colors, na.value = "black") +
     coord_equal() +
     theme_void() +
     theme(axis.title.x = element_blank(), axis.title.y = element_blank(), legend.position = "none", axis.text.x = element_text(angle = 90, vjust = 1, hjust = 1), axis.text.y = element_text())

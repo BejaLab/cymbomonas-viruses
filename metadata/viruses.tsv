@@ -20,7 +20,7 @@ Qinghai Lake virophage	QLV	ncbi	ncbi		KJ854379.1		small	Virophage
 Rumen virophage 21000060	RVP-21000060	ncbi	prokka		AUXO017923253.1		small	RVP			y	
 Cryoconite virophage	CryV	ncbi	ncbi		LDNN01000025.1		small			partial		
 Miers Valley soil virophage	MVSV	ncbi	ncbi		CZR14427.1		small			fragment		
-Phaeocystis globosa virus virophage 16T	PgVV-16T	ncbi	ncbi		KC662250.1		small	PgVV	red			
+Phaeocystis globosa virus virophage 14T	PgVV-14T	manual	manual				small	PgVV	red			
 Pleurochrysis sp. Polinton-like virus isolate ALTPLV2	ALTPLV2	ncbi	ncbi		KY346836.1		small	PgVV	PleuPLV			
 Pleurochrysis sp. Polinton-like virus isolate ALTPLV4	ALTPLV4	ncbi	ncbi		KY346838.1		small	PgVV	PleuPLV	fragment		
 Chrysochromulina parva virophage Curly	Curly	ncbi	ncbi		MH919296.1		small	PgVV	MLC			
@@ -136,7 +136,7 @@ PLV-SAF2	PLV-SAF2	yutin	yutin				small	PgVV	SAF23
 PLV-SAF3	PLV-SAF3	yutin	yutin				small	PgVV	SAF23			
 PLV-SAF4	PLV-SAF4	yutin	yutin				small	PgVV	SAF4			
 PLV-SAF5	PLV-SAF5	yutin	yutin				small	PgVV	ACE1_SAF5			
-PLV-SAF6	PLV-SAF6	yutin	yutin				small	PgVV	SAF6_Delaware1642			
+PLV-SAF6	PLV-SAF6	yutin	yutin				small	PgVV	purple2			
 PLV-INO1	PLV-INO1	yutin	yutin				small	TVS				
 PLV-MED1	PLV-MED1	yutin	yutin				small	TVS				
 PLV-SPO1	PLV-SPO1	yutin	yutin				small	TVS				
@@ -151,19 +151,19 @@ PLV-YSL4	PLV-YSL4	yutin	yutin				small	PgVV	YSL2456
 PLV-YSL5	PLV-YSL5	yutin	yutin				small	PgVV	YSL2456			
 PLV-YSL6	PLV-YSL6	yutin	yutin				small	PgVV	YSL2456			
 PLV-ACE1	PLV-ACE1	yutin	yutin				small	PgVV	ACE1_SAF5			
-Soyang458	Soyang458	bellas	bellas	EBI metagenomes		PRJEB15535	small	PgVV	MLC			ERX2821582_NODE_458_length_20907_cov_355.705120
-Soyang406	Soyang406	bellas	bellas	EBI metagenomes		PRJEB15535	small	PgVV	MLC			ERX2821581_NODE_406_length_20775_cov_133.006907
-Soyang317	Soyang317	bellas	bellas	EBI metagenomes		PRJEB15535	small	PgVV	MLC			ERX2821556_NODE_317_length_19925_cov_13.255868
-Soyang530	Soyang530	bellas	bellas	EBI metagenomes		PRJEB15535	small	PgVV	MLC			ERX2821584_NODE_530_length_19723_cov_38.875992
-Han847	Han847	bellas	bellas	EBI metagenomes		PRJEB19373	small	PgVV	MLC			HanCross_NODE_847_length_21238_cov_27.396844
-Han442	Han442	bellas	bellas	EBI metagenomes		PRJEB19373	small	PgVV	MLC			ERR1823950_NODE_442_length_21064_cov_30.389177
-Han884	Han884	bellas	bellas	EBI metagenomes		PRJEB19373	small	PgVV	MLC			HanCross_NODE_884_length_20776_cov_8.048684
-Han1312	Han1312	bellas	bellas	EBI metagenomes		PRJEB19373	small	PgVV	MLC			HanCross_NODE_1312_length_16476_cov_4.690034
-Han1023	Han1023	bellas	bellas	EBI metagenomes		PRJEB19373	small	PgVV	Han1023			ERR1823954_NODE_1023_length_10726_cov_5.475364
-Han2744	Han2744	bellas	bellas	EBI metagenomes		PRJEB19373	small	PgVV	MLC			HanCross_NODE_2744_length_10019_cov_10.874950
-Chesapeake726	Chesapeake726	bellas	bellas	IMG/VR			small	PgVV	CCE			Ga0099846_1000726
-Montjoie2259	Montjoie2259	bellas	bellas	IMG/VR			small	PgVV	MLC			Ga0114973_10002259
-Delaware1642	Delaware1642	bellas	bellas	IMG/VR			small	PgVV	SAF6_Delaware1642			Ga0070754_10001642
-Chesapeake430	Chesapeake430	bellas	bellas	IMG/VR			small	PgVV	CCE			Ga0099848_1000430
-Etoliko555	Etoliko555	bellas	bellas	IMG/VR			small	PgVV	CCE			3300005611_____Ga0074647_1000555
-Delaware572	Delaware572	bellas	bellas	IMG/VR			small	PgVV	Delaware572			Ga0070751_1000572
+Soyang-458	Soyang-458	bellas	bellas	EBI metagenomes		PRJEB15535	small	PgVV	MLC			ERX2821582_NODE_458_length_20907_cov_355.705120
+Soyang-406	Soyang-406	bellas	bellas	EBI metagenomes		PRJEB15535	small	PgVV	MLC			ERX2821581_NODE_406_length_20775_cov_133.006907
+Soyang-317	Soyang-317	bellas	bellas	EBI metagenomes		PRJEB15535	small	PgVV	MLC			ERX2821556_NODE_317_length_19925_cov_13.255868
+Soyang-530	Soyang-530	bellas	bellas	EBI metagenomes		PRJEB15535	small	PgVV	MLC			ERX2821584_NODE_530_length_19723_cov_38.875992
+Han-847	Han-847	bellas	bellas	EBI metagenomes		PRJEB19373	small	PgVV	MLC			HanCross_NODE_847_length_21238_cov_27.396844
+Han-442	Han-442	bellas	bellas	EBI metagenomes		PRJEB19373	small	PgVV	MLC			ERR1823950_NODE_442_length_21064_cov_30.389177
+Han-884	Han-884	bellas	bellas	EBI metagenomes		PRJEB19373	small	PgVV	MLC			HanCross_NODE_884_length_20776_cov_8.048684
+Han-1312	Han-1312	bellas	bellas	EBI metagenomes		PRJEB19373	small	PgVV	MLC			HanCross_NODE_1312_length_16476_cov_4.690034
+Han-1023	Han-1023	bellas	bellas	EBI metagenomes		PRJEB19373	small	PgVV	Han-1023			ERR1823954_NODE_1023_length_10726_cov_5.475364
+Han-2744	Han-2744	bellas	bellas	EBI metagenomes		PRJEB19373	small	PgVV	MLC			HanCross_NODE_2744_length_10019_cov_10.874950
+Chesapeake-726	Chesapeake-726	bellas	bellas	IMG/VR			small	PgVV	CCE			Ga0099846_1000726
+Montjoie-2259	Montjoie-2259	bellas	bellas	IMG/VR			small	PgVV	MLC			Ga0114973_10002259
+Delaware-1642	Delaware-1642	bellas	bellas	IMG/VR			small	PgVV	purple2			Ga0070754_10001642
+Chesapeake-430	Chesapeake-430	bellas	bellas	IMG/VR			small	PgVV	CCE			Ga0099848_1000430
+Etoliko-555	Etoliko-555	bellas	bellas	IMG/VR			small	PgVV	CCE			3300005611_____Ga0074647_1000555
+Delaware-572	Delaware-572	bellas	bellas	IMG/VR			small	PgVV	PleuPLV			Ga0070751_1000572

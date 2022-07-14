@@ -10,7 +10,7 @@ Phage_Capsid_P3	MCP
 Capsid_N	MCP	
 Phage_T4_gp36	gp36-like	
 SLATT_4	SLATT	2
-DUF5871	DUF2738/DUF5871	
+DUF5871	DUF2738/5871	
 DNA_methylase	C-MTase	1
 EcoRI_methylase	N-MTase	1
 MethyltransfD12	N-MTase	1
@@ -21,11 +21,11 @@ N6_Mtase	N-MTase	1
 DUF5710	DUF5710	
 Endonuclease_7	Endo VII	2
 Phage_term_sma	HTH	2
-Pox_VLTF3	Pox VLTF3	
+Pox_VLTF3	VLTF3	
 DNA_pol_delta_4	Pol delta 4	2
 Peptidase_C57	C57 peptidase	
 Capsid_NCLDV	MCP	
-YqaJ	YqaJ exo	
+YqaJ	YqaJ	
 GREB1_C	TAGT	
 HNH_3	HNH endo	
 DDE_Tnp_IS240	DDE-type transposase	
@@ -39,9 +39,8 @@ PIF1	S1H	1
 Pox_A32	A32 ATPase	1
 Abhydrolase_6	AB hydrolase	
 TBP	TFIID	
-DUF2738	DUF2738/DUF5871	
+DUF2738	DUF2738/5871	
 DUF927	S2H	1
-Pox_A22	Resolvase	1
 DUF5767	DUF5767	1
 Glyco_transf_10	GT10	1
 Glyco_tranf_2_3	GT2	1
@@ -88,4 +87,7 @@ Baculo_RING	ac53-Zfp	2
 DUF3945	DUF3945-like	2
 DUF2075	S1H	1
 Herpes_Helicase,DNA_pol_B_2	pPolB
-Pox_A22	Pox_A22
+Pox_A22	RuvC	1
+RuvC_1	RuvC	1
+Ydc2-catalyt	RuvC	1
+Methyltransf_21	FkbM	2

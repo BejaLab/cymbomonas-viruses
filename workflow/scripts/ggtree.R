@@ -138,7 +138,7 @@ p <- ggtree(tree_data) +
     geom_text2(aes(subset = node %in% multi_species$node, x = max(x, na.rm = T), label = label.show), nudge_x = 0.01, size = 4, hjust = 0) +
     geom_tippoint(aes(color = Host), size = 3) +
     geom_treescale(width = 0.5) +
-    scale_size_continuous(range = c(1, 3)) +
+    scale_size_continuous(limits = c(90, 100), range = c(1, 3)) +
     scale_shape_manual(values = seq(0,15)) +
     scale_color_manual(values = colors)
 

@@ -1,0 +1,36 @@
+MCP	#0000ff
+A32 ATPase	#ff0000
+mCP penton	#00ccff
+Tlr6F	#dd5498
+PGVV05	#cc00ff
+AB hydrolase	#fd8f3f
+PGVV09	#800000
+SLATT	#00ff8f
+Yrec	#6f42c1
+GIY-YIG	#af83f8
+TVpol-S3H	#00aa00
+pPolB	#2d0082
+S3H	#efb300
+gp36-like	#ea95bf
+YSL5_01	#932162
+YSL1_23	#8d6568
+S1H	#87de87
+N-MTase	#cccccc
+C-MTase	#deb897
+PGVV01b	#ffaaaa
+PGVV08	#1e9497
+PGVV13	#2affd5
+PGVV15	#d5ffe6
+PGVV15b	#ffabfd
+PGVV16	#ffe680
+FkbM	#c8ab37
+RuvC	#adff2f
+Yqaj	#ff00ff
+VLTF3	#ffff99
+DUF2738/5871	#6f7c91
+ac53-Zfp	#c4451c
+DUF5824	#683b79
+SAF2_03	#325a9b
+DUF3945-like	#2b3d26
+PGVV15B	#426600
+TAGT	#be0032

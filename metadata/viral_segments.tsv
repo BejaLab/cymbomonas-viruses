@@ -1,29 +1,23 @@
 short	name	genome	segment_id	scaffold	scaffold_start	scaffold_end	strand	fragment	start_fuzzy	end_fuzy	clade	subclade	length	start_repeat_complete	end_repeat_complete	comment
-Phaglo-B1	Phaglo-B1	Phaglo	Phaglo_scaffold_1_591173-596100	Phaglo_scaffold_1	583710	599460	1	fragment			PgVV	blue	15751			
-Phaglo-B195	Phaglo-B195	Phaglo	Phaglo_scaffold_195_75364-82923	Phaglo_scaffold_195	66837	94302	-1				PgVV	blue	27466	yes		
-Phaglo-B26	Phaglo-B26	Phaglo	Phaglo_scaffold_26_676127-678503	Phaglo_scaffold_26	664931	685149	1				PgVV	blue	20219		yes	
-Phaant-B41	Phaant-B41	Phaant	Phaant_scaffold_41_12121-20291	Phaant_scaffold_41	7643	30702	-1				PgVV	blue	23060	yes	yes	
-Phaant-B9	Phaant-B9	Phaant	Phaant_scaffold_9_2577220-2585235	Phaant_scaffold_9	2570966	2594125	-1				PgVV	blue	23160	yes	yes	
-Phaant-B3	Phaant-B3	Phaant	Phaant_scaffold_3_3072736-3080757	Phaant_scaffold_3	3066413	3089655	-1				PgVV	blue	23243	yes	yes	
-Phaglo-B364	Phaglo-B364	Phaglo	Phaglo_scaffold_364_22111-23537	Phaglo_scaffold_364	765	24160	-1	fragment		1	PgVV	blue	23396			
-Phaant-B25	Phaant-B25	Phaant	Phaant_scaffold_25_462386-472810	Phaant_scaffold_25	455200	478827	1				PgVV	blue	23628	yes	yes	
-Phaglo-B448	Phaglo-B448	Phaglo	Phaglo_scaffold_448_69027-80162	Phaglo_scaffold_448	62352	86999	1				PgVV	blue	24648	yes	yes	
-Phaglo-B242	Phaglo-B242	Phaglo	Phaglo_scaffold_242_199732-207686	Phaglo_scaffold_242	192639	216696	-1				PgVV	blue	24058	yes	yes	
-Phaglo-B321	Phaglo-B321	Phaglo	Phaglo_scaffold_321_100892-104706	Phaglo_scaffold_321	93134	117649	1				PgVV	blue	24516	yes		
-Phaglo-B199	Phaglo-B199	Phaglo	Phaglo_scaffold_199_13864-22902	Phaglo_scaffold_199	6390	31847	-1				PgVV	blue	25458	yes	yes	
-Phaglo-B117	Phaglo-B117	Phaglo	Phaglo_scaffold_117_276273-285063	Phaglo_scaffold_117	268529	293463	-1				PgVV	blue	24935	yes	yes	
-Phaglo-B74	Phaglo-B74	Phaglo	Phaglo_scaffold_74_7845-30317	Phaglo_scaffold_74	1	30709	-1	fragment	1	1	PgVV	blue	30709			
-Phaglo-P224frag	Phaglo-P224frag	Phaglo	Phaglo_scaffold_224_212132-213871	Phaglo_scaffold_224	209015	220000	1	fragment	1	1	PgVV	purple	10986			
-Phaant-E7	Phaant-E7	Phaant	Phaant_scaffold_7_1061391-1069190	Phaant_scaffold_7	1048634	1095378	1				Endemic	Endemic	46745			
-Phaant-E26	Phaant-E26	Phaant	Phaant_scaffold_26_1242384-1250323	Phaant_scaffold_26	1226099	1278591	1				Endemic	Endemic	52493			
-Phaant-E21	Phaant-E21	Phaant	Phaant_scaffold_21_2243220-2250408	Phaant_scaffold_21	2211450	2264998	-1				Endemic	Endemic	53549			
-Phaglo-E38	Phaglo-E38	Phaglo	Phaglo_scaffold_38_359727-381224	Phaglo_scaffold_38	357691	381393	-1		1		Endemic	Endemic	23703			
-Isogal-13	Isogal-13	Isogal	Isogal_CM030943.1_157153-161599	Isogal_CM030943.1	156444	165798	1				PgVV	Isogal	9355			
-Isogal-4	Isogal-4	Isogal	Isogal_CM030934.1_3583018-3586854	Isogal_CM030934.1	3579060	3589834	-1				PgVV	Isogal	10775			
-Isogal-2	Isogal-2	Isogal	Isogal_CM030932.1_6833132-6838396	Isogal_CM030932.1	6830324	6841632	-1				PgVV	Isogal	11309			
-Phaglo-R227	Phaglo-R227	Phaglo	Phaglo_scaffold_227_169709-173230	Phaglo_scaffold_227	166125	180048	-1			1	PgVV	red	13924			
-Phaglo-R440	Phaglo-R440	Phaglo	Phaglo_scaffold_440_55206-67028	Phaglo_scaffold_440	45636	78384	1				PgVV	red	32749			
-Phaglo-U45	Phaglo-U45	Phaglo	Phaglo_scaffold_45_37290-42148	Phaglo_scaffold_45	36912	48521	-1	no_capsid_proteins	1	1			11610			
-Phaant-Y37	Phaant-Y37	Phaant	Phaant_scaffold_37_407794-414639	Phaant_scaffold_37	397985	416332	-1				PgVV	yellow	18348			
-Phaglo-Y235	Phaglo-Y235	Phaglo	Phaglo_scaffold_235_85248-94428	Phaglo_scaffold_235	84686	107351	1				PgVV	yellow	22666			
-Phaant-Y21	Phaant-Y21	Phaant	Phaant_scaffold_21_1684477-1691294	Phaant_scaffold_21	1664742	1693596	-1				PgVV	yellow	28855			interrupted by a host-gene insertion
+Phaglo-B2	Phaglo-B2	Phaglo		Phaglo_mira_s10038_pilon	1490	6345	1				PgVV	blue				
+Phaglo-P	Phaglo-P	Phaglo		Phaglo_mira_s17671_pilon	177	6478	1				PgVV	purple				
+Phaglo-B1	Phaglo-B1	Phaglo		Phaglo_mira_s18910_pilon	10797	18044	1				PgVV	blue				
+Phaglo-G	Phaglo-G	Phaglo		Phaglo_mira_c1103_pilon	1	24638	1				Endemic	Endemic				
+Phaglo-R	Phaglo-R	Phaglo		Phaglo_mira_c588_pilon	5096	18389	1				PgVV	red				
+Phaglo-Y	Phaglo-Y	Phaglo		Phaglo_mira_c626_pilon	3870	26050	1				PgVV	yellow				
+Isogal-1	Isogal-1	GCA_018136815.1	CM030934.1_3583018-3586854	CM030934.1	3579060	3589834	-1				PgVV	Isogal	10775			
+Isogal-2	Isogal-2	GCA_018136815.1	CM030932.1_6833132-6838396	CM030932.1	6830324	6841632	-1				PgVV	Isogal	11309			
+Dialut-1a	Dialut-1a	GCA_019448385.1	JAGTXO010000002.1_1618492-1641127	JAGTXO010000002.1	1616187	1634929	1				TVS	TVS				
+Dialut-1b	Dialut-2b	GCA_019448385.1	JAGTXO010000002.1_1618492-1641127	JAGTXO010000002.1	1634867	1653649	1				TVS	TVS				
+Dialut-2	Dialut-2	GCA_019448385.1	JAGTXO010000003.1_100576-104529	JAGTXO010000003.1	98252	120636	1				TVS	TVS				
+Dialut-3	Dialut-3	GCA_019448385.1	JAGTXO010000092.1_30544-45792	JAGTXO010000092.1	8794	32877	1				TVS	TVS				
+Guillardia-1	Guillardia-1	JGI_Guith1	JGI_Guith1_scaffold_113_146884-152144	JGI_Guith1_scaffold_113	136791	159665	1				PgVV	guillardia1	22875			
+Guillardia-2	Guillardia-2	JGI_Guith1	JGI_Guith1_scaffold_84_309267-317105	JGI_Guith1_scaffold_84	297350	322347	1				PgVV	guillardia1	24998			
+Guillardia-3	Guillardia-3	JGI_Guith1	JGI_Guith1_scaffold_16_933390-939048	JGI_Guith1_scaffold_16	924123	950375	1				PgVV	guillardia2	26253			
+Guillardia-4	Guillardia-4	JGI_Guith1	JGI_Guith1_scaffold_50_323486-331509	JGI_Guith1_scaffold_50	310859	341857	1				PgVV	guillardia2	30999			
+Guillardia-5	Guillardia-5	JGI_Guith1	JGI_Guith1_scaffold_293_15866-19377	JGI_Guith1_scaffold_293	4783	30503	1				PgVV	guillardia2	25721			
+Guillardia-6	Guillardia-6	JGI_Guith1	JGI_Guith1_scaffold_94_196290-201235	JGI_Guith1_scaffold_94	187510	212836	1				PgVV	guillardia2	25327			
+Monoraphidium-1	Monoraphidium-1	GCA_000611645.1	KK100996.1_2900-12303	KK100996.1	1	19320	1				PgVV	monoraphidium	19320			
+Botryococcus-1	Botryococcus-1	GCA_002005505.1	KV908366.1_578220-593293	KV908366.1	575420	596230	1				PgVV	botryococcus	20811			
+Botryococcus-2	Botryococcus-2	GCA_002005505.1	KV908643.1_69905-74104	KV908643.1	67712	88968	1				PgVV	botryococcus	21257			
+Chromochloris-1	Chromochloris-1	JGI_Chrzof1	JGI_Chrzof1_scaffold_8_3160790-3165416	JGI_Chrzof1_scaffold_8	3152341	3173012	1				PgVV	chromochloris	20672			
