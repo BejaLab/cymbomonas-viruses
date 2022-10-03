@@ -33,6 +33,9 @@ with(snakemake@output, {
     out_image_file <<- image
     out_jtree_file <<- jtree
 })
+with(snakemake@params, {
+    outgroup_rooting <<- outgroup_rooting
+})
 
 read.fasta.headers <- function(fnames) {
     file.info(fnames) %>%
@@ -43,8 +46,6 @@ read.fasta.headers <- function(fnames) {
         unlist %>%
         data.frame(title = .)
 }
-
-outgroup_df <- read.fasta.headers(outgroup_file)
 
 synonyms <- read.table(synonyms_file, header = T, sep = "\t", fill = T, na.strings = "") %>%
     mutate(Collapse = ifelse(is.na(Collapse), Name, Collapse))
@@ -63,12 +64,9 @@ if (no_name != "") {
 
 tree <- read.tree(tree_file)
 tree <- phangorn::midpoint(tree, node.labels = "support")
-if (nrow(outgroup_df) > 0) {
+if (outgroup_rooting) {
+    outgroup_df <- read.fasta.headers(outgroup_file)
     outgroups <- with(outgroup_df, sub(" .*", "", title))
-    #    MRCA(tree, .) %>%
-    #    Descendants(tree, ., "tips") %>%
-    #    first
-    # tree <- reroot(tree, MRCA(tree, outgroups), position = 1, resolve.root = T)
     tree <- ape::root(tree, node = MRCA(tree, outgroups), edgelabel = T, resolve.root = T)
 }
 tree <- as_tibble(tree) %>%

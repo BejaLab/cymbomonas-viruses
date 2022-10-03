@@ -24,6 +24,7 @@ virus_tsv   <- lapply(virus_tsv_files, read.table, header = T, sep = "\t", quote
 data <- c(segment_tsv, virus_tsv) %>%
     bind_rows %>%
     mutate(Q.Coverage = (Q.End - Q.Start + 1) / Q.Length * 100, T.Coverage = (T.End - T.Start + 1) / T.Length * 100) %>%
+    # filter(Probab >= probab, Q.Coverage >= coverage, T.Coverage >= coverage) %>%
     filter(Probab >= probab, Q.Coverage >= coverage & T.Coverage >= coverage | Q.Coverage >= coverage_q_frag & T.Coverage >= coverage_t_frag & Identities >= identities_frag & Probab >= probab_frag) %>%
     left_join(clusters, by = c(Hit.ID = "Cluster")) %>%
     select(Query, ID, Probab)
