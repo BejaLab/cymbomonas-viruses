@@ -1,4 +1,6 @@
 channels:
+ - conda-forge
  - bioconda
 dependencies:
+ - libiconv
  - emboss=6.6.0

@@ -49,8 +49,9 @@ rule prokka_gbk:
         locustag = lambda w: re.sub('[^A-Z]', '', w.genome.upper())
     threads:
         8
-    conda:
-        "envs/prokka.yaml"
+    # NB: prokka cannot be installed with conda
+    # conda:
+    #    "envs/prokka.yaml"
     shell:
         """
         prokka --force --cpus {threads} --prefix {wildcards.genome} --locustag {params.locustag} --kingdom Viruses --outdir {params.outdir}/{wildcards.genome} {input}

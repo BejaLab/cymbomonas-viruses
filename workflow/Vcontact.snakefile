@@ -6,8 +6,8 @@ rule vcontact:
 
 rule vcontact2_cat:
     input:
-        expand("analysis/PLV_segments/{segment}.faa", segment = PgVV_segments),
-        expand("analysis/PLVs/{genome}.faa", genome = PgVV_viruses)
+        expand("analysis/PLV_segments/{segment}.faa", segment = Gezel_segments),
+        expand("analysis/PLVs/{genome}.faa", genome = Gezel_viruses)
     output:
         "analysis/vcontact2/proteins.faa"
     shell:
@@ -15,8 +15,8 @@ rule vcontact2_cat:
 
 rule vcontact2_map:
     input:
-        expand("analysis/PLV_segments/{segment}.faa", segment = PgVV_segments),
-        expand("analysis/PLVs/{genome}.faa", genome = PgVV_viruses)
+        expand("analysis/PLV_segments/{segment}.faa", segment = Gezel_segments),
+        expand("analysis/PLVs/{genome}.faa", genome = Gezel_viruses)
     output:
         "analysis/vcontact2/proteins.csv"
     conda:

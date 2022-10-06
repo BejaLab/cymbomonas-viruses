@@ -1,23 +1,23 @@
 short	name	genome	segment_id	scaffold	scaffold_start	scaffold_end	strand	fragment	start_fuzzy	end_fuzy	clade	subclade	length	start_repeat_complete	end_repeat_complete	comment
-Phaglo-B2	Phaglo-B2	Phaglo		Phaglo_mira_s10038_pilon	1490	6345	1				PgVV	blue				
-Phaglo-P	Phaglo-P	Phaglo		Phaglo_mira_s17671_pilon	177	6478	1				PgVV	purple				
-Phaglo-B1	Phaglo-B1	Phaglo		Phaglo_mira_s18910_pilon	10797	18044	1				PgVV	blue				
-Phaglo-G	Phaglo-G	Phaglo		Phaglo_mira_c1103_pilon	1	24638	1				Endemic	Endemic				
-Phaglo-R	Phaglo-R	Phaglo		Phaglo_mira_c588_pilon	5096	18389	1				PgVV	red				
-Phaglo-Y	Phaglo-Y	Phaglo		Phaglo_mira_c626_pilon	3870	26050	1				PgVV	yellow				
-Isogal-1	Isogal-1	GCA_018136815.1	CM030934.1_3583018-3586854	CM030934.1	3579060	3589834	-1				PgVV	Isogal	10775			
-Isogal-2	Isogal-2	GCA_018136815.1	CM030932.1_6833132-6838396	CM030932.1	6830324	6841632	-1				PgVV	Isogal	11309			
+Phaglo-B2	Phaglo-B2	Phaglo	Phaglo_mira_s10038_pilon_1649-4528	Phaglo_mira_s10038_pilon	1490	6345	1				Gezel	blue				
+Phaglo-P	Phaglo-P	Phaglo	Phaglo_mira_s17671_pilon_1664-3403	Phaglo_mira_s17671_pilon	177	6478	1				Gezel	purple				
+Phaglo-B1	Phaglo-B1	Phaglo	Phaglo_mira_s18910_pilon_10980-12437	Phaglo_mira_s18910_pilon	10797	18044	1				Gezel	blue				
+Phaglo-G	Phaglo-G	Phaglo	Phaglo_mira_c1103_pilon_2186-23494	Phaglo_mira_c1103_pilon	1	24638	1				Dwarf	Dwarf				
+Phaglo-R	Phaglo-R	Phaglo	Phaglo_mira_c588_pilon_10988-15435	Phaglo_mira_c588_pilon	5096	18389	1				Gezel	red				
+Phaglo-Y	Phaglo-Y	Phaglo	Phaglo_mira_c626_pilon_4543-13723	Phaglo_mira_c626_pilon	3870	26050	1				Gezel	yellow				
+Isogal-1	Isogal-1	GCA_018136815.1	CM030934.1_3583018-3586854	CM030934.1	3579060	3589834	-1				Gezel	Isogal	10775			
+Isogal-2	Isogal-2	GCA_018136815.1	CM030932.1_6833132-6838396	CM030932.1	6830324	6841632	-1				Gezel	Isogal	11309			
 Dialut-1a	Dialut-1a	GCA_019448385.1	JAGTXO010000002.1_1618492-1641127	JAGTXO010000002.1	1616187	1634929	1				TVS	TVS				
 Dialut-1b	Dialut-2b	GCA_019448385.1	JAGTXO010000002.1_1618492-1641127	JAGTXO010000002.1	1634867	1653649	1				TVS	TVS				
 Dialut-2	Dialut-2	GCA_019448385.1	JAGTXO010000003.1_100576-104529	JAGTXO010000003.1	98252	120636	1				TVS	TVS				
 Dialut-3	Dialut-3	GCA_019448385.1	JAGTXO010000092.1_30544-45792	JAGTXO010000092.1	8794	32877	1				TVS	TVS				
-Guillardia-1	Guillardia-1	JGI_Guith1	JGI_Guith1_scaffold_113_146884-152144	JGI_Guith1_scaffold_113	136791	159665	1				PgVV	guillardia1	22875			
-Guillardia-2	Guillardia-2	JGI_Guith1	JGI_Guith1_scaffold_84_309267-317105	JGI_Guith1_scaffold_84	297350	322347	1				PgVV	guillardia1	24998			
-Guillardia-3	Guillardia-3	JGI_Guith1	JGI_Guith1_scaffold_16_933390-939048	JGI_Guith1_scaffold_16	924123	950375	1				PgVV	guillardia2	26253			
-Guillardia-4	Guillardia-4	JGI_Guith1	JGI_Guith1_scaffold_50_323486-331509	JGI_Guith1_scaffold_50	310859	341857	1				PgVV	guillardia2	30999			
-Guillardia-5	Guillardia-5	JGI_Guith1	JGI_Guith1_scaffold_293_15866-19377	JGI_Guith1_scaffold_293	4783	30503	1				PgVV	guillardia2	25721			
-Guillardia-6	Guillardia-6	JGI_Guith1	JGI_Guith1_scaffold_94_196290-201235	JGI_Guith1_scaffold_94	187510	212836	1				PgVV	guillardia2	25327			
-Monoraphidium-1	Monoraphidium-1	GCA_000611645.1	KK100996.1_2900-12303	KK100996.1	1	19320	1				PgVV	monoraphidium	19320			
-Botryococcus-1	Botryococcus-1	GCA_002005505.1	KV908366.1_578220-593293	KV908366.1	575420	596230	1				PgVV	botryococcus	20811			
-Botryococcus-2	Botryococcus-2	GCA_002005505.1	KV908643.1_69905-74104	KV908643.1	67712	88968	1				PgVV	botryococcus	21257			
-Chromochloris-1	Chromochloris-1	JGI_Chrzof1	JGI_Chrzof1_scaffold_8_3160790-3165416	JGI_Chrzof1_scaffold_8	3152341	3173012	1				PgVV	chromochloris	20672			
+Guillardia-1	Guillardia-1	JGI_Guith1	JGI_Guith1_scaffold_113_146884-152144	JGI_Guith1_scaffold_113	136791	159665	1				Gezel	guillardia1	22875			
+Guillardia-2	Guillardia-2	JGI_Guith1	JGI_Guith1_scaffold_84_309267-317105	JGI_Guith1_scaffold_84	297350	322347	1				Gezel	guillardia1	24998			
+Guillardia-3	Guillardia-3	JGI_Guith1	JGI_Guith1_scaffold_16_933390-939048	JGI_Guith1_scaffold_16	924123	950375	1				Gezel	guillardia2	26253			
+Guillardia-4	Guillardia-4	JGI_Guith1	JGI_Guith1_scaffold_50_323486-331509	JGI_Guith1_scaffold_50	310859	341857	1				Gezel	guillardia2	30999			
+Guillardia-5	Guillardia-5	JGI_Guith1	JGI_Guith1_scaffold_293_15866-19377	JGI_Guith1_scaffold_293	4783	30503	1				Gezel	guillardia2	25721			
+Guillardia-6	Guillardia-6	JGI_Guith1	JGI_Guith1_scaffold_94_196290-201235	JGI_Guith1_scaffold_94	187510	212836	1				Gezel	guillardia2	25327			
+Monoraphidium-1	Monoraphidium-1	GCA_000611645.1	KK100996.1_2900-12303	KK100996.1	1	19320	1				Gezel	monoraphidium	19320			
+Botryococcus-1	Botryococcus-1	GCA_002005505.1	KV908366.1_578220-593293	KV908366.1	575420	596230	1				Gezel	botryococcus	20811			
+Botryococcus-2	Botryococcus-2	GCA_002005505.1	KV908643.1_69905-74104	KV908643.1	67712	88968	1				Gezel	botryococcus	21257			
+Chromochloris-1	Chromochloris-1	JGI_Chrzof1	JGI_Chrzof1_scaffold_8_3160790-3165416	JGI_Chrzof1_scaffold_8	3152341	3173012	1				Gezel	chromochloris	20672			

@@ -1,6 +1,6 @@
 channels:
- - bioconda
  - conda-forge
+ - bioconda
 dependencies:
  - hhsuite=3.3.0
  - ffindex=0.98

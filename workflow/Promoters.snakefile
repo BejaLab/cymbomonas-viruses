@@ -3,8 +3,8 @@ promoter_re = "[ATW][ATW][ATW][ATW][ATW]TG[ATW]"
 
 rule promoters:
     input:
-        "output/fimo/PgVV-14T.gff",
-        expand("output/fimo/{segment}.gff", segment = PgVV_segments),
+        "output/fimo/Gezel-14T.gff",
+        expand("output/fimo/{segment}.gff", segment = Gezel_segments),
         "output/promoters.svg"
 
 rule flanks:
@@ -33,7 +33,7 @@ rule meme:
         nmotifs = 10,
         minsites = 10
     conda:
-        "envs/tools.yaml"
+        "envs/meme.yaml"
     shell:
         "meme -minw {params.minw} -maxw {params.maxw} -nmotifs {params.nmotifs} -minsites {params.minsites} -maxsites Inf -dna -oc {params.outdir} {input}"
 
@@ -51,9 +51,9 @@ rule meme_extract:
 
 rule gbk2fna:
     input:
-        "metadata/PgVV-14T.gbk"
+        "metadata/Gezel-14T.gbk"
     output:
-        "analysis/PgVV-14T/PgVV-14T.fna"
+        "analysis/Gezel-14T/Gezel-14T.fna"
     conda:
         "envs/emboss.yaml"
     shell:
@@ -62,13 +62,13 @@ rule gbk2fna:
 rule fimo:
     input:
         meme = "analysis/promoters/PgV-16T/meme/meme.extract.txt",
-        fasta = "analysis/PgVV-14T/PgVV-14T.fna"
+        fasta = "analysis/Gezel-14T/Gezel-14T.fna"
     output:
-        "analysis/fimo/PgVV-14T/fimo.tsv"
+        "analysis/fimo/Gezel-14T/fimo.tsv"
     params:
-        out_dir= "analysis/fimo/PgVV-14T"
+        out_dir= "analysis/fimo/Gezel-14T"
     conda:
-        "envs/tools.yaml"
+        "envs/meme.yaml"
     shell:
         "fimo --oc {params.out_dir} {input.meme} {input.fasta}"
 
@@ -81,7 +81,7 @@ rule fimo_segments:
     params:
         out_dir= "analysis/fimo/{segment}"
     conda:
-        "envs/tools.yaml"
+        "envs/meme.yaml"
     shell:
         "fimo --oc {params.out_dir} {input.meme} {input.fasta}"
 

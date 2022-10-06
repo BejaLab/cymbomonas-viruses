@@ -9,7 +9,7 @@ rule extract_element:
     output:
         "analysis/PLV_segments/{segment}.gbk"
     params:
-        flank = 0,
+        flank = segment_flanks,
         segment = lambda w: segments[w.segment]
     conda:
         "envs/biopython.yaml"

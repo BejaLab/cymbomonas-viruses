@@ -268,8 +268,8 @@ rule mcl_analyze:
         reduced_tree = "output/MCP_PLV_reduced_{coverage}.svg"
     params:
         probab = 80,
-        chosen_clades = [ "PgVV", "Endemic", "Mesomimi" ],
-        clade_levels  = [ "Mesomimi", "Endemic", "Mavirus", "Virophage", "TVS", "PgVV" ],
+        chosen_clades = [ "Gezel", "Dwarf", "Mesomimi" ],
+        clade_levels  = [ "Mesomimi", "Dwarf", "Lavidaviridae", "TVS", "Gezel" ],
         ref_genomes   = [ "Sputnik", "Mavirus_Spezl", "TVV_S1", "Dialut-1a", "Dialut-1b", "Dialut-2" ]
     conda:
         "envs/r.yaml"

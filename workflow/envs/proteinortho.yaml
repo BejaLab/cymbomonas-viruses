@@ -1,4 +1,0 @@
-channels:
- - bioconda
-dependencies:
- - proteinortho=6.0.25

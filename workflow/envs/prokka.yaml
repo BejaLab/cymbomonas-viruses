@@ -1,5 +1,8 @@
 channels:
+ - conda-forge
  - bioconda
 dependencies:
+ - perl=5.26.2
+ - perl-xml-simple=2.22
+ - perl-xml-sax-expat
  - prokka=1.14.5
- - prodigal=2.6.3

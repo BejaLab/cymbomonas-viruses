@@ -20,20 +20,20 @@ Qinghai Lake virophage	QLV	ncbi	ncbi		KJ854379.1		small	Virophage
 Rumen virophage 21000060	RVP-21000060	ncbi	prokka		AUXO017923253.1		small	RVP			y	
 Cryoconite virophage	CryV	ncbi	ncbi		LDNN01000025.1		small			partial		
 Miers Valley soil virophage	MVSV	ncbi	ncbi		CZR14427.1		small			fragment		
-Phaeocystis globosa virus virophage 14T	PgVV-14T	manual	manual				small	PgVV	red			
-Pleurochrysis sp. Polinton-like virus isolate ALTPLV2	ALTPLV2	ncbi	ncbi		KY346836.1		small	PgVV	PleuPLV			
-Pleurochrysis sp. Polinton-like virus isolate ALTPLV4	ALTPLV4	ncbi	ncbi		KY346838.1		small	PgVV	PleuPLV	fragment		
-Chrysochromulina parva virophage Curly	Curly	ncbi	ncbi		MH919296.1		small	PgVV	MLC			
-Chrysochromulina parva virophage Larry	Larry	ncbi	ncbi		MH920636.1		small	PgVV	MLC			
-Chrysochromulina parva virophage Moe	Moe	ncbi	ncbi		MH919297.1		small	PgVV	MLC			
-Pleurochrysis sp. Polinton-like virus isolate PleuroPLV	PleuroPLV	ncbi	ncbi		KY203338.1		small	PgVV	PleuPLV			
+Phaeocystis globosa virus virophage 14T	Gezel-14T	manual	manual				small	Gezel	red			
+Pleurochrysis sp. Polinton-like virus isolate ALTPLV2	ALTPLV2	ncbi	ncbi		KY346836.1		small	Gezel	PleuPLV			
+Pleurochrysis sp. Polinton-like virus isolate ALTPLV4	ALTPLV4	ncbi	ncbi		KY346838.1		small	Gezel	PleuPLV	fragment		
+Chrysochromulina parva virophage Curly	Curly	ncbi	ncbi		MH919296.1		small	Gezel	MLC			
+Chrysochromulina parva virophage Larry	Larry	ncbi	ncbi		MH920636.1		small	Gezel	MLC			
+Chrysochromulina parva virophage Moe	Moe	ncbi	ncbi		MH919297.1		small	Gezel	MLC			
+Pleurochrysis sp. Polinton-like virus isolate PleuroPLV	PleuroPLV	ncbi	ncbi		KY203338.1		small	Gezel	PleuPLV			
 Tetraselmis viridis virus N1	TVV_N1	ncbi	ncbi		JF974319.1		small	TVS				
 Tetraselmis viridis virus S1	TVV_S1	ncbi	ncbi		HQ332143.1		small	TVS				
 Chrysochromulina ericina virus CeV-01B	CeV-01B	ncbi	ncbi		KT820662.1		big	Mesomimi				
 Chrysochromulina parva virus BQ2	CpV-BQ2	ncbi	prokka		MH918795.1		big	Mesomimi			y	
-Pleurochrysis sp. endemic virus 1a	PsEV1a	ncbi	ncbi		KY131436.1		small	Endemic				
-Pleurochrysis sp. endemic virus 1b	PsEV1b	ncbi	ncbi		KY203336.1		small	Endemic				
-Pleurochrysis sp. endemic virus 2	PsEV2	ncbi	ncbi		KY346835.1		small	Endemic				
+Pleurochrysis sp. endemic virus 1a	PsEV1a	ncbi	ncbi		KY131436.1		small	Dwarf				
+Pleurochrysis sp. endemic virus 1b	PsEV1b	ncbi	ncbi		KY203336.1		small	Dwarf				
+Pleurochrysis sp. endemic virus 2	PsEV2	ncbi	ncbi		KY346835.1		small	Dwarf				
 Tetraselmis virus 1	TetV	ncbi	ncbi		KY322437.1		big	Mesomimi				
 Phaeocystis globosa virus 16T	PgV-16T	ncbi	ncbi		KC662249.1		big	Mesomimi				
 Pyramimonas orientalis virus isolate 01B clone POV01B_10, partial genome	PoV-01B	ncbi	ncbi		MT663543.1,MT663542.1,MT663541.1,MT663540.1,MT663539.1,MT663538.1,MT663537.1,MT663536.1,MT663535.1,MT663534.1		big	Mesomimi				
@@ -131,39 +131,39 @@ Lymphocystis disease virus 1	Lymphocystis_disease_virus_1	ncbi	ncbi		NC_001824		
 Invertebrate iridescent virus 3	Invertebrate_iridescent_virus_3	ncbi	ncbi		DQ643392		big					
 Frog virus 3	Frog_virus_3	ncbi	ncbi		NC_005946		big					
 Shrimp hemocyte iridescent virus	Shrimp_hemocyte_iridescent_virus	ncbi	ncbi		MF599468		big					
-PLV-SAF1	PLV-SAF1	yutin	yutin				small	PgVV	SAF1			
-PLV-SAF2	PLV-SAF2	yutin	yutin				small	PgVV	SAF23			
-PLV-SAF3	PLV-SAF3	yutin	yutin				small	PgVV	SAF23			
-PLV-SAF4	PLV-SAF4	yutin	yutin				small	PgVV	SAF4			
-PLV-SAF5	PLV-SAF5	yutin	yutin				small	PgVV	ACE1_SAF5			
-PLV-SAF6	PLV-SAF6	yutin	yutin				small	PgVV	purple2			
+PLV-SAF1	PLV-SAF1	yutin	yutin				small	Gezel	SAF1			
+PLV-SAF2	PLV-SAF2	yutin	yutin				small	Gezel	SAF23			
+PLV-SAF3	PLV-SAF3	yutin	yutin				small	Gezel	SAF23			
+PLV-SAF4	PLV-SAF4	yutin	yutin				small	Gezel	SAF4			
+PLV-SAF5	PLV-SAF5	yutin	yutin				small	Gezel	ACE1_SAF5			
+PLV-SAF6	PLV-SAF6	yutin	yutin				small	Gezel	purple2			
 PLV-INO1	PLV-INO1	yutin	yutin				small	TVS				
 PLV-MED1	PLV-MED1	yutin	yutin				small	TVS				
 PLV-SPO1	PLV-SPO1	yutin	yutin				small	TVS				
 PLV-SPO2	PLV-SPO2	yutin	yutin				small	TVS				
 PLV-SPO3	PLV-SPO3	yutin	yutin				small	X				
 PLV-RED1	PLV-RED1	yutin	yutin				small	TVS				
-PLV-RED2	PLV-RED2	yutin	yutin				small	PgVV	RED2			
-PLV-YSL1	PLV-YSL1	yutin	yutin				small	PgVV	MLC			
-PLV-YSL2	PLV-YSL2	yutin	yutin				small	PgVV	YSL2456			
-PLV-YSL3	PLV-YSL3	yutin	yutin				small	PgVV	MLC			
-PLV-YSL4	PLV-YSL4	yutin	yutin				small	PgVV	YSL2456			
-PLV-YSL5	PLV-YSL5	yutin	yutin				small	PgVV	YSL2456			
-PLV-YSL6	PLV-YSL6	yutin	yutin				small	PgVV	YSL2456			
-PLV-ACE1	PLV-ACE1	yutin	yutin				small	PgVV	ACE1_SAF5			
-Soyang-458	Soyang-458	bellas	bellas	EBI metagenomes		PRJEB15535	small	PgVV	MLC			ERX2821582_NODE_458_length_20907_cov_355.705120
-Soyang-406	Soyang-406	bellas	bellas	EBI metagenomes		PRJEB15535	small	PgVV	MLC			ERX2821581_NODE_406_length_20775_cov_133.006907
-Soyang-317	Soyang-317	bellas	bellas	EBI metagenomes		PRJEB15535	small	PgVV	MLC			ERX2821556_NODE_317_length_19925_cov_13.255868
-Soyang-530	Soyang-530	bellas	bellas	EBI metagenomes		PRJEB15535	small	PgVV	MLC			ERX2821584_NODE_530_length_19723_cov_38.875992
-Han-847	Han-847	bellas	bellas	EBI metagenomes		PRJEB19373	small	PgVV	MLC			HanCross_NODE_847_length_21238_cov_27.396844
-Han-442	Han-442	bellas	bellas	EBI metagenomes		PRJEB19373	small	PgVV	MLC			ERR1823950_NODE_442_length_21064_cov_30.389177
-Han-884	Han-884	bellas	bellas	EBI metagenomes		PRJEB19373	small	PgVV	MLC			HanCross_NODE_884_length_20776_cov_8.048684
-Han-1312	Han-1312	bellas	bellas	EBI metagenomes		PRJEB19373	small	PgVV	MLC			HanCross_NODE_1312_length_16476_cov_4.690034
-Han-1023	Han-1023	bellas	bellas	EBI metagenomes		PRJEB19373	small	PgVV	Han-1023			ERR1823954_NODE_1023_length_10726_cov_5.475364
-Han-2744	Han-2744	bellas	bellas	EBI metagenomes		PRJEB19373	small	PgVV	MLC			HanCross_NODE_2744_length_10019_cov_10.874950
-Chesapeake-726	Chesapeake-726	bellas	bellas	IMG/VR			small	PgVV	CCE			Ga0099846_1000726
-Montjoie-2259	Montjoie-2259	bellas	bellas	IMG/VR			small	PgVV	MLC			Ga0114973_10002259
-Delaware-1642	Delaware-1642	bellas	bellas	IMG/VR			small	PgVV	purple2			Ga0070754_10001642
-Chesapeake-430	Chesapeake-430	bellas	bellas	IMG/VR			small	PgVV	CCE			Ga0099848_1000430
-Etoliko-555	Etoliko-555	bellas	bellas	IMG/VR			small	PgVV	CCE			3300005611_____Ga0074647_1000555
-Delaware-572	Delaware-572	bellas	bellas	IMG/VR			small	PgVV	PleuPLV			Ga0070751_1000572
+PLV-RED2	PLV-RED2	yutin	yutin				small	Gezel	RED2			
+PLV-YSL1	PLV-YSL1	yutin	yutin				small	Gezel	MLC			
+PLV-YSL2	PLV-YSL2	yutin	yutin				small	Gezel	YSL2456			
+PLV-YSL3	PLV-YSL3	yutin	yutin				small	Gezel	MLC			
+PLV-YSL4	PLV-YSL4	yutin	yutin				small	Gezel	YSL2456			
+PLV-YSL5	PLV-YSL5	yutin	yutin				small	Gezel	YSL2456			
+PLV-YSL6	PLV-YSL6	yutin	yutin				small	Gezel	YSL2456			
+PLV-ACE1	PLV-ACE1	yutin	yutin				small	Gezel	ACE1_SAF5			
+Soyang-458	Soyang-458	bellas	bellas	EBI metagenomes		PRJEB15535	small	Gezel	MLC			ERX2821582_NODE_458_length_20907_cov_355.705120
+Soyang-406	Soyang-406	bellas	bellas	EBI metagenomes		PRJEB15535	small	Gezel	MLC			ERX2821581_NODE_406_length_20775_cov_133.006907
+Soyang-317	Soyang-317	bellas	bellas	EBI metagenomes		PRJEB15535	small	Gezel	MLC			ERX2821556_NODE_317_length_19925_cov_13.255868
+Soyang-530	Soyang-530	bellas	bellas	EBI metagenomes		PRJEB15535	small	Gezel	MLC			ERX2821584_NODE_530_length_19723_cov_38.875992
+Han-847	Han-847	bellas	bellas	EBI metagenomes		PRJEB19373	small	Gezel	MLC			HanCross_NODE_847_length_21238_cov_27.396844
+Han-442	Han-442	bellas	bellas	EBI metagenomes		PRJEB19373	small	Gezel	MLC			ERR1823950_NODE_442_length_21064_cov_30.389177
+Han-884	Han-884	bellas	bellas	EBI metagenomes		PRJEB19373	small	Gezel	MLC			HanCross_NODE_884_length_20776_cov_8.048684
+Han-1312	Han-1312	bellas	bellas	EBI metagenomes		PRJEB19373	small	Gezel	MLC			HanCross_NODE_1312_length_16476_cov_4.690034
+Han-1023	Han-1023	bellas	bellas	EBI metagenomes		PRJEB19373	small	Gezel	Han-1023			ERR1823954_NODE_1023_length_10726_cov_5.475364
+Han-2744	Han-2744	bellas	bellas	EBI metagenomes		PRJEB19373	small	Gezel	MLC			HanCross_NODE_2744_length_10019_cov_10.874950
+Chesapeake-726	Chesapeake-726	bellas	bellas	IMG/VR			small	Gezel	CCE			Ga0099846_1000726
+Montjoie-2259	Montjoie-2259	bellas	bellas	IMG/VR			small	Gezel	MLC			Ga0114973_10002259
+Delaware-1642	Delaware-1642	bellas	bellas	IMG/VR			small	Gezel	purple2			Ga0070754_10001642
+Chesapeake-430	Chesapeake-430	bellas	bellas	IMG/VR			small	Gezel	CCE			Ga0099848_1000430
+Etoliko-555	Etoliko-555	bellas	bellas	IMG/VR			small	Gezel	CCE			3300005611_____Ga0074647_1000555
+Delaware-572	Delaware-572	bellas	bellas	IMG/VR			small	Gezel	PleuPLV			Ga0070751_1000572

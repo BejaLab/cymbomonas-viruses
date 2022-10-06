@@ -5,6 +5,10 @@ from hashlib import sha256
 from Bio import SeqIO
 from collections import defaultdict
 
+# Defaults
+segment_flanks = 50000
+models = { "MCP_PLV": "Blosum62+F+R5", "MCP_NCLDV": "LG+F+R9" }
+
 # Get variables from globs
 genomes,       = glob_wildcards("genomes/{genome}.fna")
 algal_genomes, = glob_wildcards("genomes_algae/{genome}.fna")
@@ -24,34 +28,32 @@ viruses_file  = 'metadata/viruses.tsv'
 evalues = { "MCP_PLV": 1e-8, "MCP_NCLDV": 1e-8 }
 
 segments = {}
-PgVV_segments = []
+Gezel_segments = []
 data = read_csv(segments_file, sep = '\t')
 for i, row in data.iterrows():
     if isnull(row['fragment']):
         short = row['short']
         segments[short] = row.to_dict()
-        if row['clade'] == 'PgVV':
-            PgVV_segments.append(short)
+        if row['clade'] == 'Gezel':
+            Gezel_segments.append(short)
 segment_names = list(segments.keys())
 
 viruses = {}
 small_viruses = []
-PgVV_viruses = []
+Gezel_viruses = []
 Mesomimi_viruses = []
 data = read_csv(viruses_file, sep = '\t')
 for i, row in data.iterrows():
     if isnull(row['fragment']):
         short = row['short']
         viruses[short] = row.to_dict()
-        if row['clade'] == 'PgVV':
-            PgVV_viruses.append(short)
+        if row['clade'] == 'Gezel':
+            Gezel_viruses.append(short)
         if row['clade'] == 'Mesomimi':
             Mesomimi_viruses.append(short)
         if row['group'] == 'small':
             small_viruses.append(short)
 virus_names = list(viruses.keys())
-
-models = { "MCP_PLV": "Blosum62+F+R5", "MCP_NCLDV": "LG+F+R9" }
 
 # Include dependent snakefiles
 include: "Promoters.snakefile"

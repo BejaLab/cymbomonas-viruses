@@ -61,7 +61,7 @@ rule segments_extract:
     output:
         "analysis/segments/{genome}/segments.fna"
     params:
-        flanks = 50000
+        flanks = segment_flanks
     conda:
         "envs/tools.yaml"
     shell:
@@ -98,7 +98,7 @@ rule segments_prodigal:
     shadow:
         "minimal"
     conda:
-        "envs/prokka.yaml"
+        "envs/prodigal.yaml"
     shell:
         "prodigal -i {input} -m -g 1 -p meta -f gff > {output}"
 

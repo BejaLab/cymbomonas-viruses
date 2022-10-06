@@ -135,6 +135,8 @@ rule blast_extract_algae:
         "analysis/phylogeny/algae/blast/{genome}-{CP}.faa"
     params:
         evalue = 1e-10
+    conda:
+        "envs/tools.yaml"
     shell:
         "awk -ve={params.evalue} '$11<e' {input.blast} | cut -f2 | sort -u | xargs -r seqkit faidx -f {input.fasta} > {output}"
 
@@ -338,7 +340,7 @@ rule algae_ggtree_MCP:
         tree = "analysis/phylogeny/MCP.treefile",
         fasta = expand("analysis/blast_algae/{genome}-MCP.faa", genome = algal_genomes),
         tblout = expand("analysis/hmm_algae/{genome}-{hmm}.tblout", genome = algal_genomes, hmm = hmm_algae),
-        synonyms = "annotations/organisms.txt",
+        synonyms = "metadata/organisms.txt",
         hmm = expand("hmm_algae/{hmm}.hmm", hmm = hmm_algae)
     output:
         "analysis/phylogeny/MCP.svg"
