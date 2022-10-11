@@ -1,6 +1,6 @@
 channels:
- - bioconda
  - conda-forge
+ - bioconda
 dependencies:
  - python=3.7
  - conda-ecosystem-user-package-isolation

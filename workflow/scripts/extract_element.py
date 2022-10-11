@@ -6,7 +6,6 @@ input_gbk = str(snakemake.input)
 output_gbk = str(snakemake.output)
 flank = snakemake.params['flank']
 segment = snakemake.params['segment']
-print(segment)
 
 coords_re = re.compile(r'(.+)_(\d+)-(\d+)[. ]*$')
 def get_coords(description):

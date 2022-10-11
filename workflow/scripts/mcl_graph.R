@@ -22,8 +22,8 @@ if (interactive()) {
     core_genes_file <- "pie.pdf"
     jtree_file      <- "output/MCP_PLV.jtree"
     reduced_tree_file <- "output/MCP_PLV_reduced.svg"
-    chosen_clades <- c("PgVV", "Endemic", "Mesomimi")
-    clade_levels <- c("Mesomimi", "Endemic", "Mavirus", "Virophage", "TVS", "PgVV")
+    chosen_clades <- c("Gezel", "Dwarf", "Mesomimi")
+    clade_levels <- c("Mesomimi", "Dwarf", "Virophage", "TVS", "Gezel")
     ref_genomes <- c("Sputnik", "Mavirus_Spezl", "TVV_S1")
     colors_file <- "metadata/subclade_colors.txt"
     plv_order_file <- "metadata/plv_order.txt"
@@ -135,10 +135,9 @@ tip.data <- filter(tree@data, !isInternal) %>%
     mutate(Name = ifelse(is.na(short), Name, short)) %>%
     {setNames(.$Name, .$label)}
 tree@phylo$tip.label <- tip.data[tree@phylo$tip.label]
-tips.to.keep <- filter(data, clade == "PgVV") %>%
+tips.to.keep <- filter(data, clade == "Gezel") %>%
     pull(Genome) %>%
-    `[`(. %in% tree@phylo$tip.label) %>%
-    c("PgVV")
+    `[`(. %in% tree@phylo$tip.label)
 tips.to.drop <- tree@phylo$tip.label[! tree@phylo$tip.label %in% tips.to.keep]
 my.tree <- tree@phylo %>%
     keep.tip(tips.to.keep) %>%
@@ -160,7 +159,7 @@ clades.data <- filter(data, clade %in% chosen_clades | Genome %in% ref_genomes) 
     mutate(Count = 1) %>%
     complete(Gene, nesting(Genome, clade, subclade), fill = list(Count = 0)) %>%
     group_by(Gene) %>%
-    mutate(N_Subclades = n_distinct(subclade[clade == "PgVV" & Count > 0]), N_Genomes = n_distinct(Genome[clade == "PgVV" & Count > 0])) %>%
+    mutate(N_Subclades = n_distinct(subclade[clade == "Gezel" & Count > 0]), N_Genomes = n_distinct(Genome[clade == "Gezel" & Count > 0])) %>%
     filter(N_Subclades > 2) %>%
     mutate(clade = factor(clade, levels = clade_levels)) %>%
     left_join(order.tips, by = "Genome") %>%
@@ -209,7 +208,7 @@ vertex_metadata <- list(
         Genome = mutate(metadata, label = short)
     ) %>% bind_rows(.id = "Type")
 
-g <- filter(data, clade == "PgVV") %>%
+g <- filter(data, clade == "Gezel") %>%
     distinct(Genome, Cluster) %>%
     group_by(Cluster) %>%
     filter(n() > 2) %>%

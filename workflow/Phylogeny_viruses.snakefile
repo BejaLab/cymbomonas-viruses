@@ -1,6 +1,6 @@
 
-small = [ 'PgVV', 'TVS', 'X' ]
-big = [ 'Mesomimi', 'Endemic' ]
+small = [ 'Gezel', 'TVS', 'X' ]
+big = [ 'Mesomimi', 'Dwarf' ]
 
 small_genes = [ 'MCP', 'mCP_penton', 'Yrec', 'A32_ATPase', 'Tlr6F', 'PGVV05', 'PGVV09', 'YSL1_23', 'pPolB' ]
 
@@ -76,7 +76,10 @@ rule phylo_iqtree:
 rule phylo_ggtree:
     input:
         tree = "analysis/phylogeny_viruses/{gene}-{group}.treefile",
-        tsv  = "analysis/phylogeny_viruses/{gene}-{group}.tsv"
+        tsv  = "analysis/phylogeny_viruses/{gene}-{group}.tsv",
+        virus_metadata = "metadata/viruses.tsv",
+        segment_metadata = "metadata/viral_segments.tsv",
+        colors = "metadata/subclade_colors.txt"
     output:
         image = "output/phylogeny_viruses/{gene}-{group}.svg",
         jtree = "output/phylogeny_viruses/{gene}-{group}.jtree"

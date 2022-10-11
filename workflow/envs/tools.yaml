@@ -16,3 +16,4 @@ dependencies:
  - gawk
  - parallel
  - blast=2.13.0
+ - trimal=1.4.1

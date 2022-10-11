@@ -146,7 +146,7 @@ Paramecium_bursaria_Chlorella_virus_FR483	Paramecium bursaria Chlorella virus FR
 Paramecium_bursaria_Chlorella_virus_MT325	Paramecium bursaria chlorella virus MT325	Chlorophyta	Phycodnaviridae: Chlorovirus	Phycodnaviridae: Chlorovirus
 Paramecium_bursaria_Chlorella_virus_NY2A	Paramecium bursaria Chlorella virus NY2A	Chlorophyta	Phycodnaviridae: Chlorovirus	Phycodnaviridae: Chlorovirus
 PgV-16T	Phaeocystis globosa virus	Haptophyta	Mimiviridae: Mesomimiviruses	
-Gezel-14T	Gezel-PgVV	Haptophyta		
+Gezel-14T	Gezel-14T	Haptophyta		
 Phaant	Phaeocystis antarctica	Haptophyta		Phaeocystis antarctica
 Phaeocystis_pouchetii_virus_01	Phaeocystis pouchetii virus	Haptophyta	Mimiviridae: Mesomimiviruses	
 Phaglo	Phaeocystis globosa	Haptophyta		Phaeocystis globosa
