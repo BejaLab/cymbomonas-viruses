@@ -80,56 +80,6 @@ checkpoint segments_split:
         rename s/segments.id_// {output}/*.fna
         """
 
-rule segments_genemarks:
-    input:
-        "analysis/segments/{genome}/segments_split/{segment}.fna"
-    output:
-        "analysis/segments/{genome}/segments_split/{segment}.genemarks.gff"
-    shadow:
-        "minimal"
-    shell:
-        "gmsn.pl --format GFF3 --virus --output {output} {input}"
-
-rule segments_prodigal:
-    input:
-        "analysis/segments/{genome}/segments_split/{segment}.fna"
-    output:
-        "analysis/segments/{genome}/segments_split/{segment}.prodigal.gff"
-    shadow:
-        "minimal"
-    conda:
-        "envs/prodigal.yaml"
-    shell:
-        "prodigal -i {input} -m -g 1 -p meta -f gff > {output}"
-
-rule segments_genemarks_cat:
-    input:
-        "analysis/segments/{genome}/segments_split/{segment}.genemarks.gff",
-        "analysis/segments/{genome}/segments_split/{segment}.prodigal.gff"
-    output:
-        "analysis/segments/{genome}/segments_split/{segment}.combined.gtf"
-    params:
-        outprefix = "analysis/segments/{genome}/segments_split/{segment}",
-        cprefix = lambda wildcards:
-            wildcards.genome.replace('-','') + '_' + sha256(wildcards.segment.encode('utf-8')).hexdigest()[0:6]
-    conda:
-        "envs/tools.yaml" # NB: conda gives 0.11.2
-    shell:
-        "gffcompare -p {params.cprefix} -CTo {params.outprefix} {input}"
-
-rule segments_gffread:
-    input:
-        gtf = "analysis/segments/{genome}/segments_split/{segment}.combined.gtf",
-        fna = "analysis/segments/{genome}/segments_split/{segment}.fna",
-        fai = "analysis/segments/{genome}/segments_split/{segment}.fna.fai"
-    output:
-        gff = "analysis/segments/{genome}/segments_split/{segment}.gff",
-        faa = "analysis/segments/{genome}/segments_split/{segment}.faa"
-    conda:
-        "envs/tools.yaml"
-    shell:
-        "gffread -g {input.fna} -w - -o {output.gff} {input.gtf} | seqkit translate --trim -o {output.faa}"
-
 def aggregate_segments(wildcards, suffix):
     split_dir = checkpoints.segments_split.get(**wildcards).output[0]
     fna = path.join(split_dir, "{segment}.fna")
@@ -174,20 +124,6 @@ rule segments_bellas:
     output:
         tblout = "analysis/segments/{genome}/segments.bellas.tblout",
         domtblout = "analysis/segments/{genome}/segments.bellas.domtblout"
-    threads:
-        4
-    conda:
-        "envs/tools.yaml"
-    shell:
-        "hmmscan --cpu {threads} -o /dev/null --tblout {output.tblout} --domtblout {output.domtblout} {input.hmm} {input.fasta}"
-
-rule segments_vogdb:
-    input:
-        hmm = "databases/vogdb/output/vog.hmmdb",
-        fasta = "analysis/segments/{genome}/segments.faa"
-    output:
-        tblout = "analysis/segments/{genome}/segments.vogdb.tblout",
-        domtblout = "analysis/segments/{genome}/segments.vogdb.domtblout"
     threads:
         4
     conda:

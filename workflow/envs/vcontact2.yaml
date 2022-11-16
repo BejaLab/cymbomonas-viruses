@@ -7,6 +7,6 @@ dependencies:
  - pandas=0.25.3
  - numpy=1.19.5
  - mcl
- - diamond
+ - diamond=2.0.7
  - clusterone=1.0
  - vcontact2=0.9.19

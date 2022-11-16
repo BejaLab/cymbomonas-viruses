@@ -9,61 +9,74 @@ from collections import defaultdict
 segment_flanks = 50000
 models = { "MCP_PLV": "Blosum62+F+R5", "MCP_NCLDV": "LG+F+R9" }
 
+PLV_scores = { 'PLV2': 100, 'PLVA': 175, 'PLVB': 175 }
+PLVs = list(PLV_scores.keys())
+PLV_outgroups = [ 'TVS', 'S.punctatus', 'Gezel' ]
+
+NCLDVs = [ 'AG_03', 'Prasinoviridae', 'Chlorovirus' ]
+
 # Get variables from globs
 genomes,       = glob_wildcards("genomes/{genome}.fna")
-algal_genomes, = glob_wildcards("genomes_algae/{genome}.fna")
+clusters,      = glob_wildcards("clusters/{cluster}.fasta")
+algae,         = glob_wildcards("algae/{genome}.fna")
 hmms,          = glob_wildcards("hmm/{hmm}.hmm")
+mcp_hmms,      = glob_wildcards("hmm/MCP/{hmm}.hmm")
 hmm_algae,     = glob_wildcards("hmm_algae/{hmm}.hmm")
 capsid_proteins = defaultdict(list)
-
 # Get variables from files
 with open("metadata/capsid_proteins.txt") as fh:
     for line in fh:
         hmm, CP = line.rstrip().split()
         capsid_proteins[CP].append(hmm)
 
-segments_file = 'metadata/viral_segments.tsv'
+algae = {}
+with open("metadata/algae.txt") as fh:
+   for line in fh:
+       acc, organism = line.rstrip().split('\t')
+       algae[acc] = organism
+
+NCLDV_markers = {}
+with open("metadata/NCLDV_markers.txt") as fh:
+    for line in fh:
+        hmm, score = line.strip().split()
+        NCLDV_markers[hmm] = score
+
 viruses_file  = 'metadata/viruses.tsv'
 
 evalues = { "MCP_PLV": 1e-8, "MCP_NCLDV": 1e-8 }
 
-segments = {}
-Gezel_segments = []
-data = read_csv(segments_file, sep = '\t')
-for i, row in data.iterrows():
-    if isnull(row['fragment']):
-        short = row['short']
-        segments[short] = row.to_dict()
-        if row['clade'] == 'Gezel':
-            Gezel_segments.append(short)
-segment_names = list(segments.keys())
-
 viruses = {}
-small_viruses = []
-Gezel_viruses = []
-Mesomimi_viruses = []
+virus_clades = defaultdict(list)
 data = read_csv(viruses_file, sep = '\t')
 for i, row in data.iterrows():
     if isnull(row['fragment']):
-        short = row['short']
-        viruses[short] = row.to_dict()
-        if row['clade'] == 'Gezel':
-            Gezel_viruses.append(short)
-        if row['clade'] == 'Mesomimi':
-            Mesomimi_viruses.append(short)
-        if row['group'] == 'small':
-            small_viruses.append(short)
+        if row['exclude'] != 'y':
+            short = row['short']
+            clade = row['clade']
+            viruses[short] = row.to_dict()
+            virus_clades[clade].append(short)
 virus_names = list(viruses.keys())
 
+clades = set()
+with open('metadata/curated/MCPs.faa') as fd:
+    fasta = SeqIO.parse(fd, 'fasta')
+    for record in fasta:
+        subclade = record.id.partition('@')[2]
+        clade = subclade.partition('-')[0]
+        clades.add(clade)
+
 # Include dependent snakefiles
-include: "Promoters.snakefile"
+# include: "Promoters.snakefile"
 include: "Get_viruses.snakefile"
-include: "Segments_extract.snakefile"
+include: "Locate_viruses.snakefile"
+# include: "Segments_extract.snakefile"
 include: "Segments_search.snakefile"
-include: "Phylogeny_with_algae.snakefile"
-include: "Vcontact.snakefile"
+# include: "Phylogeny_with_algae.snakefile"
+# include: "Vcontact.snakefile"
 include: "Remote_homology.snakefile"
-include: "Phylogeny_viruses.snakefile"
+include: "Phylogeny_NCLDVs.snakefile"
+include: "Phylogeny_PLVs.snakefile"
+include: "Algae.snakefile"
 
 class bcolors:
     HEADER = '\033[95m'
@@ -92,16 +105,6 @@ rule makeblastdb_prot:
     shell:
         "makeblastdb -in {input} -dbtype prot"
 
-rule makeblastdb_nucl:
-    input:
-        "{fasta}"
-    output:
-        "{fasta}.ndb"
-    conda:
-        "envs/tools.yaml"
-    shell:
-        "makeblastdb -in {input} -dbtype nucl"
-
 rule faidx:
     input:
         "{fasta}"
@@ -129,3 +132,128 @@ rule mad:
         "{treefile}.rooted"
     shell:
         "mad {input}"
+
+rule segments_genemarks:
+    input:
+        "{prefix}.fna"
+    output:
+        "{prefix}.genemarks.gff"
+    shadow:
+        "minimal"
+    shell:
+        """
+        gmsn.pl --format GFF3 --virus --output tmp.gff {input}
+        awk -F'\\t' '$2{{sub(/ .*/,"",$1)}}1' OFS='\\t' tmp.gff > {output}
+        """
+
+rule segments_prodigal:
+    input:
+        "{prefix}.fna"
+    output:
+        "{prefix}.prodigal.gff"
+    shadow:
+        "minimal"
+    conda:
+        "envs/prodigal.yaml"
+    shell:
+        "prodigal -i {input} -m -g 1 -p meta -f gff > {output}"
+
+rule segments_genemarks_cat:
+    input:
+        "{prefix}.genemarks.gff",
+        "{prefix}.prodigal.gff"
+    output:
+        "{prefix}.combined.gtf"
+    conda:
+        "envs/tools.yaml"
+    shadow:
+        "shallow"
+    shell:
+        """
+        gffcompare -p NAME_PREFIX -CTo tmp {input}
+        awk -v p=NAME_PREFIX -F'\\t' '{{sub(p,$1,$9)}}1' OFS='\\t' tmp.combined.gtf > {output}
+        """
+
+rule segments_gffread:
+    input:
+        gtf = "{prefix}.combined.gtf",
+        fna = "{prefix}.fna",
+        fai = "{prefix}.fna.fai"
+    output:
+        gff = "{prefix}.combined.gff",
+        faa = "{prefix}.combined.faa"
+    conda:
+        "envs/tools.yaml"
+    shell:
+        "gffread -g {input.fna} -w - -o {output.gff} {input.gtf} | seqkit translate --trim -o {output.faa}"
+
+rule makeblastdb:
+    input:
+        "{prefix}.fna"
+    output:
+        "{prefix}.fna.ndb"
+    conda:
+        "envs/tools.yaml"
+    shell:
+        "makeblastdb -in {input} -dbtype nucl"
+
+rule merge_custom_hmms:
+    input:
+        expand("hmm/{hmm}.hmm", hmm = hmms)
+    output:
+        "analysis/hmm/custom.hmmdb"
+    shell:
+        "cat {input} > {output}"
+
+rule hmmpress:
+    input:
+        "{prefix}.hmmdb"
+    output:
+        expand("{{prefix}}.hmmdb.{ext}", ext = [ "h3m", "h3i", "h3f", "h3p" ])
+    conda:
+        "envs/tools.yaml"
+    shell:
+        "hmmpress {input}"
+
+rule custom_hmmscan:
+    input:
+        fasta = "{prefix}.faa",
+        hmm = "analysis/hmm/custom.hmmdb",
+        h3m = "analysis/hmm/custom.hmmdb.h3m"
+    output:
+        tblout = "{prefix}.custom.tblout",
+        domtblout = "{prefix}.custom.domtblout"
+    threads:
+        4
+    conda:
+        "envs/tools.yaml"
+    shell:
+        "hmmscan --max --cpu {threads} -o /dev/null --tblout {output.tblout} --domtblout {output.domtblout} {input.hmm} {input.fasta}"
+
+rule vogdb_hmmsearch:
+    input:
+        fasta = "{prefix}.faa",
+        hmm = "databases/vogdb/output/vog.hmmdb"
+    output:
+        tblout = "{prefix}.vogdb.tblout",
+        domtblout = "{prefix}.vogdb.domtblout"
+    threads:
+        4
+    conda:
+        "envs/tools.yaml"
+    shell:
+        "hmmscan --cpu {threads} -o /dev/null --tblout {output.tblout} --domtblout {output.domtblout} {input.hmm} {input.fasta}"
+
+rule outfmt6_to_bed:
+    input:
+        "{prefix}.outfmt6"
+    output:
+        "{prefix}.outfmt6.bed"
+    shell:
+        "awk -vf=+ -vr=- -vd=. '{{n=$2;b=$9;e=$10;s=f}}b>e{{s=r;b=$10;e=$9}}{{print n,b-1,e,d,d,s}}' OFS=\\\\t {input} > {output}"
+
+rule touch_blank:
+    output:
+        "analysis/blank.txt"
+    shell:
+        "touch {output}"

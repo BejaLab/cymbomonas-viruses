@@ -4,5 +4,8 @@ channels:
 dependencies:
  - python=3.7
  - biopython=1.79
+ - bcbio-gff=0.6.9
+ - python-igraph=0.10.0
+ - pybedtools=0.9.0
  - conda-ecosystem-user-package-isolation
  - pandas

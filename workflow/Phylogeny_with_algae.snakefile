@@ -1,7 +1,7 @@
 
 rule mcp_algae:
     input:
-        expand("output/{CP}.svg", CP = [ "MCP_NCLDV", "MCP_PLV" ]),
+        expand("output/{CP}.svg", CP = "MCP_PLV"),
 
 rule algae_getorf:
     input:

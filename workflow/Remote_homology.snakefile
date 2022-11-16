@@ -1,20 +1,21 @@
 
 rule remote_homology:
     input:
-        expand("analysis/PLV_segments_hh/{segment}-hhsearch-pfam.tsv", segment = segment_names),
-        expand("analysis/PLVs_hh/{segment}-hhsearch-pfam.tsv", segment = small_viruses + Mesomimi_viruses),
-        expand("output/core_genes_{coverage}.pdf", coverage = [ 40, 60 ]),
+        expand("analysis/PLVs_hh/{virus}-hhsearch-pfam.tsv", virus = virus_names)
+        # expand("output/core_genes_{coverage}.pdf", coverage = [ 40, 60 ]),
 
 rule collect_proteins:
     input:
-        expand("analysis/PLVs/{genome}.faa", genome = small_viruses + Mesomimi_viruses),
-        expand("analysis/PLV_segments/{segment}.faa", segment = segment_names)
+        expand("analysis/PLVs/{genome}.faa", genome = virus_names),
+        "databases/Bellas_Sommaruga/input/All_proteins.faa"
     output:
         "analysis/hhblits_db/All_proteins.faa"
+    params:
+        m = 20
     conda:
         "envs/tools.yaml"
     shell:
-        "seqkit seq -o {output} {input}"
+        "seqkit seq -m {params.m} {input} | seqkit rmdup -s | seqkit rename -o {output}"
 
 rule segments_faa_ffindex:
     input:
@@ -126,16 +127,6 @@ rule hhsuite_parse:
     shell:
         "ffindex_apply -q {input.data} {input.index} -- Rscript workflow/helpers/parse_hhsuite.R | sed '2,${{/^Query/d}}' > {output}"
 
-rule protein_createdb_bellas:
-    input:
-        "databases/Bellas_Sommaruga/input/All_proteins.faa"
-    output:
-        "analysis/hhblits_db/Bellas"
-    conda:
-        "envs/soedinglab.yaml"
-    shell:
-        "mmseqs createdb {input} {output}"
-
 rule protein_createdb:
     input:
         "analysis/hhblits_db/All_proteins.faa"
@@ -215,8 +206,7 @@ rule createtsv:
 rule mcl_abc:
     input:
         clu_tsv = "analysis/hhblits_db/All_proteins_clu.tsv",
-        segment_tsv = expand("analysis/PLV_segments_hh/{segment}-hhsearch-self.tsv", segment = segment_names),
-        virus_tsv = expand("analysis/PLVs_hh/{segment}-hhsearch-self.tsv", segment = small_viruses + Mesomimi_viruses),
+        virus_tsv = expand("analysis/PLVs_hh/{segment}-hhsearch-self.tsv", segment = virus_names),
     output:
         "analysis/hh_mcl/abc_{coverage}.tsv"
     params:
@@ -249,10 +239,8 @@ rule mcl_run:
 rule mcl_analyze:
     input:
         mcl = "analysis/hh_mcl/mcl_{coverage}.txt",
-        segment_ffindex  = expand("analysis/PLV_segments/{segment}.ffindex", segment = segment_names),
-        virus_ffindex    = expand("analysis/PLVs/{virus}.ffindex", virus = small_viruses + Mesomimi_viruses),
-        segment_pfam     = expand("analysis/PLV_segments_hh/{segment}-hhsearch-pfam.tsv", segment = segment_names),
-        virus_pfam       = expand("analysis/PLVs_hh/{virus}-hhsearch-pfam.tsv", virus = small_viruses + Mesomimi_viruses),
+        virus_ffindex    = expand("analysis/PLVs/{virus}.ffindex", virus = virus_names),
+        virus_pfam       = expand("analysis/PLVs_hh/{virus}-hhsearch-pfam.tsv", virus = virus_names),
         virus_metadata   = "metadata/viruses.tsv",
         segment_metadata = "metadata/viral_segments.tsv",
         genes_cluster    = "metadata/genes_cluster.tsv",
