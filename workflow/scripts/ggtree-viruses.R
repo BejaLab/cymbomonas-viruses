@@ -22,11 +22,7 @@ read.cdhit.clstr <- function(fname) {
         mutate(Representative = Seq.Name[which(Is.Representative)]) %>%
         separate_rows(Col2, sep = ",") %>%
         separate(Col2, into = data.fields, sep = "/", fill = "left", convert = T) %>%
-        mutate(Identity = sub("%", "", Identity) %>% as.numeric) %>%
-        group_by(Seq.Name) %>%
-        mutate(level.rank = paste0(".", 1:n() - 1), level.rank = ifelse(level.rank == ".0", "", level.rank)) %>%
-        pivot_wider(names_from = level.rank, values_from = data.fields, names_sep = "") %>%
-        ungroup
+        mutate(Identity = sub("%", "", Identity) %>% as.numeric)
 }
 
 with(snakemake@input, {
@@ -39,6 +35,9 @@ with(snakemake@input, {
 with(snakemake@output, {
     out_image_file <<- image
     out_jtree_file <<- jtree
+})
+with(snakemake@params, {
+    output_width <<- width
 })
 
 img_locations <- read.table(img_file, sep = "\t", col.names = c("Analysis", "Location", "Status"))
@@ -76,12 +75,11 @@ tree <- read.tree(tree_file) %>%
 ntaxa <- filter(tree, ! node %in% parent) %>% nrow
 tree_data <- as.treedata(tree)
 write.jtree(tree_data, file = out_jtree_file)
-
 p <- ggtree(tree_data) +
     geom_nodepoint(aes(x = branch, subset = !is.na(UFboot) & UFboot >= 90, size = UFboot)) +
-    geom_tiplab(aes(label = Label, color = clade), size = 2, align = F, linesize = 0) +
+    geom_tiplab(aes(label = Label), size = 2, align = F, linesize = 0) +
     # scale_color_manual(values = colors) +
     geom_treescale(width = 0.5) +
     scale_size_continuous(limits = c(90, 100), range = c(1, 2))
 
-ggsave(out_image_file, p, height = ntaxa * 0.1, width = 4, limitsize = F)
+ggsave(out_image_file, p, height = ntaxa * 0.1, width = output_width, limitsize = F)

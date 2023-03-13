@@ -51,7 +51,7 @@ rule ncldv_hmmsearch_extract:
     conda:
         "envs/tools.yaml"
     shell:
-        "grep -v '^#' {input.txt} | awk '$8>{params.score}' | cut -f1 -d' ' | head -n1 | xargs -r seqkit faidx {input.faa} | seqkit replace -p $ -r ' {wildcards.marker} {wildcards.genome}' -o {output} || true"
+        "grep -v '^#' {input.txt} | awk '$8>{params.score}' | cut -f1 -d' ' | head -n1 | xargs -r seqkit faidx {input.faa} | seqkit replace -p ^ -r '{wildcards.genome} ' -o {output} || true"
 
 rule NCLDV_fetch:
     input:
@@ -62,7 +62,7 @@ rule NCLDV_fetch:
     conda:
         "envs/tools.yaml"
     shell:
-        "grep -w {wildcards.segment:q} {input.gff} | gffread -g {input.fna} -w - | seqkit translate --trim | seqkit replace -p TCONS -r {wildcards.segment:q} -o {output}"
+        "grep -w {wildcards.segment:q} {input.gff} | gffread -g {input.fna} -w - | seqkit translate --trim -o {output}"
 
 rule NCLDV_markers_mafft:
     input:
@@ -106,8 +106,7 @@ rule NCLDV_markers_nexus:
  
 rule NCLDV_iqtree:
     input:
-        nex = "analysis/phylogeny/NCLDVs/markers/NCLDV.nex",
-        fasta = expand("analysis/phylogeny/NCLDVs/markers/{marker}.trimal", marker = NCLDV_markers)
+        "analysis/phylogeny/NCLDVs/markers/NCLDV.nex",
     output:
         "analysis/phylogeny/NCLDVs/markers/NCLDV.treefile"
     params:
@@ -119,30 +118,31 @@ rule NCLDV_iqtree:
     conda:
         "envs/tools.yaml"
     shell:
-        "iqtree2 -spp {input.nex} --prefix {params.prefix} -redo --alrt 1000 -B {params.B} --seed {params.seed} -T {threads}"
+        "iqtree2 -spp {input} --prefix {params.prefix} -redo --alrt 1000 -B {params.B} --seed {params.seed} -T {threads}"
 
 rule NCLDV_txt_viruses:
     input:
-        "analysis/phylogeny/NCLDVs/faa/{source}/{genome}.faa"
+        expand("analysis/phylogeny/NCLDVs/markers/{marker}.mafft", marker = NCLDV_markers)
     output:
-        "analysis/phylogeny/NCLDVs/faa/{source}/{genome}.faa.txt"
+        "analysis/phylogeny/NCLDVs/markers/names.txt"
     conda:
         "envs/tools.yaml"
     shell:
-        "seqkit seq -ni {input} | awk -vg={wildcards.genome:q} '{{print g,$1}}' OFS='\\t' > {output}"
+        "seqkit seq -ni {input} | sort -u | awk '{{print $1,$1}}' OFS='\\t' > {output}"
 
 rule NCLDV_phylo_ggtree:
     input:
-        tree = "analysis/phylogeny/NCLDVs/markers/NCLDV.treefile",
-        proteins = lambda w: expand("analysis/phylogeny/NCLDVs/faa/{source}/{genome}.faa.txt", genome = [ virus for x in NCLDVs for virus in virus_clades[x]]),
+        tree = "analysis/phylogeny/NCLDVs/markers/NCLDV.treefile.madroot",
+        proteins = "analysis/phylogeny/NCLDVs/markers/names.txt",
         viruses  = "metadata/viruses.tsv",
         img = "metadata/IMG.tsv",
         clstr = "analysis/blank.txt"
     output:
         image = "output/phylogeny/NCLDVs.svg",
         jtree = "output/phylogeny/NCLDVs.jtree"
+    params:
+        width = 3
     conda:
         "envs/r.yaml"
     script:
         "scripts/ggtree-viruses.R"
-

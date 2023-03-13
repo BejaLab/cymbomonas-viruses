@@ -1,12 +1,13 @@
 
 rule remote_homology:
     input:
-        expand("analysis/PLVs_hh/{virus}-hhsearch-pfam.tsv", virus = virus_names)
-        # expand("output/core_genes_{coverage}.pdf", coverage = [ 40, 60 ]),
+        "output/mcl_genes_60.tsv"
+        # expand("analysis/PLVs_hh/{virus}-hhsearch-pfam.tsv", virus = virus_names)
 
 rule collect_proteins:
     input:
-        expand("analysis/PLVs/{genome}.faa", genome = virus_names),
+        expand("analysis/PLVs/{genome}.faa", genome = [ "Gezel-14T" ]),
+        expand("analysis/PLVs/{genome}.faa", genome = [ g for g in viruses if viruses[g]['representative'] == 'y' ]),
         "databases/Bellas_Sommaruga/input/All_proteins.faa"
     output:
         "analysis/hhblits_db/All_proteins.faa"
@@ -206,7 +207,7 @@ rule createtsv:
 rule mcl_abc:
     input:
         clu_tsv = "analysis/hhblits_db/All_proteins_clu.tsv",
-        virus_tsv = expand("analysis/PLVs_hh/{segment}-hhsearch-self.tsv", segment = virus_names),
+        virus_tsv = expand("analysis/PLVs_hh/{genome}-hhsearch-self.tsv", genome = [ g for g in viruses if viruses[g]['representative'] == 'y' ]),
     output:
         "analysis/hh_mcl/abc_{coverage}.tsv"
     params:
@@ -239,28 +240,17 @@ rule mcl_run:
 rule mcl_analyze:
     input:
         mcl = "analysis/hh_mcl/mcl_{coverage}.txt",
-        virus_ffindex    = expand("analysis/PLVs/{virus}.ffindex", virus = virus_names),
-        virus_pfam       = expand("analysis/PLVs_hh/{virus}-hhsearch-pfam.tsv", virus = virus_names),
+        virus_ffindex    = expand("analysis/PLVs/{virus}.ffindex", virus = [ g for g in viruses if viruses[g]['representative'] == 'y' ]),
+        virus_pfam       = expand("analysis/PLVs_hh/{virus}-hhsearch-pfam.tsv", virus = [ g for g in viruses if viruses[g]['representative'] == 'y' ]),
         virus_metadata   = "metadata/viruses.tsv",
-        segment_metadata = "metadata/viral_segments.tsv",
         genes_cluster    = "metadata/genes_cluster.tsv",
-        genes_pfam       = "metadata/genes_pfam.tsv",
-        jtree            = "output/MCP_PLV.jtree",
-        colors           = "metadata/subclade_colors.txt",
-        plv_order        = "metadata/plv_order.txt",
-        family_colors    = "metadata/family_colors.txt"
+        genes_pfam       = "metadata/genes_pfam.tsv"
     output:
-        core_genes = "output/core_genes_{coverage}.pdf",
         bipartite  = "output/bipartite_{coverage}.pdf",
-        data       = "output/mcl_genes_{coverage}.tsv",
-        reduced_tree = "output/MCP_PLV_reduced_{coverage}.svg"
+        data       = "output/mcl_genes_{coverage}.tsv"
     params:
-        probab = 80,
-        chosen_clades = [ "Gezel", "Dwarf", "Mesomimi" ],
-        clade_levels  = [ "Mesomimi", "Dwarf", "Lavidaviridae", "TVS", "Gezel" ],
-        ref_genomes   = [ "Sputnik", "Mavirus_Spezl", "TVV_S1", "Dialut-1a", "Dialut-1b", "Dialut-2" ]
+        probab = 80
     conda:
         "envs/r.yaml"
     script:
-        "scripts/mcl_graph.R"
-
+        "scripts/mcl_genes.R"

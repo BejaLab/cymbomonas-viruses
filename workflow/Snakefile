@@ -50,9 +50,9 @@ virus_clades = defaultdict(list)
 data = read_csv(viruses_file, sep = '\t')
 for i, row in data.iterrows():
     if isnull(row['fragment']):
+        short = row['short']
+        clade = row['clade']
         if row['exclude'] != 'y':
-            short = row['short']
-            clade = row['clade']
             viruses[short] = row.to_dict()
             virus_clades[clade].append(short)
 virus_names = list(viruses.keys())
@@ -257,3 +257,12 @@ rule touch_blank:
         "analysis/blank.txt"
     shell:
         "touch {output}"
+
+# NB: not in conda
+rule mad_root:
+    input:
+        "{prefix}.treefile"
+    output:
+        "{prefix}.treefile.madroot"
+    shell:
+        "madRoot {input} > {output}"

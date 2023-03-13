@@ -213,7 +213,7 @@ rule faa_txt_algae:
 
 rule PLV_phylo_ggtree:
     input:
-        tree = "analysis/phylogeny/PLVs/PLVs.treefile",
+        tree = "analysis/phylogeny/PLVs/PLVs.treefile.madroot",
         proteins = lambda w:
             expand("analysis/phylogeny/PLVs/viruses/{genome}-MCP.faa.txt", genome = [ virus for x in PLV_outgroups for virus in virus_clades[x]]) +
             expand("analysis/phylogeny/PLVs/algae/{clade}-{genome}.faa.txt", genome = algae, clade = PLVs),
@@ -223,6 +223,8 @@ rule PLV_phylo_ggtree:
     output:
         image = "output/phylogeny/PLVs-MCP.svg",
         jtree = "output/phylogeny/PLVs-MCP.jtree"
+    params:
+        width = 4
     conda:
         "envs/r.yaml"
     script:
