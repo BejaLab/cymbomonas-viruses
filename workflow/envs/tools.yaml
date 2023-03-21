@@ -17,3 +17,4 @@ dependencies:
  - parallel
  - blast=2.13.0
  - trimal=1.4.1
+ - bedtools=2.30.0

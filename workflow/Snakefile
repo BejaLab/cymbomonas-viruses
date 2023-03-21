@@ -244,14 +244,6 @@ rule vogdb_hmmsearch:
     shell:
         "hmmscan --cpu {threads} -o /dev/null --tblout {output.tblout} --domtblout {output.domtblout} {input.hmm} {input.fasta}"
 
-rule outfmt6_to_bed:
-    input:
-        "{prefix}.outfmt6"
-    output:
-        "{prefix}.outfmt6.bed"
-    shell:
-        "awk -vf=+ -vr=- -vd=. '{{n=$2;b=$9;e=$10;s=f}}b>e{{s=r;b=$10;e=$9}}{{print n,b-1,e,d,d,s}}' OFS=\\\\t {input} > {output}"
-
 rule touch_blank:
     output:
         "analysis/blank.txt"

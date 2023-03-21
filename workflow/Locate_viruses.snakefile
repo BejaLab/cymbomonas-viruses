@@ -4,7 +4,7 @@ from Bio import SeqIO
 
 rule locate_viruses:
     input:
-        expand("analysis/locate_viruses/long_MCPs/{cluster}-{clade}.tblastn.outfmt6.bed", cluster = clusters, clade = clades)
+        expand("analysis/locate_viruses/all_MCPs/{cluster}.bed", cluster = clusters)
 
 rule MCPs_link:
     input:
@@ -89,17 +89,40 @@ rule parse_blastn:
     script:
         "scripts/blastn.py"
 
-checkpoint resolve_bed:
+rule simplify_gff:
     input:
-        gff = "analysis/locate_viruses/blastn/{cluster}-{clade}.gff",
-        fna = "analysis/locate_viruses/clusters/{cluster}.fna"
+        "analysis/locate_viruses/blastn/{cluster}-{clade}.gff"
     output:
-        gff = "analysis/locate_viruses/segments/{cluster}-{clade}.gff3",
-        fna = "analysis/locate_viruses/segments/{cluster}-{clade}.fna"
+        "analysis/locate_viruses/blastn/{cluster}-{clade}.gff3"
     conda:
         "envs/biopython.yaml"
     script:
-        "scripts/bed.py"
+        "scripts/simplify_gff.py"
+
+rule flatten_gff:
+    input:
+        "analysis/locate_viruses/blastn/{cluster}-{clade}.gff3"
+    output:
+        "analysis/locate_viruses/segments/{cluster}-{clade}.gff3"
+    params:
+        overlap = 10
+    conda:
+        "envs/tools.yaml"
+    shell:
+        """
+        sort -k1,1 -k4,4n {input} | bedtools merge -s -d -{params.overlap} -c 7 -o distinct | awk '{{print$1,"blastn","fragment",$2+1,$3,".",$4,".",sprintf("ID=frag-%s;", NR)}}' OFS=\\\\t > {output}
+        """
+
+rule gff3_to_fna:
+    input:
+        gff = "analysis/locate_viruses/segments/{cluster}-{clade}.gff3",
+        fna = "analysis/locate_viruses/clusters/{cluster}.fna"
+    output:
+        "analysis/locate_viruses/segments/{cluster}-{clade}.fna"
+    conda:
+        "envs/biopython.yaml"
+    script:
+        "scripts/gff_fna.py"
 
 rule segment_hmmsearch:
     input:
@@ -159,7 +182,7 @@ rule MCP_blast:
     output:
         "analysis/locate_viruses/long_MCPs/{cluster}-{clade}.tblastn.outfmt6"
     params:
-        evalue = 1e-5
+        evalue = 1e-10
     conda:
         "envs/tools.yaml"
     threads:
@@ -167,3 +190,26 @@ rule MCP_blast:
     shell:
         "tblastn -num_threads {threads} -query {input.query} -db {input.fna} -evalue {params.evalue} -max_target_seqs 1000000 -outfmt 6 -out {output}"
 
+rule outfmt6_to_bed:
+    input:
+        "analysis/locate_viruses/long_MCPs/{cluster}-{clade}.tblastn.outfmt6"
+    output:
+        "analysis/locate_viruses/long_MCPs/{cluster}-{clade}.tblastn.outfmt6.bed"
+    conda:
+        "envs/tools.yaml"
+    shell:
+        """
+        awk -v c={wildcards.clade} '{{n=$2;b=$9;e=$10;s="+"}}b>e{{s="-";b=$10;e=$9}}{{print n,b-1,e,$3,c,s}}' OFS=\\\\t {input} | sort -k1,1 -k2,2n | bedtools merge -s -c 4,5,6 -o max,distinct,distinct > {output}
+        """
+
+rule merge_outfmt6_to_bed:
+    input:
+        expand("analysis/locate_viruses/long_MCPs/{{cluster}}-{clade}.tblastn.outfmt6.bed", clade = clades)
+    output:
+        "analysis/locate_viruses/all_MCPs/{cluster}.bed"
+    conda:
+        "envs/tools.yaml"
+    shell:
+        """
+        sort -k1,1 -k2,2n {input} | bedtools merge -s -c 4,5,6 -o collapse,collapse,distinct | awk '{{split($4,s,",");split($5,c,",");S=0;for(i in s) if(s[i]>S){{S=s[i];C=c[i]}};print$1,$2,$3,S,C,$6}}' OFS=\\\\t > {output}
+        """
