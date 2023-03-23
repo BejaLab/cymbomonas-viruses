@@ -38,7 +38,7 @@ with open("metadata/algae.txt") as fh:
 NCLDV_markers = {}
 with open("metadata/NCLDV_markers.txt") as fh:
     for line in fh:
-        hmm, score = line.strip().split()
+        hmm, desc, score = line.strip().split()
         NCLDV_markers[hmm] = score
 
 viruses_file  = 'metadata/viruses.tsv'

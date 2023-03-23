@@ -63,6 +63,14 @@ rule cp_gbk:
     shell:
         "cp {input} {output}"
 
+rule cp_lens:
+    input:
+        lambda w: expand("analysis/PLV_annotate/{annotations}-{genome}.lens.txt", annotations = viruses[w.genome]['annotations'], genome = w.genome)
+    output:
+        "analysis/PLVs/{genome}.lens.txt"
+    shell:
+        "cp {input} {output}"
+
 rule mv_faa:
     input:
         lambda w: expand("analysis/PLV_annotate/{annotations}-{genome}.faa", annotations = viruses[w.genome]['annotations'], genome = w.genome)
@@ -159,3 +167,47 @@ rule extract_faa_ncbi:
         "envs/bioperl.yaml"
     shell:
         "perl workflow/helpers/biotags.pl -i {input} -p CDS -T description -t protein_id,translation | awk -F\\\\t '$2{{printf\"%s %s\\t%s\\n\",$2,$1,$3}}' | seqkit tab2fx -o {output}"
+
+rule get_lens_gbk:
+    input:
+        "analysis/PLV_annotate/{source}-{virus}.gbk",
+    wildcard_constraints:
+        source = "ncbi|prokka|yutin|manual"
+    output:
+        "analysis/PLV_annotate/{source}-{virus}.lens.txt"
+    conda:
+        "envs/tools.yaml"
+    shell:
+        "grep ^LOCUS {input} | awk -vV={wildcards.virus} '{{print V,$2,$3}}' > {output}"
+
+rule get_lens_moniruzzaman:
+    input:
+        "databases/Moniruzzaman20/final_bins_nucl/{virus}.dc.fa"
+    output:
+        "analysis/PLV_annotate/moniruzzaman20-{virus}.lens.txt"
+    conda:
+        "envs/tools.yaml"
+    shell:
+        "seqkit fx2tab -nil {input} | awk -vV={wildcards.virus} '{{print V,$1,$2}}' > {output}"
+
+rule get_lens_bellas:
+    input:
+        "databases/Bellas_Sommaruga/input/All_proteins.faa"
+    output:
+        "analysis/PLV_annotate/bellas-{virus}.faa"
+    params:
+        search = lambda w: viruses[w.virus]['search']
+    conda:
+        "envs/tools.yaml"
+    shell:
+        "seqkit grep -rp {params.search} {input} | seqkit seq -ni | awk -F_[-]_ '{{c=$1}}$2~/_len/{{c=$2}}{{print c}}' | sort -u | awk -F_ -vV={wildcards.virus} '{{for(i=1;i<NF;i++)if($i~/^len/){{print V,$0,$(i+1);next}}}} > {output}"
+
+rule get_lens_gvmags:
+    input:
+        "databases/GVMAGs/data"
+    output:
+        "analysis/PLV_annotate/gvmags-{virus}.lens.txt"
+    conda:
+        "envs/tools.yaml"
+    shell:
+        "seqkit fx2tab -nil {input}/GVMAGs_*/GVMAGs_*_fna/{wildcards.virus}.fna | awk -vV={wildcards.virus} '{{print V,$1,$2}}' > {output}"

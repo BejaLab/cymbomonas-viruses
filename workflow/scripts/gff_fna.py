@@ -15,5 +15,5 @@ with open(gff_input_file) as gff:
                 feature = record.get_feature()
                 seq = feature.extract(fasta[sbjct])
                 seq.id = seq.name = record.id
-                seq.description = ''
+                seq.description = 'score:%f' % record.score
                 SeqIO.write(seq, fna, 'fasta')

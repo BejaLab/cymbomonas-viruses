@@ -76,7 +76,7 @@ rule blast_IMGVR:
     params:
         evalue = 1e-10
     conda:
-        "envs/tools.yaml"
+        "envs/vcontact2.yaml"
     shell:
         "diamond blastp --query {input.query} --db {input.db} --evalue {params.evalue} --outfmt 6 --out {output} --more-sensitive"
 

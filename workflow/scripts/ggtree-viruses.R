@@ -8,6 +8,7 @@ library(phangorn)
 library(stringr)
 library(ggplot2)
 library(phytools)
+library(tibble)
 
 read.cdhit.clstr <- function(fname) {
     data.fields <- c("E.Value", "Aln", "Identity")
@@ -31,6 +32,9 @@ with(snakemake@input, {
     viruses_file <<- viruses
     img_file     <<- img
     clstr_files  <<- clstr
+    lens_files   <<- lens
+    aln_files    <<- alns
+    markers_file <<- markers
 })
 with(snakemake@output, {
     out_image_file <<- image
@@ -40,6 +44,19 @@ with(snakemake@params, {
     output_width <<- width
 })
 
+markers <- read.table(markers_file, col.names = c("marker", "desc", "score"))
+lens <- lapply(lens_files, read.table, col.names = c("short", "contig", "len")) %>%
+    bind_rows %>%
+    group_by(short) %>%
+    summarize(total_len = sum(len))
+alns <- lapply(aln_files, read.fasta) %>%
+    lapply(names) %>%
+    setNames(aln_files) %>%
+    lapply(as.data.frame) %>%
+    bind_rows(.id = "marker") %>%
+    setNames(c("marker", "short")) %>%
+    mutate(marker = basename(tools::file_path_sans_ext(marker)), short = sub(" .+", "", short)) %>%
+    left_join(markers, by = "marker")
 img_locations <- read.table(img_file, sep = "\t", col.names = c("Analysis", "Location", "Status"))
 clstr <- lapply(clstr_files, read.cdhit.clstr) %>%
     bind_rows %>%
@@ -52,7 +69,9 @@ metadata <- protein_files %>%
     bind_rows %>%
     setNames(c("short", "protein")) %>%
     left_join(viruses, by = "short") %>%
+    left_join(lens, by = "short") %>%
     distinct(protein, .keep_all = T)
+
 tree <- read.tree(tree_file) %>%
     phangorn::midpoint(node.labels = "support") %>%
     as_tibble %>%
@@ -65,7 +84,7 @@ tree <- read.tree(tree_file) %>%
     left_join(img_locations, by = "Analysis") %>%
     mutate(Label = case_when(
 	!is.na(IMGVR) ~ paste(IMGVR, ifelse(is.na(Location), "", sprintf("(%s)", Location))),
-        !is.na(name)  ~ name,
+        # !is.na(name)  ~ name,
         !is.na(short) ~ short,
         !is.na(n_clstr) ~ sprintf('(%d)', n_clstr),
         T ~ label)
@@ -75,11 +94,20 @@ tree <- read.tree(tree_file) %>%
 ntaxa <- filter(tree, ! node %in% parent) %>% nrow
 tree_data <- as.treedata(tree)
 write.jtree(tree_data, file = out_jtree_file)
+
+lens_df <- select(metadata, id = short, x = total_len)
+mark_df <- select(alns, short, desc) %>%
+    mutate(present = T) %>%
+    spread(desc, present) %>%
+    column_to_rownames("short")
 p <- ggtree(tree_data) +
     geom_nodepoint(aes(x = branch, subset = !is.na(UFboot) & UFboot >= 90, size = UFboot)) +
     geom_tiplab(aes(label = Label), size = 2, align = F, linesize = 0) +
     # scale_color_manual(values = colors) +
     geom_treescale(width = 0.5) +
-    scale_size_continuous(limits = c(90, 100), range = c(1, 2))
-
+    scale_size_continuous(limits = c(95, 100), range = c(1, 2)) +
+    geom_facet(panel = "Assembly length", data = lens_df, geom = geom_col, orientation = 'y') +
+    # geom_facet(panel = "Markers", data = mark_df, geom = geom_point) +
+    theme_tree2() # theme(legend.position = "bottom")
+p <- gheatmap(p, data = mark_df)
 ggsave(out_image_file, p, height = ntaxa * 0.1, width = output_width, limitsize = F)

@@ -1,6 +1,8 @@
 
+NCLDV_genomes = [ virus for x in NCLDVs for virus in virus_clades[x] if viruses[virus]['representative'] != 'y' ]
+
 def NCLDV_segment_markers(wildcards):
-    fasta_file = checkpoints.resolve_bed.get(cluster = clusters[0], clade = "NCLDV").output['fna']
+    fasta_file = checkpoints.gff3_to_fna.get(cluster = clusters[0], clade = "NCLDV").output[0]
     recs = SeqIO.parse(fasta_file, "fasta")
     min_len = 80000
     segments = [ rec.id for rec in recs if len(rec.seq) > min_len ]
@@ -66,7 +68,7 @@ rule NCLDV_fetch:
 
 rule NCLDV_markers_mafft:
     input:
-        expand("analysis/phylogeny/NCLDVs/hmmsearch/viruses/{genome}-{{marker}}.faa", genome = [ virus for x in NCLDVs for virus in virus_clades[x]]),
+        expand("analysis/phylogeny/NCLDVs/hmmsearch/viruses/{genome}-{{marker}}.faa", genome = NCLDV_genomes),
         NCLDV_segment_markers
     output:
         "analysis/phylogeny/NCLDVs/markers/{marker}.mafft"
@@ -135,13 +137,18 @@ rule NCLDV_phylo_ggtree:
         tree = "analysis/phylogeny/NCLDVs/markers/NCLDV.treefile.madroot",
         proteins = "analysis/phylogeny/NCLDVs/markers/names.txt",
         viruses  = "metadata/viruses.tsv",
+        markers  = "metadata/NCLDV_markers.txt",
         img = "metadata/IMG.tsv",
-        clstr = "analysis/blank.txt"
+        clstr = "analysis/blank.txt",
+        lens =
+            expand("analysis/PLVs/{genome}.lens.txt", genome = NCLDV_genomes) +
+            expand("analysis/locate_viruses/segments/{cluster}-NCLDV.lens.txt", cluster = clusters),
+        alns = expand("analysis/phylogeny/NCLDVs/markers/{marker}.mafft", marker = NCLDV_markers)
     output:
         image = "output/phylogeny/NCLDVs.svg",
         jtree = "output/phylogeny/NCLDVs.jtree"
     params:
-        width = 3
+        width = 7
     conda:
         "envs/r.yaml"
     script:

@@ -79,10 +79,10 @@ rule parse_blastn:
     output:
         "analysis/locate_viruses/blastn/{cluster}-{clade}.gff"
     params:
-        query_gap = 1000,
-        sbjct_gap_1 = 10000,
-        sbjct_gap_2 = 1000,
-        chain_len = 1000,
+        query_gap   = lambda w: 1000  if w.clade != 'NCLDV' else 3000,
+        sbjct_gap_1 = lambda w: 10000 if w.clade != 'NCLDV' else 30000,
+        sbjct_gap_2 = lambda w: 1000  if w.clade != 'NCLDV' else 3000,
+        chain_len   = lambda w: 1000  if w.clade != 'NCLDV' else 3000,
         min_neighbor_len = 500
     conda:
         "envs/biopython.yaml"
@@ -93,27 +93,13 @@ rule simplify_gff:
     input:
         "analysis/locate_viruses/blastn/{cluster}-{clade}.gff"
     output:
-        "analysis/locate_viruses/blastn/{cluster}-{clade}.gff3"
+        "analysis/locate_viruses/segments/{cluster}-{clade}.gff3"
     conda:
         "envs/biopython.yaml"
     script:
         "scripts/simplify_gff.py"
 
-rule flatten_gff:
-    input:
-        "analysis/locate_viruses/blastn/{cluster}-{clade}.gff3"
-    output:
-        "analysis/locate_viruses/segments/{cluster}-{clade}.gff3"
-    params:
-        overlap = 10
-    conda:
-        "envs/tools.yaml"
-    shell:
-        """
-        sort -k1,1 -k4,4n {input} | bedtools merge -s -d -{params.overlap} -c 7 -o distinct | awk '{{print$1,"blastn","fragment",$2+1,$3,".",$4,".",sprintf("ID=frag-%s;", NR)}}' OFS=\\\\t > {output}
-        """
-
-rule gff3_to_fna:
+checkpoint gff3_to_fna:
     input:
         gff = "analysis/locate_viruses/segments/{cluster}-{clade}.gff3",
         fna = "analysis/locate_viruses/clusters/{cluster}.fna"
@@ -123,6 +109,16 @@ rule gff3_to_fna:
         "envs/biopython.yaml"
     script:
         "scripts/gff_fna.py"
+
+rule locate_get_lens:
+    input:
+        "analysis/locate_viruses/segments/{cluster}-{clade}.fna"
+    output:
+        "analysis/locate_viruses/segments/{cluster}-{clade}.lens.txt"
+    conda:
+        "envs/tools.yaml"
+    shell:
+        "seqkit fx2tab -nil {input} | awk '{{print$1,$1,$2}}' > {output}"
 
 rule segment_hmmsearch:
     input:
@@ -209,7 +205,9 @@ rule merge_outfmt6_to_bed:
         "analysis/locate_viruses/all_MCPs/{cluster}.bed"
     conda:
         "envs/tools.yaml"
+    params:
+        dist = 400
     shell:
         """
-        sort -k1,1 -k2,2n {input} | bedtools merge -s -c 4,5,6 -o collapse,collapse,distinct | awk '{{split($4,s,",");split($5,c,",");S=0;for(i in s) if(s[i]>S){{S=s[i];C=c[i]}};print$1,$2,$3,S,C,$6}}' OFS=\\\\t > {output}
+        sort -k1,1 -k2,2n {input} | bedtools merge -s -d {params.dist} -c 4,5,6 -o collapse,collapse,distinct | awk '{{split($4,s,",");split($5,c,",");S=0;for(i in s) if(s[i]>S){{S=s[i];C=c[i]}};print$1,$2,$3,S,C,$6}}' OFS=\\\\t > {output}
         """
