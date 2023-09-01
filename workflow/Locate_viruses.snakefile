@@ -4,7 +4,8 @@ from Bio import SeqIO
 
 rule locate_viruses:
     input:
-        expand("analysis/locate_viruses/all_MCPs/{cluster}.bed", cluster = clusters)
+        expand("output/locate_viruses_{cluster}.svg", cluster = clusters),
+        expand("output/scaffold_{scaffold}.svg", scaffold = [ "jcf7180000139292", "jcf7180000174485" ])
 
 rule MCPs_link:
     input:
@@ -211,3 +212,169 @@ rule merge_outfmt6_to_bed:
         """
         sort -k1,1 -k2,2n {input} | bedtools merge -s -d {params.dist} -c 4,5,6 -o collapse,collapse,distinct | awk '{{split($4,s,",");split($5,c,",");S=0;for(i in s) if(s[i]>S){{S=s[i];C=c[i]}};print$1,$2,$3,S,C,$6}}' OFS=\\\\t > {output}
         """
+
+rule scaf_lens:
+    input:
+        "analysis/locate_viruses/clusters/cymbo_MaSURCA_assembly_2020.fna"
+    output:
+        "analysis/locate_viruses/clusters/cymbo_MaSURCA_assembly_2020.lens"
+    conda:
+        "envs/tools.yaml"
+    shell:
+        "seqkit fx2tab -nl -o {output} {input}"
+
+rule gbk_to_gff3:
+    input:
+        "submission/annot_fixed.gbf"
+    output:
+        "analysis/genome/annot_fixed.gff3"
+    conda:
+        "envs/bioperl.yaml"
+    shell:
+        "bp_genbank2gff3.pl -in stdin -out stdout < {input} | perl -pl -MURI::Escape -e '$_=uri_unescape($_)' > {output}"
+
+rule complement:
+    input:
+        lens = "analysis/locate_viruses/clusters/cymbo_MaSURCA_assembly_2020.lens",
+        gff3 = expand("analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020-{clade}.gff3", clade = clades)
+    output:
+        "analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020.complement.bed"
+    conda:
+        "envs/tools.yaml"
+    shell:
+        "cat {input.gff3} | bedtools sort | bedtools complement -g {input.lens} -i - > {output}"
+
+rule fna_gc:
+    input:
+        gff3 = "analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020-{clade}.gff3",
+        fna = "analysis/locate_viruses/clusters/cymbo_MaSURCA_assembly_2020.fna"
+    output:
+        "analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020-{clade}.gff3.gc"
+    conda:
+        "envs/tools.yaml"
+    shell:
+        "bedtools sort -i {input.gff3} | bedtools merge | bedtools getfasta -fi {input.fna} -bed - | seqkit replace -p '[:-].*' | seqkit fx2tab | bedtools groupby -g 1 -c 2 -o collapse | seqkit tab2fx | seqkit fx2tab -gln -o {output}"
+
+rule complement_gc:
+    input:
+        bed = "analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020.complement.bed",
+        fna = "analysis/locate_viruses/clusters/cymbo_MaSURCA_assembly_2020.fna"
+    output:
+        "analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020.complement.bed.gc"
+    conda:
+        "envs/tools.yaml"
+    shell:
+        "bedtools sort -i {input.bed} | bedtools getfasta -fi {input.fna} -bed - | seqkit replace -p '[:-].*' | seqkit fx2tab | bedtools groupby -g 1 -c 2 -o collapse | seqkit tab2fx | seqkit fx2tab -gln -o {output}"
+
+rule complement_intron_mRNA:
+    input:
+        annots = "analysis/genome/annot_fixed.gff3",
+        compl = "analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020.complement.bed"
+    output:
+        "analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020.complement.multiexon.tab"
+    conda:
+        "envs/tools.yaml"
+    shell:
+        "gffread -FUCG {input.annots} | bedtools intersect -a - -b {input.compl} | csvgrep --no-header-row -t -c 3 -m mRNA | csvcut -c1,4,5,9 | sed 1d > {output}"
+
+rule count_viruses:
+    input:
+        MCPs = "analysis/locate_viruses/all_MCPs/{cluster}.bed",
+        gff3 = expand("analysis/locate_viruses/segments/{{cluster}}-{clade}.gff3", clade = clades)
+    output:
+        "output/locate_viruses_{cluster}.svg"
+    params:
+        clades = clades,
+        complete_score = 0.9,
+        complete_lens = { "NCLDV": 100000 }
+    conda:
+        "envs/r.yaml"
+    script:
+        "scripts/count_viruses.R"
+
+rule scaffold_coverage:
+    input:
+        "coverage/depth.PLY262_illumina_001_v_PLY262_masurca_assembly.bam.out"
+    output:
+        "analysis/coverage/{scaffold}.tab"
+    shell:
+        "grep {wildcards.scaffold} {input} > {output}"
+
+rule plot_coverage:
+    input:
+        complement_gc = "analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020.complement.bed.gc",
+        clade_gc = expand("analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020-{clade}.gff3.gc", clade = clades),
+        coverage = "coverage/PLY262_illumina_001_v_PLY262_masurca_assembly.bam.coverage",
+        scaffold = "analysis/coverage/jcf7180000139292.tab"
+    output:
+        "output/total_coverage.pdf",
+    params:
+        clades = clades,
+        scaf_min = 10000
+    conda:
+        "envs/r.yaml"
+    script:
+        "scripts/coverage.R"
+
+rule dload_eggnog:
+    output:
+        "analysis/eggnog/data/eggnog.db"
+    conda:
+        "envs/eggnog.yaml"
+    shell:
+        "download_eggnog_data.py -y --data_dir $(dirname {output})"
+
+rule get_scaffold_to_annotate:
+    input:
+        "clusters/cymbo_MaSURCA_assembly_2020.fasta"
+    output:
+        "analysis/scaffolds_to_annotate/{scaffold}.fna"
+    conda:
+        "envs/tools.yaml"
+    shell:
+        "seqkit grep -p {wildcards.scaffold} -o {output} {input}"
+
+rule eggnog:
+    input:
+        db = "analysis/eggnog/data/eggnog.db",
+        faa = "analysis/scaffolds_to_annotate/{genome}.combined.faa"
+    output:
+        "analysis/scaffolds_to_annotate/{genome}/eggnog.emapper.annotations"
+    conda:
+        "envs/eggnog.yaml"
+    threads:
+        20
+    shell:
+        "emapper.py --cpu {threads} -o eggnog -i {input.faa} --data_dir $(dirname {input.db}) -m diamond --output_dir $(dirname {output})"
+
+rule scaffold_gvog:
+    input:
+        hmm = "databases/GVDB/output/GVOG.hmm",
+        faa = "analysis/scaffolds_to_annotate/{scaffold}.combined.faa"
+    output:
+        "analysis/scaffolds_to_annotate/{scaffold}_gvog.txt"
+    conda:
+        "envs/tools.yaml"
+    shell:
+        "hmmscan -o /dev/null --tblout {output} {input.hmm} {input.faa}"
+
+rule plot_scaffold:
+    input:
+        eggnog = "analysis/scaffolds_to_annotate/{scaffold}/eggnog.emapper.annotations",
+        genes = "analysis/scaffolds_to_annotate/{scaffold}.combined.gff",
+        cogs = "metadata/cogs.tab",
+        fna = "analysis/scaffolds_to_annotate/{scaffold}.fna",
+        cov = "analysis/coverage/{scaffold}.tab",
+        cov_total = "coverage/PLY262_illumina_001_v_PLY262_masurca_assembly.bam.coverage",
+        viruses = expand("analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020-{clade}.gff3", clade = clades),
+        colors = "metadata/clade_colors.tab",
+        gvog = "analysis/scaffolds_to_annotate/{scaffold}_gvog.txt",
+        markers = "metadata/NCLDV_markers.txt"
+    output:
+        "output/scaffold_{scaffold}.svg"
+    params:
+        clades = clades
+    conda:
+        "envs/gmoviz.yaml"
+    script:
+        "scripts/plot_scaffold.R"
