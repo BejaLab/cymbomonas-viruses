@@ -152,4 +152,4 @@ rule NCLDV_phylo_ggtree:
     conda:
         "envs/r.yaml"
     script:
-        "scripts/ggtree-viruses.R"
+        "scripts/ggtree-NCLDV.R"

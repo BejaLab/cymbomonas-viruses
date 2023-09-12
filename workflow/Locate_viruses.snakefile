@@ -4,8 +4,10 @@ from Bio import SeqIO
 
 rule locate_viruses:
     input:
-        expand("output/locate_viruses_{cluster}.svg", cluster = clusters),
-        expand("output/scaffold_{scaffold}.svg", scaffold = [ "jcf7180000139292", "jcf7180000174485" ])
+        #expand("output/locate_viruses_{cluster}.svg", cluster = clusters),
+        #expand("output/scaffold_{scaffold}.svg", scaffold = [ "jcf7180000139292", "jcf7180000174485" ]),
+        expand("analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020-{clade}.stringtie.faa", clade = clades),
+        "output/total_coverage.pdf"
 
 rule MCPs_link:
     input:
@@ -225,7 +227,7 @@ rule scaf_lens:
 
 rule gbk_to_gff3:
     input:
-        "submission/annot_fixed.gbf"
+        "../genome_annotation/output/submission/annot_fixed.gbf"
     output:
         "analysis/genome/annot_fixed.gff3"
     conda:
@@ -271,11 +273,11 @@ rule complement_intron_mRNA:
         annots = "analysis/genome/annot_fixed.gff3",
         compl = "analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020.complement.bed"
     output:
-        "analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020.complement.multiexon.tab"
+        "analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020.complement.mRNA.tab"
     conda:
         "envs/tools.yaml"
     shell:
-        "gffread -FUCG {input.annots} | bedtools intersect -a - -b {input.compl} | csvgrep --no-header-row -t -c 3 -m mRNA | csvcut -c1,4,5,9 | sed 1d > {output}"
+        "gffread -FCG {input.annots} | bedtools intersect -a - -b {input.compl} | csvgrep --no-header-row -t -c 3 -m mRNA | csvcut -c1,4,5,9 | sed 1d > {output}"
 
 rule count_viruses:
     input:
@@ -305,7 +307,7 @@ rule plot_coverage:
         complement_gc = "analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020.complement.bed.gc",
         clade_gc = expand("analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020-{clade}.gff3.gc", clade = clades),
         coverage = "coverage/PLY262_illumina_001_v_PLY262_masurca_assembly.bam.coverage",
-        scaffold = "analysis/coverage/jcf7180000139292.tab"
+        colors = "metadata/clade_colors.tab"
     output:
         "output/total_coverage.pdf",
     params:
@@ -358,6 +360,16 @@ rule scaffold_gvog:
     shell:
         "hmmscan -o /dev/null --tblout {output} {input.hmm} {input.faa}"
 
+rule scaffold_interproscan:
+    input:
+        "analysis/scaffolds_to_annotate/{scaffold}.combined.faa"
+    output:
+        "analysis/scaffolds_to_annotate/{scaffold}.combined.faa.tsv"
+    threads:
+        20
+    shell:
+        "interproscan.sh --disable-precalc -i {input} -d $(dirname {output}) -cpu {threads}"
+
 rule plot_scaffold:
     input:
         eggnog = "analysis/scaffolds_to_annotate/{scaffold}/eggnog.emapper.annotations",
@@ -369,7 +381,9 @@ rule plot_scaffold:
         viruses = expand("analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020-{clade}.gff3", clade = clades),
         colors = "metadata/clade_colors.tab",
         gvog = "analysis/scaffolds_to_annotate/{scaffold}_gvog.txt",
-        markers = "metadata/NCLDV_markers.txt"
+        markers = "metadata/NCLDV_markers.txt",
+        iprscan = "analysis/scaffolds_to_annotate/{scaffold}.combined.faa.tsv",
+        custom_domains = "metadata/custom_domains.tab"
     output:
         "output/scaffold_{scaffold}.svg"
     params:
@@ -378,3 +392,63 @@ rule plot_scaffold:
         "envs/gmoviz.yaml"
     script:
         "scripts/plot_scaffold.R"
+
+rule summarize_scaffolds:
+    input:
+        mRNA = "analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020.complement.mRNA.tab",
+        complement_gc = "analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020.complement.bed.gc",
+        clade_gc = expand("analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020-{clade}.gff3.gc", clade = clades),
+        coverage = "coverage/PLY262_illumina_001_v_PLY262_masurca_assembly.bam.coverage",
+        MCP = "analysis/locate_viruses/all_MCPs/cymbo_MaSURCA_assembly_2020.bed",
+        gff3 = expand("analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020-{clade}.gff3", clade = clades),
+        proteinortho = "../genome_annotation/analysis/proteinortho/proteinortho.proteinortho.tsv"
+    output:
+        "output/viral_scaffolds.tsv"
+    params:
+        clades = clades,
+        min_species = 4
+    conda:
+        "envs/r.yaml"
+    script:
+        "scripts/scaffold_summary.R"
+
+rule stringtie_transcripts_intersect:
+    input:
+        assembly = "../genome_annotation/analysis/stringtie/assembly.gtf",
+        virus = "analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020-{clade}.gff3"
+    output:
+        "analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020-{clade}.stringtie.gff"
+    params:
+        m = 200
+    conda:
+        "envs/tools.yaml"
+    shell:
+        "bedtools intersect -a {input.assembly} -b {input.virus} -f 1 -wb > {output}"
+
+rule stringtie_transcripts_sequence:
+    input:
+        gff = "analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020-{clade}.stringtie.gff",
+        genome = "analysis/locate_viruses/clusters/cymbo_MaSURCA_assembly_2020.fna"
+    output:
+        "analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020-{clade}.stringtie.ffn"
+    params:
+        m = 200
+    conda:
+        "envs/tools.yaml"
+    shell:
+        "cut -f1-9 {input.gff} | gffread -Ww- -g {input.genome} | seqkit seq -gm {params.m} > {output}"
+
+rule stringtie_transdecoder:
+    input:
+        "analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020-{clade}.stringtie.ffn"
+    output:
+        "analysis/locate_viruses/segments/cymbo_MaSURCA_assembly_2020-{clade}.stringtie.faa"
+    shadow:
+        "minimal"
+    conda:
+        "envs/transdecoder.yaml"
+    shell:
+        """
+        TransDecoder.LongOrfs -t {input} -O ./ || true
+        [ -s longest_orfs.pep ] && mv longest_orfs.pep {output} || touch {output}
+        """

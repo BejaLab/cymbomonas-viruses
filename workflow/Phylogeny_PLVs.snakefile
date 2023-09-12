@@ -140,7 +140,7 @@ rule get_algal_MCPs:
 
 rule cat_PLV_MCPs_viruses:
     input:
-        lambda w: expand("analysis/phylogeny/PLVs/viruses/{genome}-MCP.faa", genome = [ virus for x in PLV_outgroups for virus in virus_clades[x]])
+        lambda w: expand("analysis/phylogeny/PLVs/viruses/{genome}-MCP.faa", genome = [ virus for x in PLV_outgroups for virus in virus_clades[x] if not virus.startswith('jcf') ])
     output:
         "analysis/phylogeny/PLVs/outgroups/MCP.faa"
     shell:
@@ -213,7 +213,7 @@ rule faa_txt_algae:
 
 rule PLV_phylo_ggtree:
     input:
-        tree = "analysis/phylogeny/PLVs/PLVs.treefile.madroot",
+        tree = "analysis/phylogeny/PLVs/PLVs.treefile",
         proteins = lambda w:
             expand("analysis/phylogeny/PLVs/viruses/{genome}-MCP.faa.txt", genome = [ virus for x in PLV_outgroups for virus in virus_clades[x]]) +
             expand("analysis/phylogeny/PLVs/algae/{clade}-{genome}.faa.txt", genome = algae, clade = PLVs),
@@ -228,4 +228,4 @@ rule PLV_phylo_ggtree:
     conda:
         "envs/r.yaml"
     script:
-        "scripts/ggtree-viruses.R"
+        "scripts/ggtree-PLVs.R"

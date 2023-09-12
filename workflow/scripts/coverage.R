@@ -7,7 +7,7 @@ with(snakemake@input, {
     complement_gc_file <<- complement_gc
     clade_gc_files <<- clade_gc
     coverage_file <<- coverage
-    scaffold_file <<- scaffold
+    colors_file <<- colors
 })
 with(snakemake@params, {
     clades <<- clades
@@ -37,12 +37,8 @@ coverage <- read.table(coverage_file, col.names = c("scaffold", "scaf_size", "sc
     mutate(med_scaf_cov = first(med_scaf_cov[viral_fract == 0])) %>%
     mutate(scaf_cov_norm = scaf_cov / med_scaf_cov)
 
-colors <- list(
-    NCLDV = "#ccffaaff",
-    PLV2  = "#5cc2eaff",
-    PLVA  = "#d4865eff",
-    PLVB  = "#fbbc56ff"
-)
+colors <- read.table(colors_file, col.names = c("clade", "color"), sep = "\t", comment.char = "") %>%
+    with(setNames(color, clade))
 
 p <- ggplot() +
     geom_point(data = filter(coverage, viral_fract > 0, scaf_size > scaf_min), aes(x = viral_fract, y = scaf_cov_norm, size = scaf_size, color = longest)) +

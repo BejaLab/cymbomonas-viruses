@@ -192,7 +192,7 @@ rule get_lens_moniruzzaman:
 
 rule get_lens_bellas:
     input:
-        "databases/Bellas_Sommaruga/input/All_proteins.faa"
+        "databases/Bellas_Sommaruga/input/All_proteins.faa.lens"
     output:
         "analysis/PLV_annotate/bellas-{virus}.faa"
     params:
