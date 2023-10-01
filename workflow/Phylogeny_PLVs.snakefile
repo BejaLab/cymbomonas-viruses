@@ -108,7 +108,7 @@ rule cdhit_MCPs:
     conda:
         "envs/tools.yaml"
     shell:
-        "cdhit -i {input} -o {output.cdhit} -c {params.c} -d 0"
+        "cd-hit -i {input} -o {output.cdhit} -c {params.c} -d 0"
 
 rule blast_MCPs:
     input:

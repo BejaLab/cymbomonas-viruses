@@ -171,7 +171,7 @@ rule segment_hmmsearch_fasta_cdhit:
     conda:
         "envs/tools.yaml"
     shell:
-        "cdhit -i {input} -o {output} -d 0 -c {params.c}"
+        "cd-hit -i {input} -o {output} -d 0 -c {params.c}"
 
 rule MCP_blast:
     input:

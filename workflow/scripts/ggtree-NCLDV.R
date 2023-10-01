@@ -101,7 +101,7 @@ mark_df <- select(alns, short, desc) %>%
     spread(desc, present) %>%
     column_to_rownames("short")
 p <- ggtree(tree_data) +
-    geom_nodepoint(aes(x = branch, subset = !is.na(UFboot) & UFboot >= 90, size = UFboot)) +
+    geom_nodepoint(aes(x = branch, subset = !is.na(UFboot) & UFboot >= 95, size = UFboot)) +
     geom_tiplab(aes(label = Label), size = 2, align = F, linesize = 0) +
     # scale_color_manual(values = colors) +
     geom_treescale(width = 0.5) +
